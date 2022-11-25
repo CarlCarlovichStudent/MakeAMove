@@ -88,17 +88,17 @@ public class Chessboard : MonoBehaviour
     private GameObject GenerateSingleTile(float size, int x, int y)
     {
         GameObject tile = new GameObject(string.Format("X:{0}, Y:{1}", x, y));
-        tile.transform.parent = transform;
+        //tile.transform.parent = transform;
 
         Mesh mesh = new Mesh();
         tile.AddComponent<MeshFilter>().mesh = mesh;
         tile.AddComponent<MeshRenderer>().material = tileMaterial;
         
         Vector3[] vertices = new Vector3[4];
-        vertices[0] = new Vector3(x * tileSize, 0, y * tileSize);
-        vertices[1] = new Vector3(x * tileSize, 0, (y + 1) * tileSize);
-        vertices[2] = new Vector3((x + 1) * tileSize, 0, y * tileSize);
-        vertices[3] = new Vector3((x + 1) * tileSize, 0, (y + 1) * tileSize);
+        vertices[0] = new Vector3(x * tileSize, 0.001f, y * tileSize);
+        vertices[1] = new Vector3(x * tileSize, 0.001f, (y + 1) * tileSize);
+        vertices[2] = new Vector3((x + 1) * tileSize, 0.001f, y * tileSize);
+        vertices[3] = new Vector3((x + 1) * tileSize, 0.001f, (y + 1) * tileSize);
 
         int[] tris = new int[] { 0, 1, 2, 1, 3, 2 };
 
