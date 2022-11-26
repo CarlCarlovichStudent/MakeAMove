@@ -44,8 +44,13 @@ public class Chessboard : MonoBehaviour
     // Spawning pieces
     private void SpawnPiece(Vector2Int position, ChessPieceTeam team)
     {
+        GameObject container = new GameObject("Pieces");
+        container.transform.parent = transform;
+        container.transform.localPosition = Vector3.zero;
+        container.transform.localRotation = Quaternion.identity;
+        
         ChessPiece piece = Instantiate(pawn).GetComponent<ChessPiece>();
-        piece.transform.parent = transform;
+        piece.transform.parent = container.transform;
 
         piece.team = team;
         piece.GetComponent<MeshRenderer>().material = team == ChessPieceTeam.White ? whiteTeamMaterial : blackTeamMaterial;
@@ -67,9 +72,8 @@ public class Chessboard : MonoBehaviour
 
     private Vector3 GetTileCenter(Vector2Int position)
     {
-        Vector3 scale = transform.lossyScale;
-        return new Vector3((0.5f + position.x - TileCountX / 2f) * tileSize / scale.x ,yOffset,
-            (0.5f + position.y - TileCountY / 2f) * tileSize / scale.y);
+        return new Vector3((0.5f + position.x - TileCountX / 2f) * tileSize  ,yOffset,
+            (0.5f + position.y - TileCountY / 2f) * tileSize);
     }
     
     // Hover
@@ -116,29 +120,33 @@ public class Chessboard : MonoBehaviour
     // Generate tiles
     private void GenerateAllTiles()
     {
+        GameObject container = new GameObject("Tiles");
+        container.transform.parent = transform;
+        container.transform.localPosition = Vector3.zero;
+        container.transform.localRotation = Quaternion.identity;
+        
         tiles = new GameObject[TileCountX, TileCountY];
         for (int x = 0; x < TileCountX; x++)
         {
             for (int y = 0; y < TileCountY; y++)
             {
-                tiles[x, y] = GenerateTile(x, y);
+                tiles[x, y] = GenerateTile(x, y, container);
             }
         }
     }
 
-    private GameObject GenerateTile(int x, int y)
+    private GameObject GenerateTile(int x, int y, GameObject container)
     {
         GameObject tile = new GameObject(string.Format("X:{0}, Y:{1}", x, y));
-        tile.transform.parent = transform;
+        tile.transform.parent = container.transform;
 
         Mesh mesh = new Mesh();
         tile.AddComponent<MeshFilter>().mesh = mesh;
         tile.AddComponent<MeshRenderer>().material = hoverMaterial;
         
         Vector3[] vertices = new Vector3[4];
-
+        
         Vector3 position = transform.position;
-
         float centerOffsetX = TileCountX / 2f;
         float centerOffsetY = TileCountY / 2f;
         

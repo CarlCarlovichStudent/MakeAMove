@@ -484,3 +484,16 @@ MonoBehaviour:
   whiteTeamMaterial: {fileID: 2100000, guid: 6e9c4a717ad97094e8403c85d2579c87, type: 2}
   blackTeamMaterial: {fileID: 2100000, guid: e5eb2200dcfff114d8283bcfe6ca4689, type: 2}
   pawn: {fileID: 5603600136221564716, guid: c7305a7f83096ae458e230179e3300e2, type: 3}
+--- !u!114 &2056848573
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2056848569}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 91f57ea45ff3f484b960d0688fd5de7f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  deck: {fileID: 11400000, guid: 30eba2334256fa346b647f7574a8c7d0, type: 2}
