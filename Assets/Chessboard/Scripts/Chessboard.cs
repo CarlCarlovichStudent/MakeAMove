@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.Serialization;
 
 public class Chessboard : MonoBehaviour
 {
@@ -7,16 +6,28 @@ public class Chessboard : MonoBehaviour
     [SerializeField] private Material hoverMaterial;
     [SerializeField] private float tileSize = 1.0f;
     [SerializeField] private float yOffset = 1.0f;
+
+    [Header("Team Materials")] 
+    [SerializeField] private Material whiteTeamMaterial;
+    [SerializeField] private Material blackTeamMaterial;
     
+    [Header("Piece prefabs")]
+    [SerializeField] private GameObject pawn;
+
     // Logic
     private const int TileCountX = 8, TileCountY = 8;
     private GameObject[,] tiles;
     private Camera currentCamera;
     private Vector2Int currentHover;
+    private ChessPiece[,] pieces;
     
     private void Awake()
     {
-        GenerateAllTiles(tileSize);
+        GenerateAllTiles();
+
+        pieces = new ChessPiece[TileCountX, TileCountY];
+        
+        SpawnPiece(new Vector2Int(7, 7), ChessPieceTeam.Black);
     }
 
     private void Update()
@@ -30,6 +41,37 @@ public class Chessboard : MonoBehaviour
         HoverTileHandler();
     }
 
+    // Spawning pieces
+    private void SpawnPiece(Vector2Int position, ChessPieceTeam team)
+    {
+        ChessPiece piece = Instantiate(pawn).GetComponent<ChessPiece>();
+        piece.transform.parent = transform;
+
+        piece.team = team;
+        piece.GetComponent<MeshRenderer>().material = team == ChessPieceTeam.White ? whiteTeamMaterial : blackTeamMaterial;
+
+        PositionPiece(ref piece, position, true);
+        piece.boardPosition = position;
+
+        pieces[position.x, position.y] = piece;
+    }
+    
+    // Position pieces
+    private void PositionPiece(ref ChessPiece piece, Vector2Int position, bool spawning = false)
+    {
+        if (spawning)
+        {
+            piece.transform.localPosition = GetTileCenter(position);
+        }
+    }
+
+    private Vector3 GetTileCenter(Vector2Int position)
+    {
+        Vector3 scale = transform.lossyScale;
+        return new Vector3((0.5f + position.x - TileCountX / 2f) * tileSize / scale.x ,yOffset,
+            (0.5f + position.y - TileCountY / 2f) * tileSize / scale.y);
+    }
+    
     // Hover
     private void HoverTileHandler()
     {
@@ -72,19 +114,19 @@ public class Chessboard : MonoBehaviour
     }
 
     // Generate tiles
-    private void GenerateAllTiles(float tileSize)
+    private void GenerateAllTiles()
     {
         tiles = new GameObject[TileCountX, TileCountY];
         for (int x = 0; x < TileCountX; x++)
         {
             for (int y = 0; y < TileCountY; y++)
             {
-                tiles[x, y] = GenerateSingleTile(x, y);
+                tiles[x, y] = GenerateTile(x, y);
             }
         }
     }
 
-    private GameObject GenerateSingleTile(int x, int y)
+    private GameObject GenerateTile(int x, int y)
     {
         GameObject tile = new GameObject(string.Format("X:{0}, Y:{1}", x, y));
         tile.transform.parent = transform;
@@ -96,11 +138,14 @@ public class Chessboard : MonoBehaviour
         Vector3[] vertices = new Vector3[4];
 
         Vector3 position = transform.position;
+
+        float centerOffsetX = TileCountX / 2f;
+        float centerOffsetY = TileCountY / 2f;
         
-        vertices[0] = new Vector3((x - TileCountX / 2f) * tileSize + position.x, yOffset, (y - TileCountY / 2f) * tileSize + position.y);
-        vertices[1] = new Vector3((x - TileCountX / 2f) * tileSize + position.x, yOffset, (y + 1 - TileCountY / 2f) * tileSize + position.y);
-        vertices[2] = new Vector3((x + 1 - TileCountX / 2f) * tileSize + position.x, yOffset, (y - TileCountY / 2f) * tileSize + position.y);
-        vertices[3] = new Vector3((x + 1 - TileCountX / 2f) * tileSize + position.x, yOffset, (y + 1 - TileCountY / 2f) * tileSize + position.y);
+        vertices[0] = new Vector3((x - centerOffsetX) * tileSize + position.x, yOffset, (y - centerOffsetY) * tileSize + position.y);
+        vertices[1] = new Vector3((x - centerOffsetX) * tileSize + position.x, yOffset, (y + 1 - centerOffsetY) * tileSize + position.y);
+        vertices[2] = new Vector3((x + 1 - centerOffsetX) * tileSize + position.x, yOffset, (y - centerOffsetY) * tileSize + position.y);
+        vertices[3] = new Vector3((x + 1 - centerOffsetX) * tileSize + position.x, yOffset, (y + 1 - centerOffsetY) * tileSize + position.y);
 
         int[] tris = new int[] { 0, 1, 2, 1, 3, 2 };
 

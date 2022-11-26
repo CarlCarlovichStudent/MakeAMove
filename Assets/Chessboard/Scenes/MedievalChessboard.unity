@@ -155,6 +155,9 @@ MonoBehaviour:
   hoverMaterial: {fileID: 2100000, guid: c1b456032e190814b9280d407dbcdb47, type: 2}
   tileSize: 1
   yOffset: 1
+  whiteTeamMaterial: {fileID: 0}
+  blackTeamMaterial: {fileID: 0}
+  pawn: {fileID: 0}
 --- !u!4 &831973079
 Transform:
   m_ObjectHideFlags: 0
@@ -478,3 +481,6 @@ MonoBehaviour:
   hoverMaterial: {fileID: 2100000, guid: c1b456032e190814b9280d407dbcdb47, type: 2}
   tileSize: 0.6
   yOffset: 0.001
+  whiteTeamMaterial: {fileID: 2100000, guid: 6e9c4a717ad97094e8403c85d2579c87, type: 2}
+  blackTeamMaterial: {fileID: 2100000, guid: e5eb2200dcfff114d8283bcfe6ca4689, type: 2}
+  pawn: {fileID: 5603600136221564716, guid: c7305a7f83096ae458e230179e3300e2, type: 3}
