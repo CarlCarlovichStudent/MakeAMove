@@ -8,6 +8,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/Assets/Chessboard/Scripts/Card.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Chessboard/Scripts/Chessboard.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Chessboard/Scripts/Pieces/Pawn.cs" root0="FORCE_HIGHLIGHTING" />
   </component>
@@ -68,7 +69,8 @@
       <updated>1669382906141</updated>
       <workItem from="1669382919079" duration="11731000" />
       <workItem from="1669474356983" duration="4579000" />
-      <workItem from="1669483100316" duration="7855000" />
+      <workItem from="1669483100316" duration="8051000" />
+      <workItem from="1669550623811" duration="2065000" />
     </task>
     <servers />
   </component>

@@ -1,12 +1,13 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class CardDeckHandler : MonoBehaviour
 {
     [SerializeField] private CardDeck deck;
 
-    private CardDeck.CardSetup[] cards;
+    private List<CardSetup> cards;
     private void Awake()
     {
-        cards = deck.GetCards().ToArray();
+        cards = deck.GetCards();
     }
 }

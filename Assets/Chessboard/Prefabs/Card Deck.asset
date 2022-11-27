@@ -13,5 +13,18 @@ MonoBehaviour:
   m_Name: Card Deck
   m_EditorClassIdentifier: 
   cards:
-  - piece: 0
-  - piece: 0
+  - piecesAffected: 1
+    cardType: 1
+    weightedChance: 0
+  - piecesAffected: 0
+    cardType: 0
+    weightedChance: 0
+  - piecesAffected: 0
+    cardType: 0
+    weightedChance: 0
+  - piecesAffected: 0
+    cardType: 0
+    weightedChance: 0
+  - piecesAffected: 0
+    cardType: 0
+    weightedChance: 0

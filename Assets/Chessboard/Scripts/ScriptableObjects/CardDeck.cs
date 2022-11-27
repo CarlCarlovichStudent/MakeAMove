@@ -5,16 +5,18 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "Card Deck")]
 public class CardDeck : ScriptableObject
 {
-    [Serializable]
-    public class CardSetup
-    {
-        public ChessPieceType piece;
-    }
-
-    [SerializeField] private List<CardSetup> cards;
+    [SerializeField] [NonReorderable] private List<CardSetup> cards;
 
     public List<CardSetup> GetCards()
     {
         return cards;
     }
+}
+
+[Serializable]
+public class CardSetup
+{
+    public ChessPieceType piecesAffected;
+    public CardType cardType;
+    public int weightedChance;
 }
