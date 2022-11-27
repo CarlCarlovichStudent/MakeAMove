@@ -14,17 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cards:
   - piecesAffected: 1
-    cardType: 1
-    weightedChance: 0
-  - piecesAffected: 0
-    cardType: 0
-    weightedChance: 0
-  - piecesAffected: 0
-    cardType: 0
-    weightedChance: 0
-  - piecesAffected: 0
-    cardType: 0
-    weightedChance: 0
-  - piecesAffected: 0
-    cardType: 0
-    weightedChance: 0
+    cardType: 2
+    weightedChance: 1
