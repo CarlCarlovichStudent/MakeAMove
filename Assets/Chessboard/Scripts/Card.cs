@@ -2,10 +2,16 @@ using UnityEngine;
 
 public class Card : MonoBehaviour
 {
-    private CardBehavior behaviour;
+    private CardBehavior behavior;
+    private Canvas canvas;
 
-    public Card(CardBehavior behavior) : base()
+    public Card(CardBehavior behavior, Canvas canvas)
     {
-        this.behaviour = behavior;
+        this.behavior = behavior;
+        this.canvas = canvas;
+
+        GameObject image = new GameObject(behavior.cardType.ToString() + behavior.piecesAffected.ToString());
+        
+        Instantiate(image);
     }
 }
