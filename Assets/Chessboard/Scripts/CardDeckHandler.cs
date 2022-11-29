@@ -8,6 +8,7 @@ public class CardDeckHandler : MonoBehaviour
 {
     [Header("Settings")]
     [SerializeField] private int handSize;
+    [SerializeField] private Vector2Int cardOffset;
     
     [Header("General references")]
     [SerializeField] private CardDeck deck;
@@ -33,7 +34,7 @@ public class CardDeckHandler : MonoBehaviour
         InitializeHand();
     }
 
-    // Initialize
+    // Initialize cards
     private void InitializeHand()
     {
         for (int i = 0; i < handSize; i++)
@@ -46,20 +47,27 @@ public class CardDeckHandler : MonoBehaviour
     {
         CardBehavior behavior = GetRandomCardBehavior();
         
-        Transform holderTransform = InstantiateGameObject("Card " + (slot + 1), canvas.transform).transform;
+        GameObject gameObject = InstantiateImageObject("Card " + slot, canvas.transform, cardSprite);
+        Card card = gameObject.AddComponent<Card>();
         
-        GameObject pieceImage = InstantiateGameObject("Piece Image", holderTransform);
-        Image image = pieceImage.AddComponent<Image>();
-        image.sprite = PieceSprite(behavior.piecesAffected);
+        InstantiateImageObject("Piece Image", gameObject.transform, PieceSprite(behavior.piecesAffected));
+        InstantiateImageObject("Card Type Image", gameObject.transform, CardTypeSprite(behavior.cardType));
         
-        GameObject cardTypeImage = InstantiateGameObject("Card Type Image", holderTransform);
-        image = cardTypeImage.AddComponent<Image>();
-        image.sprite = CardTypeSprite(behavior.cardType);
+        card.SetStartValues(slot, handSize, cardOffset);
 
         return behavior;
     }
 
     // Instantiate objects
+    private GameObject InstantiateImageObject(string name, Transform parent, Sprite sprite)
+    {
+        GameObject gameObject = InstantiateGameObject(name, parent);
+        Image image = gameObject.AddComponent<Image>();
+        image.sprite = sprite;
+
+        return gameObject;
+    }
+    
     private GameObject InstantiateGameObject(string name, Transform parent)
     {
         GameObject gameObject = new GameObject(name);
