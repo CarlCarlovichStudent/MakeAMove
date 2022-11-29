@@ -44,11 +44,8 @@ public class Chessboard : MonoBehaviour
     // Spawning pieces
     private void SpawnPiece(Vector2Int position, ChessPieceTeam team)
     {
-        GameObject container = new GameObject("Pieces");
-        container.transform.parent = transform;
-        container.transform.localPosition = Vector3.zero;
-        container.transform.localRotation = Quaternion.identity;
-        
+        GameObject container = CreateContainer("Pieces", transform);
+
         ChessPiece piece = Instantiate(pawn).GetComponent<ChessPiece>();
         piece.transform.parent = container.transform;
 
@@ -120,10 +117,7 @@ public class Chessboard : MonoBehaviour
     // Generate tiles
     private void GenerateAllTiles()
     {
-        GameObject container = new GameObject("Tiles");
-        container.transform.parent = transform;
-        container.transform.localPosition = Vector3.zero;
-        container.transform.localRotation = Quaternion.identity;
+        GameObject container = CreateContainer("Tiles", transform);
         
         tiles = new GameObject[TileCountX, TileCountY];
         for (int x = 0; x < TileCountX; x++)
@@ -167,6 +161,17 @@ public class Chessboard : MonoBehaviour
         tile.GetComponent<MeshRenderer>().enabled = false;
 
         return tile;
+    }
+    
+    // Reusable code
+    private GameObject CreateContainer(string name, Transform parent)
+    {
+        GameObject container = new GameObject(name);
+        container.transform.parent = parent;
+        container.transform.localPosition = Vector3.zero;
+        container.transform.localRotation = Quaternion.identity;
+        
+        return container;
     }
     
     // Draw preview of tiles in editor (shows outlines of tiles)
