@@ -23,39 +23,79 @@ public class CardDeckHandler : MonoBehaviour
     [SerializeField] private Sprite move;
     [SerializeField] private Sprite special;
 
+    private Chessboard board;
+    
+    // Cards
     private List<CardBehavior> cardPool;
-    private CardBehavior[] hand;
+    private Card[] hand;
+    private Card lastSelected;
+    private Card lastHovered;
 
     private void Awake()
     {
         cardPool = deck.GetCards();
-        hand = new CardBehavior[handSize];
-
+        board = GetComponent<Chessboard>();
         InitializeHand();
+    }
+
+    private void Update()
+    {
+        if (lastSelected is not null)
+        {
+            //?
+        }
+    }
+
+    // Hover and select handlers for HUD Raycaster
+    public void HandleCardHover(Card card)
+    {
+        if (card == lastHovered || card == lastSelected) return;
+        
+        lastHovered?.Unhover();
+        lastHovered = card;
+        card.Hover();
+    }
+
+    public void HandleCardSelect(Card card) // TODO: handle deselect when already selected
+    {
+        if (card == lastSelected) return;
+        
+        lastSelected?.Deselect();
+        lastSelected = card;
+        lastSelected.Select();
+        
+        board.SetSelectedBehavior(lastSelected.behavior);
+    }
+
+    public void HandleNoCardHover()
+    {
+        lastHovered?.Unhover();
+        lastHovered = null;
     }
 
     // Initialize cards
     private void InitializeHand()
     {
+        hand = new Card[handSize];
         for (int i = 0; i < handSize; i++)
         {
             hand[i] = InitializeCard(i);
         }
     }
 
-    private CardBehavior InitializeCard(int slot)
+    private Card InitializeCard(int slot)
     {
-        CardBehavior behavior = GetRandomCardBehavior();
-        
         GameObject gameObject = InstantiateImageObject("Card " + slot, canvas.transform, cardSprite);
         Card card = gameObject.AddComponent<Card>();
+
+        CardBehavior behavior = GetRandomCardBehavior();
         
         InstantiateImageObject("Piece Image", gameObject.transform, PieceSprite(behavior.piecesAffected));
         InstantiateImageObject("Card Type Image", gameObject.transform, CardTypeSprite(behavior.cardType));
         
-        card.SetStartValues(slot, handSize, cardOffset);
+        card.SetStartValues(slot + 0.5f - handSize / 2f, cardOffset, behavior);
 
-        return behavior;
+        return card;
     }
 
     // Instantiate objects

@@ -153,6 +153,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   hoverMaterial: {fileID: 2100000, guid: c1b456032e190814b9280d407dbcdb47, type: 2}
+  highlightMaterial: {fileID: 0}
   tileSize: 1
   yOffset: 1
   whiteTeamMaterial: {fileID: 0}
@@ -640,6 +641,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 727562e4ab0c2b64db75b01391c72e8a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  handler: {fileID: 2056848573}
 --- !u!1 &2056848569 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1000011581524622, guid: 857381d11efac0a4d91a3b3b8b94a827,
@@ -659,6 +661,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   hoverMaterial: {fileID: 2100000, guid: c1b456032e190814b9280d407dbcdb47, type: 2}
+  highlightMaterial: {fileID: 2100000, guid: ce84168a7c6dde84cb9a1a5713175d94, type: 2}
   tileSize: 0.6
   yOffset: 0.001
   whiteTeamMaterial: {fileID: 2100000, guid: 6e9c4a717ad97094e8403c85d2579c87, type: 2}

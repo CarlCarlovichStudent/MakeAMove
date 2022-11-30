@@ -4,6 +4,7 @@ public class Chessboard : MonoBehaviour
 {
     [Header("Tile Settings")] 
     [SerializeField] private Material hoverMaterial;
+    [SerializeField] private Material highlightMaterial;
     [SerializeField] private float tileSize = 1.0f;
     [SerializeField] private float yOffset = 1.0f;
 
@@ -16,10 +17,13 @@ public class Chessboard : MonoBehaviour
 
     // Logic
     private const int TileCountX = 8, TileCountY = 8;
+    
     private GameObject[,] tiles;
+    private MeshRenderer[,] tileRenderers; // better for performance
     private Camera currentCamera;
     private Vector2Int currentHover;
     private ChessPiece[,] pieces;
+    private CardBehavior selectedBehavior;
     
     private void Awake()
     {
@@ -38,7 +42,42 @@ public class Chessboard : MonoBehaviour
             return;
         }
         
+        TileHandler();
+    }
+
+    private void TileHandler() // To have correct order
+    {
+        HighlightTileHandler();
         HoverTileHandler();
+    }
+
+    public void SetSelectedBehavior(CardBehavior behavior)
+    {
+        selectedBehavior = behavior;
+    }
+
+    // Highlight
+    private void HighlightTileHandler() // TODO: FIX
+    {
+        if (selectedBehavior != null)
+        {
+            if (selectedBehavior.cardType == CardType.Summon)
+            {
+                for (int i = 0; i < TileCountX; i++)
+                {
+                    HighlightTile(i, 0);
+                }
+            }
+        }
+    }
+
+    private void HighlightTile(int x, int y)
+    {
+        if (pieces[x, y] is null)
+        {
+            tileRenderers[x, y].material = highlightMaterial;
+            tileRenderers[x, y].enabled = true;
+        }
     }
 
     // Spawning pieces
@@ -81,19 +120,27 @@ public class Chessboard : MonoBehaviour
         {
             if (currentHover != -Vector2Int.one)
             {
-                tiles[currentHover.x, currentHover.y].GetComponent<MeshRenderer>().enabled = false;
+                tileRenderers[currentHover.x, currentHover.y].enabled = false;
             }
 
             if (hoveredTileIndex != -Vector2Int.one)
             {
-                tiles[hoveredTileIndex.x, hoveredTileIndex.y].GetComponent<MeshRenderer>().enabled = true;
+                tileRenderers[hoveredTileIndex.x, hoveredTileIndex.y].enabled = true;
+                tileRenderers[hoveredTileIndex.x, hoveredTileIndex.y].material = hoverMaterial;
             }
 
             currentHover = hoveredTileIndex;
         }
+        else
+        {
+            if (hoveredTileIndex != -Vector2Int.one)
+            {
+                tileRenderers[hoveredTileIndex.x, hoveredTileIndex.y].material = hoverMaterial;
+            }
+        }
     }
     
-    private Vector2Int GetHoveredTileIndex()
+    private Vector2Int GetHoveredTileIndex() // TODO: Improve by making bool and sending tile index as out variable
     {
         Ray ray = currentCamera.ScreenPointToRay(Input.mousePosition);
         if (Physics.Raycast(ray, out RaycastHit hitInfo, 100, LayerMask.GetMask("Tile")))
@@ -118,7 +165,8 @@ public class Chessboard : MonoBehaviour
     private void GenerateAllTiles()
     {
         GameObject container = CreateContainer("Tiles", transform);
-        
+
+        tileRenderers = new MeshRenderer[TileCountX, TileCountY];
         tiles = new GameObject[TileCountX, TileCountY];
         for (int x = 0; x < TileCountX; x++)
         {
@@ -136,7 +184,11 @@ public class Chessboard : MonoBehaviour
 
         Mesh mesh = new Mesh();
         tile.AddComponent<MeshFilter>().mesh = mesh;
-        tile.AddComponent<MeshRenderer>().material = hoverMaterial;
+
+        MeshRenderer renderer = tile.AddComponent<MeshRenderer>();
+        renderer.material = hoverMaterial;
+        renderer.enabled = false;
+        tileRenderers[x, y] = renderer;
         
         Vector3[] vertices = new Vector3[4];
         
@@ -157,9 +209,7 @@ public class Chessboard : MonoBehaviour
         
         tile.AddComponent<BoxCollider>();
         tile.layer = LayerMask.NameToLayer("Tile");
-
-        tile.GetComponent<MeshRenderer>().enabled = false;
-
+        
         return tile;
     }
     
@@ -173,7 +223,7 @@ public class Chessboard : MonoBehaviour
         
         return container;
     }
-    
+
     // Draw preview of tiles in editor (shows outlines of tiles)
     #if UNITY_EDITOR
             /// <summary>
