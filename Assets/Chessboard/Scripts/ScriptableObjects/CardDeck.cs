@@ -18,6 +18,7 @@ public class CardBehavior
 {
     public ChessPieceType piecesAffected;
     public CardType cardType;
+    public Sprite sprite;
     [Range(1, 10)] public int weightedChance;
 }
 

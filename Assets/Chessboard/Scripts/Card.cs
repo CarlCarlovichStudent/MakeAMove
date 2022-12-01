@@ -6,17 +6,19 @@ public class Card : MonoBehaviour
     public bool startMovement;
 
     private const float StartTime = 1f;
-    private const float HoverTime = 0.2f;
+    private const float HoverTime = 0.3f;
 
     private bool selected;
     private float lerpTime;
+    private int hoverOffset;
     private Vector2 targetPosition;
     private Vector2 previousPosition;
     private RectTransform rectTransform;
 
-    public void SetStartValues(float slotOffset, Vector2Int cardOffset, CardBehavior behavior)
+    public void SetStartValues(float slotOffset, Vector3Int cardOffset, CardBehavior behavior)
     {
         this.behavior = behavior;
+        hoverOffset = cardOffset.z;
         
         rectTransform = GetComponent<RectTransform>();
         rectTransform.anchorMin = new Vector2(0.5f, 0);
@@ -39,7 +41,7 @@ public class Card : MonoBehaviour
         if (startMovement) return;
         
         previousPosition = targetPosition;
-        targetPosition *= new Vector2(1, 1.1f);
+        targetPosition += new Vector2(0, hoverOffset);
         lerpTime = 1f - lerpTime;
     }
 
@@ -56,7 +58,7 @@ public class Card : MonoBehaviour
         if (selected) return;
         
         previousPosition = targetPosition;
-        targetPosition /= new Vector2(1, 1.1f);
+        targetPosition -= new Vector2(0, hoverOffset);
         lerpTime = 1f - lerpTime;
     }
 

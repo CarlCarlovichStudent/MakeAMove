@@ -15,4 +15,5 @@ MonoBehaviour:
   cards:
   - piecesAffected: 1
     cardType: 2
+    sprite: {fileID: 21300000, guid: b3a9ef00b6e804e4bb9715ccbe8e1ea5, type: 3}
     weightedChance: 1

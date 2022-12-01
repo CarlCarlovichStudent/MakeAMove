@@ -9,19 +9,11 @@ public class CardDeckHandler : MonoBehaviour
     [Header("Settings")]
     [SerializeField] private int handSize;
     [SerializeField] private Vector2Int cardSize;
-    [SerializeField] private Vector2Int cardOffset;
+    [SerializeField] private Vector3Int cardOffset; // z value is hover offset
     
     [Header("General references")]
     [SerializeField] private CardDeck deck;
     [SerializeField] private Canvas canvas;
-
-    [Header("Piece Sprites")]
-    [SerializeField] private Sprite pawn;
-
-    [Header("Card Type Sprites")]
-    [SerializeField] private Sprite summon;
-    [SerializeField] private Sprite move;
-    [SerializeField] private Sprite special;
 
     private Chessboard board;
     
@@ -87,7 +79,7 @@ public class CardDeckHandler : MonoBehaviour
     {
         CardBehavior behavior = GetRandomCardBehavior();
         
-        GameObject gameObject = InstantiateImageObject("Card " + slot, canvas.transform, CardTypeSprite(behavior.cardType), cardSize);
+        GameObject gameObject = InstantiateImageObject("Card " + slot, canvas.transform, behavior.sprite, cardSize);
         Card card = gameObject.AddComponent<Card>();
 
         //InstantiateImageObject("Piece Image", gameObject.transform, PieceSprite(behavior.piecesAffected));
@@ -135,36 +127,5 @@ public class CardDeckHandler : MonoBehaviour
         }
 
         return behaviors[Random.Range(0, behaviors.Count - 1)];
-    }
-    
-    // Look up textures
-    private Sprite PieceSprite(ChessPieceType pieceType)
-    {
-        switch (pieceType)
-        {
-            case ChessPieceType.Pawn:
-                return pawn;
-            
-            default:
-                throw new Exception("Invalid Piece Type");
-        }
-    }
-    
-    private Sprite CardTypeSprite(CardType cardType)
-    {
-        switch (cardType)
-        {
-            case CardType.Move:
-                return move;
-            
-            case CardType.Summon:
-                return summon;
-            
-            case CardType.Special:
-                return special;
-            
-            default:
-                throw new Exception("Invalid Card Type");
-        }
     }
 }
