@@ -31,7 +31,7 @@ public class Chessboard : MonoBehaviour
 
         pieces = new ChessPiece[TileCountX, TileCountY];
         
-        SpawnPiece(new Vector2Int(7, 7), ChessPieceTeam.Black);
+        SpawnPiece(new Vector2Int(2, 0), ChessPieceTeam.Black);
     }
 
     private void Update()

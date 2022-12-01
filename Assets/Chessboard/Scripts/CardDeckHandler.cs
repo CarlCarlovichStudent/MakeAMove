@@ -8,12 +8,12 @@ public class CardDeckHandler : MonoBehaviour
 {
     [Header("Settings")]
     [SerializeField] private int handSize;
+    [SerializeField] private Vector2Int cardSize;
     [SerializeField] private Vector2Int cardOffset;
     
     [Header("General references")]
     [SerializeField] private CardDeck deck;
     [SerializeField] private Canvas canvas;
-    [SerializeField] private Sprite cardSprite;
 
     [Header("Piece Sprites")]
     [SerializeField] private Sprite pawn;
@@ -85,13 +85,13 @@ public class CardDeckHandler : MonoBehaviour
 
     private Card InitializeCard(int slot)
     {
-        GameObject gameObject = InstantiateImageObject("Card " + slot, canvas.transform, cardSprite);
-        Card card = gameObject.AddComponent<Card>();
-
         CardBehavior behavior = GetRandomCardBehavior();
         
-        InstantiateImageObject("Piece Image", gameObject.transform, PieceSprite(behavior.piecesAffected));
-        InstantiateImageObject("Card Type Image", gameObject.transform, CardTypeSprite(behavior.cardType));
+        GameObject gameObject = InstantiateImageObject("Card " + slot, canvas.transform, CardTypeSprite(behavior.cardType), cardSize);
+        Card card = gameObject.AddComponent<Card>();
+
+        //InstantiateImageObject("Piece Image", gameObject.transform, PieceSprite(behavior.piecesAffected));
+        //InstantiateImageObject("Card Type Image", gameObject.transform, CardTypeSprite(behavior.cardType));
         
         card.SetStartValues(slot + 0.5f - handSize / 2f, cardOffset, behavior);
 
@@ -99,11 +99,15 @@ public class CardDeckHandler : MonoBehaviour
     }
 
     // Instantiate objects
-    private GameObject InstantiateImageObject(string name, Transform parent, Sprite sprite)
+    private GameObject InstantiateImageObject(string name, Transform parent, Sprite sprite, Vector2 size)
     {
         GameObject gameObject = InstantiateGameObject(name, parent);
+        
         Image image = gameObject.AddComponent<Image>();
         image.sprite = sprite;
+        
+        RectTransform rectTransform = gameObject.GetComponent<RectTransform>();
+        rectTransform.sizeDelta = size;
 
         return gameObject;
     }

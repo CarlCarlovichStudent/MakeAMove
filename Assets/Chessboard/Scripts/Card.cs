@@ -25,7 +25,7 @@ public class Card : MonoBehaviour
         rectTransform.anchoredPosition = Vector2.zero;
 
         Rect rect = rectTransform.rect;
-        previousPosition = new Vector2((cardOffset.x + rect.width) * slotOffset * 0.8f, -10);
+        previousPosition = new Vector2((cardOffset.x + rect.width) * slotOffset * 0.8f, -rect.height);
         targetPosition = new Vector2((cardOffset.x + rect.width) * slotOffset, cardOffset.y + rect.height);
         
         lerpTime = 0f;
