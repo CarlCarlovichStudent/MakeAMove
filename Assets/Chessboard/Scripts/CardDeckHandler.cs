@@ -38,6 +38,11 @@ public class CardDeckHandler : MonoBehaviour
         }
     }
 
+    public void UseCard()
+    {
+        lastSelected.Use();
+    }
+
     // Hover and select handlers for HUD Raycaster
     public void HandleCardHover(Card card)
     {

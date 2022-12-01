@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Chessboard : MonoBehaviour
@@ -24,14 +25,18 @@ public class Chessboard : MonoBehaviour
     private Vector2Int currentHover;
     private ChessPiece[,] pieces;
     private CardBehavior selectedBehavior;
+    private GameObject pieceContainer;
+    private CardDeckHandler handler;
+    private ChessPieceTeam team;
     
     private void Awake()
     {
-        GenerateAllTiles();
-
+        handler = GetComponent<CardDeckHandler>();
+        pieceContainer = CreateContainer("Pieces", transform);
         pieces = new ChessPiece[TileCountX, TileCountY];
+        team = ChessPieceTeam.White;
         
-        SpawnPiece(new Vector2Int(2, 0), ChessPieceTeam.Black);
+        GenerateAllTiles();
     }
 
     private void Update()
@@ -48,45 +53,101 @@ public class Chessboard : MonoBehaviour
     private void TileHandler() // To have correct order
     {
         HighlightTileHandler();
-        HoverTileHandler();
+        if (HoverTileHandler())
+        {
+            SelectTileHandler();
+        }
     }
 
     public void SetSelectedBehavior(CardBehavior behavior)
     {
         selectedBehavior = behavior;
+        UnHighlightAll();
     }
 
+    // Use card
+    private void SelectTileHandler()
+    {
+        if (currentHover != -Vector2Int.one && Input.GetMouseButtonDown(0))
+        {
+            switch (selectedBehavior.cardType)
+            {
+                case CardType.Summon:
+                    SpawnPiece(currentHover);
+                    handler.UseCard();
+                    break;
+            }
+
+            selectedBehavior = null;
+        }
+    }
+    
     // Highlight
     private void HighlightTileHandler() // TODO: FIX
     {
         if (selectedBehavior != null)
         {
-            if (selectedBehavior.cardType == CardType.Summon)
+            switch (selectedBehavior.cardType)
             {
-                for (int i = 0; i < TileCountX; i++)
+                case CardType.Summon:
+                    HighlightSummon();
+                    break;
+                
+                case CardType.Move:
+                    HighlightMove();
+                    break;
+            }
+        }
+        else
+        {
+            UnHighlightAll();
+        }
+    }
+
+    private void HighlightMove()
+    {
+        for (int x = 0; x < TileCountX; x++)
+        {
+            for (int y = 0; y < TileCountY; y++)
+            {
+                if (pieces[x, y]?.type == selectedBehavior.piecesAffected)
                 {
-                    HighlightTile(i, 0);
+                    HighlightTile(x, y);
                 }
+            }
+        }
+    }
+
+    private void HighlightSummon()
+    {
+        for (int x = 0; x < TileCountX; x++)
+        {
+            if (pieces[x, 0] is null)
+            {
+                HighlightTile(x, 0);
             }
         }
     }
 
     private void HighlightTile(int x, int y)
     {
-        if (pieces[x, y] is null)
+        tileRenderers[x, y].material = highlightMaterial;
+        tileRenderers[x, y].enabled = true;
+    }
+
+    private void UnHighlightAll()
+    {
+        foreach (MeshRenderer renderer in tileRenderers)
         {
-            tileRenderers[x, y].material = highlightMaterial;
-            tileRenderers[x, y].enabled = true;
+            renderer.enabled = false;
         }
     }
 
     // Spawning pieces
-    private void SpawnPiece(Vector2Int position, ChessPieceTeam team)
+    private void SpawnPiece(Vector2Int position)
     {
-        GameObject container = CreateContainer("Pieces", transform);
-
         ChessPiece piece = Instantiate(pawn).GetComponent<ChessPiece>();
-        piece.transform.parent = container.transform;
+        piece.transform.parent = pieceContainer.transform;
 
         piece.team = team;
         piece.GetComponent<MeshRenderer>().material = team == ChessPieceTeam.White ? whiteTeamMaterial : blackTeamMaterial;
@@ -113,8 +174,9 @@ public class Chessboard : MonoBehaviour
     }
     
     // Hover
-    private void HoverTileHandler()
+    private bool HoverTileHandler()
     {
+        bool highlighted = false;
         Vector2Int hoveredTileIndex = GetHoveredTileIndex();
         if (hoveredTileIndex != currentHover)
         {
@@ -125,6 +187,10 @@ public class Chessboard : MonoBehaviour
 
             if (hoveredTileIndex != -Vector2Int.one)
             {
+                if (tileRenderers[hoveredTileIndex.x, hoveredTileIndex.y].sharedMaterial == highlightMaterial)
+                {
+                    highlighted = true;
+                }
                 tileRenderers[hoveredTileIndex.x, hoveredTileIndex.y].enabled = true;
                 tileRenderers[hoveredTileIndex.x, hoveredTileIndex.y].material = hoverMaterial;
             }
@@ -135,9 +201,16 @@ public class Chessboard : MonoBehaviour
         {
             if (hoveredTileIndex != -Vector2Int.one)
             {
+                if (tileRenderers[hoveredTileIndex.x, hoveredTileIndex.y].sharedMaterial == highlightMaterial)
+                {
+                    highlighted = true;
+                }
+                tileRenderers[hoveredTileIndex.x, hoveredTileIndex.y].enabled = true;
                 tileRenderers[hoveredTileIndex.x, hoveredTileIndex.y].material = hoverMaterial;
             }
         }
+
+        return highlighted;
     }
     
     private Vector2Int GetHoveredTileIndex() // TODO: Improve by making bool and sending tile index as out variable

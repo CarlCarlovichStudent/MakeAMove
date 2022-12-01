@@ -34,6 +34,12 @@ public class Card : MonoBehaviour
         startMovement = true;
         selected = false;
     }
+    
+    // Use card
+    public void Use()
+    {
+        Destroy(gameObject);
+    }
 
     // Hover
     public void Hover()
