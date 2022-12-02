@@ -105,7 +105,7 @@ public class Chessboard : MonoBehaviour
     {
         if (currentlyDragging is not null && Input.GetMouseButtonUp(0))
         {
-            if (!wasHighlighted) // TODO: FIX!!! reverse logic
+            if (wasHighlighted)
             {
                 MoveTo(currentlyDragging.boardPosition, currentHover);
             }
