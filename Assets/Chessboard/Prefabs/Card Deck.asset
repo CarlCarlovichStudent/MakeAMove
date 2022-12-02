@@ -16,8 +16,13 @@ MonoBehaviour:
   - piecesAffected: 1
     cardType: 2
     sprite: {fileID: 21300000, guid: b3a9ef00b6e804e4bb9715ccbe8e1ea5, type: 3}
-    weightedChance: 2
+    weightedChance: 1
+    movementPatterns: []
   - piecesAffected: 1
     cardType: 1
     sprite: {fileID: 21300000, guid: 0f4a6496a71e7704c83459b80da79778, type: 3}
-    weightedChance: 3
+    weightedChance: 2
+    movementPatterns:
+    - move: {x: 1, y: 1}
+      repeating: 0
+      symmetric: 0

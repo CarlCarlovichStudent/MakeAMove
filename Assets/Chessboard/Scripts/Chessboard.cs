@@ -105,7 +105,7 @@ public class Chessboard : MonoBehaviour
     {
         if (currentlyDragging is not null && Input.GetMouseButtonUp(0))
         {
-            if (!wasHighlighted) // TODO: FIX!!! reverse logic
+            if (wasHighlighted)
             {
                 MoveTo(currentlyDragging.boardPosition, currentHover);
             }
@@ -159,7 +159,7 @@ public class Chessboard : MonoBehaviour
                         break;
                     
                     case CardType.Move:
-                        HighlightMove();
+                        HighlightMoves();
                         break;
                 }
             }
@@ -176,10 +176,14 @@ public class Chessboard : MonoBehaviour
 
     private void HighlightValidMoves()
     {
-        
+        foreach (MovementPattern movementPattern in selectedBehavior.movementPatterns)
+        {
+            Vector2Int validMove = currentlyDragging.boardPosition + movementPattern.move;
+            HighlightTile(validMove.x, validMove.y);
+        }
     }
 
-    private void HighlightMove()
+    private void HighlightMoves()
     {
         for (int x = 0; x < TileCountX; x++)
         {
