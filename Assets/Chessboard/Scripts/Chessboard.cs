@@ -146,8 +146,9 @@ public class Chessboard : MonoBehaviour
     }
     
     // Highlight
-    private void HighlightTileHandler() // TODO: FIX
+    private void HighlightTileHandler()
     {
+        UnHighlightAll();
         if (selectedBehavior != null)
         {
             if (currentlyDragging is null)
@@ -167,10 +168,6 @@ public class Chessboard : MonoBehaviour
             {
                 HighlightValidMoves();
             }
-        }
-        else
-        {
-            UnHighlightAll();
         }
     }
 

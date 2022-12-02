@@ -23,6 +23,6 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 0f4a6496a71e7704c83459b80da79778, type: 3}
     weightedChance: 2
     movementPatterns:
-    - move: {x: 1, y: 1}
+    - move: {x: 0, y: 1}
       repeating: 0
       symmetric: 0
