@@ -25,6 +25,7 @@ public class Chessboard : MonoBehaviour
     private Camera currentCamera;
     private Vector2Int currentHover;
     private ChessPiece[,] pieces;
+    private ChessPiece currentlyDragging;
     private CardBehavior selectedBehavior;
     private GameObject pieceContainer;
     private CardDeckHandler handler;
@@ -63,6 +64,11 @@ public class Chessboard : MonoBehaviour
         if (HoverTileHandler())
         {
             SelectTileHandler();
+            DeselectPieceHandler(true);
+        }
+        else
+        {
+            DeselectPieceHandler(false);
         }
     }
 
@@ -80,13 +86,63 @@ public class Chessboard : MonoBehaviour
             switch (selectedBehavior.cardType)
             {
                 case CardType.Summon:
-                    SpawnPiece(currentHover);
-                    handler.UseCard();
+                    SelectSummon();
+                    break;
+                
+                case CardType.Move:
+                    SelectMove();
                     break;
             }
-
-            selectedBehavior = null;
         }
+    }
+
+    private void SelectMove()
+    {
+        currentlyDragging = pieces[currentHover.x, currentHover.y];
+    }
+
+    private void DeselectPieceHandler(bool wasHighlighted)
+    {
+        if (currentlyDragging is not null && Input.GetMouseButtonUp(0))
+        {
+            if (!wasHighlighted) // TODO: FIX!!! reverse logic
+            {
+                MoveTo(currentlyDragging.boardPosition, currentHover);
+            }
+            else
+            {
+                currentlyDragging.transform.position = GetTileCenter(currentlyDragging.boardPosition);
+                currentlyDragging = null;
+            }
+        }
+    }
+
+    private void MoveTo(Vector2Int from, Vector2Int to)
+    {
+        pieces[to.x, to.y] = currentlyDragging;
+        pieces[from.x, from.y] = null;
+        
+        PositionPiece(ref currentlyDragging, to);
+        
+        currentlyDragging = null;
+        selectedBehavior = null;
+        handler.UseCard();
+    }
+
+    private void SelectSummon()
+    {
+        SpawnPiece(currentHover);
+        selectedBehavior = null;
+        handler.UseCard();
+    }
+    
+    // Receive moves
+    private void ReceiveMove(Vector2Int from, Vector2Int to) // from går att ändra till piece och sedan använda .boardPosition propertyn men mindre data att skicka = bättre så 4 ints är mycket snålare
+    {
+        pieces[to.x, to.y] = pieces[from.x, from.y];
+        pieces[from.x, from.y] = null;
+        
+        PositionPiece(ref pieces[from.x, from.y], to);
     }
     
     // Highlight
@@ -94,21 +150,33 @@ public class Chessboard : MonoBehaviour
     {
         if (selectedBehavior != null)
         {
-            switch (selectedBehavior.cardType)
+            if (currentlyDragging is null)
             {
-                case CardType.Summon:
-                    HighlightSummon();
-                    break;
-                
-                case CardType.Move:
-                    HighlightMove();
-                    break;
+                switch (selectedBehavior.cardType)
+                {
+                    case CardType.Summon:
+                        HighlightSummon();
+                        break;
+                    
+                    case CardType.Move:
+                        HighlightMove();
+                        break;
+                }
+            }
+            else
+            {
+                HighlightValidMoves();
             }
         }
         else
         {
             UnHighlightAll();
         }
+    }
+
+    private void HighlightValidMoves()
+    {
+        
     }
 
     private void HighlightMove()
@@ -151,7 +219,7 @@ public class Chessboard : MonoBehaviour
     }
 
     // Spawning pieces
-    private void SpawnPiece(Vector2Int position)
+    private void SpawnPiece(Vector2Int position) // TODO: Update for all pieces
     {
         ChessPiece piece = Instantiate(pawn).GetComponent<ChessPiece>();
         piece.transform.parent = pieceContainer.transform;
@@ -166,9 +234,14 @@ public class Chessboard : MonoBehaviour
     }
     
     // Position pieces
-    private void PositionPiece(ref ChessPiece piece, Vector2Int position, bool spawning = false)
+    private void PositionPiece(ref ChessPiece piece, Vector2Int position, bool spawning = false) // TODO: fix animations
     {
+        piece.boardPosition = position;
         if (spawning)
+        {
+            piece.transform.localPosition = GetTileCenter(position);
+        }
+        else
         {
             piece.transform.localPosition = GetTileCenter(position);
         }
@@ -176,7 +249,7 @@ public class Chessboard : MonoBehaviour
 
     private Vector3 GetTileCenter(Vector2Int position)
     {
-        return new Vector3((0.5f + position.x - TileCountX / 2f) * tileSize  ,yOffset,
+        return new Vector3((0.5f + position.x - TileCountX / 2f) * tileSize ,yOffset,
             (0.5f + position.y - TileCountY / 2f) * tileSize);
     }
     
@@ -222,6 +295,7 @@ public class Chessboard : MonoBehaviour
     
     private Vector2Int GetHoveredTileIndex() // TODO: Improve by making bool and sending tile index as out variable
     {
+        Vector2Int vector = -Vector2Int.one;
         Ray ray = currentCamera.ScreenPointToRay(Input.mousePosition);
         if (Physics.Raycast(ray, out RaycastHit hitInfo, 100, LayerMask.GetMask("Tile")))
         {
@@ -232,13 +306,13 @@ public class Chessboard : MonoBehaviour
                 {
                     if (tiles[x, y] == hitGameObject)
                     {
-                        return new Vector2Int(x, y);
+                        vector = new Vector2Int(x, y);
                     }
                 }
             }
         }
 
-        return -Vector2Int.one;
+        return vector;
     }
 
     // Generate tiles
