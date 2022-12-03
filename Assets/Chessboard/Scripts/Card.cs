@@ -1,21 +1,23 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class Card : MonoBehaviour
 {
     public CardBehavior behavior;
-    public bool startMovement;
+    public bool forcedMovement; // Should be property
 
-    private const float StartTime = 1f;
     private const float HoverTime = 0.3f;
+    private const float StartTime = 1f;
 
     private bool selected;
     private float lerpTime;
+    private float forcedTime;
     private int hoverOffset;
     private Vector2 targetPosition;
     private Vector2 previousPosition;
     private RectTransform rectTransform;
 
-    public void SetStartValues(float slotOffset, Vector3Int cardOffset, CardBehavior behavior)
+    public void SetStartValues(float slotOffset, Vector3Int cardOffset, CardBehavior behavior, bool start = false) // TODO: start yay or nay?
     {
         this.behavior = behavior;
         hoverOffset = cardOffset.z;
@@ -27,24 +29,29 @@ public class Card : MonoBehaviour
         rectTransform.anchoredPosition = Vector2.zero;
 
         Rect rect = rectTransform.rect;
-        previousPosition = new Vector2((cardOffset.x + rect.width) * slotOffset * 0.8f, -rect.height);
+        previousPosition = new Vector2((cardOffset.x + rect.width) * slotOffset * (start ? 0.75f : 1), -rect.height);
         targetPosition = new Vector2((cardOffset.x + rect.width) * slotOffset, cardOffset.y + rect.height);
         
         lerpTime = 0f;
-        startMovement = true;
+        forcedMovement = true;
+        forcedTime = StartTime;
         selected = false;
     }
     
     // Use card
-    public void Use()
+    public void Use(float exitTime)
     {
-        Destroy(gameObject);
+        Destroy(gameObject, exitTime);
+        lerpTime = 0f;
+        forcedMovement = true;
+        forcedTime = exitTime;
+        targetPosition -= new Vector2(0, rectTransform.rect.height + rectTransform.position.y);
     }
 
     // Hover
     public void Hover()
     {
-        if (startMovement) return;
+        if (forcedMovement) return;
         
         previousPosition = targetPosition;
         targetPosition += new Vector2(0, hoverOffset);
@@ -53,14 +60,14 @@ public class Card : MonoBehaviour
 
     public void Select()
     {
-        if (startMovement) return;
+        if (forcedMovement) return;
         
         selected = true;
     }
 
     public void Unhover()
     {
-        if (startMovement) return;
+        if (forcedMovement) return;
         if (selected) return;
         
         previousPosition = targetPosition;
@@ -70,7 +77,7 @@ public class Card : MonoBehaviour
 
     public void Deselect()
     {
-        if (startMovement) return;
+        if (forcedMovement) return;
         
         selected = false;
         Unhover();
@@ -83,13 +90,13 @@ public class Card : MonoBehaviour
 
         rectTransform.anchoredPosition = Vector2.Lerp(previousPosition, targetPosition, lerpTime);
 
-        lerpTime += Time.deltaTime / (startMovement ? StartTime : HoverTime);
+        lerpTime += Time.deltaTime / (forcedMovement ? forcedTime : HoverTime);
         
         if (lerpTime >= 1f)
         {
             rectTransform.anchoredPosition = targetPosition;
             lerpTime = 1f;
-            startMovement = false;
+            forcedMovement = false;
         }
     }
 }

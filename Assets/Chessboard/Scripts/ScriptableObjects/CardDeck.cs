@@ -31,6 +31,7 @@ public class MovementPattern
     public Vector2Int move;
     public bool repeating;
     public bool symmetric; // Rotational symmetry 
+    public bool capture;
 }
 
 public enum CardType

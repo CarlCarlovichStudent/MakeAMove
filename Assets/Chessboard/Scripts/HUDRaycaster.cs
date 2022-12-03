@@ -32,7 +32,7 @@ public class HUDRaycaster : MonoBehaviour
             if (result.gameObject.TryGetComponent(out Card card))
             {
                 noCardsFound = false;
-                if (!card.startMovement)
+                if (!card.forcedMovement)
                 {
                     handler.HandleCardHover(card);
                     if (Input.GetMouseButtonDown(0))

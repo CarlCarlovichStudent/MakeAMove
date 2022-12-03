@@ -15,7 +15,11 @@ public class CardDeckHandler : MonoBehaviour
     [SerializeField] private CardDeck deck;
     [SerializeField] private Canvas canvas;
 
+    private const float UseCardTime = 0.5f;
+    private const float RespawnOffset = 0.3f;
+    
     private Chessboard board;
+    private float[] respawnTimers;
     
     // Cards
     private List<CardBehavior> cardPool;
@@ -32,15 +36,31 @@ public class CardDeckHandler : MonoBehaviour
 
     private void Update()
     {
-        if (lastSelected is not null)
+        for (int i = 0; i < handSize; i++)
         {
-            //?
+            if (respawnTimers[i] <= 0) continue;
+            else
+            {
+                respawnTimers[i] -= Time.deltaTime;
+                if (respawnTimers[i] <= 0)
+                {
+                    hand[i] = InitializeCard(i);
+                }
+            }
         }
     }
 
     public void UseCard()
     {
-        lastSelected.Use();
+        lastSelected.Hover();
+        lastSelected.Use(UseCardTime);
+        for (int i = 0; i < hand.Length; i++)
+        {
+            if (lastSelected == hand[i])
+            {
+                respawnTimers[i] = RespawnOffset;
+            }
+        }
     }
 
     // Hover and select handlers for HUD Raycaster
@@ -74,6 +94,8 @@ public class CardDeckHandler : MonoBehaviour
     private void InitializeHand()
     {
         hand = new Card[handSize];
+        respawnTimers = new float[handSize];
+        
         for (int i = 0; i < handSize; i++)
         {
             hand[i] = InitializeCard(i);

@@ -1,3 +1,4 @@
+using UnityEditor.UIElements;
 using UnityEngine;
 
 public enum ChessPieceType
@@ -20,5 +21,16 @@ public abstract class ChessPiece : MonoBehaviour
     public abstract ChessPieceType type { get; }
 
     private Vector3 desiredPosition;
-    private Vector3 desiredScale;
+    private int speed;
+
+    private void Update()
+    {
+        transform.position = Vector3.Lerp(transform.position, desiredPosition, Time.deltaTime * speed); // maybe fix linear speed option
+    }
+
+    public void SetDesiredPosition(Vector3 position, int speed = 9)
+    {
+        this.speed = speed;
+        desiredPosition = position;
+    }
 }

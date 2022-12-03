@@ -111,7 +111,7 @@ public class Chessboard : MonoBehaviour
             }
             else
             {
-                currentlyDragging.transform.position = GetTileCenter(currentlyDragging.boardPosition);
+                PositionPiece(ref currentlyDragging, currentlyDragging.boardPosition);
                 currentlyDragging = null;
             }
         }
@@ -175,8 +175,19 @@ public class Chessboard : MonoBehaviour
     {
         foreach (MovementPattern movementPattern in selectedBehavior.movementPatterns)
         {
-            Vector2Int validMove = currentlyDragging.boardPosition + movementPattern.move;
-            HighlightTile(validMove.x, validMove.y);
+            Vector2Int move = currentlyDragging.boardPosition + movementPattern.move;
+            ChessPiece piece = pieces[move.x, move.y];
+            if (piece is null)
+            {
+                HighlightTile(move.x, move.y);
+            }
+            else
+            {
+                if (piece.team != team && movementPattern.capture)
+                {
+                    HighlightTile(move.x, move.y);
+                }
+            }
         }
     }
 
@@ -235,16 +246,17 @@ public class Chessboard : MonoBehaviour
     }
     
     // Position pieces
-    private void PositionPiece(ref ChessPiece piece, Vector2Int position, bool spawning = false) // TODO: fix animations
+    private void PositionPiece(ref ChessPiece piece, Vector2Int position, bool spawning = false)
     {
         piece.boardPosition = position;
         if (spawning)
         {
-            piece.transform.localPosition = GetTileCenter(position);
+            piece.transform.localPosition = GetTileCenter(position) + Vector3.down * 1.5f;
+            piece.SetDesiredPosition(GetTileCenter(position), 6);
         }
         else
         {
-            piece.transform.localPosition = GetTileCenter(position);
+            piece.SetDesiredPosition(GetTileCenter(position));
         }
     }
 
@@ -310,6 +322,16 @@ public class Chessboard : MonoBehaviour
                         vector = new Vector2Int(x, y);
                     }
                 }
+            }
+        }
+
+        if (currentlyDragging is not null)
+        {
+            Plane horizontalPlane = new Plane(Vector3.up, Vector3.up * yOffset);
+            float distance = 0.0f;
+            if (horizontalPlane.Raycast(ray, out distance))
+            {
+                currentlyDragging.SetDesiredPosition(ray.GetPoint(distance));
             }
         }
 
