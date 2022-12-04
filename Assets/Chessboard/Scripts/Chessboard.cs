@@ -1,9 +1,13 @@
+using Unity.Networking.Transport;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Chessboard : MonoBehaviour
 {
     [Header("Tile Settings")] 
     [SerializeField] private Material hoverMaterial;
+    [SerializeField] private Material highlightMaterial;
     [SerializeField] private float tileSize = 1.0f;
     [SerializeField] private float yOffset = 1.0f;
 
@@ -16,18 +20,32 @@ public class Chessboard : MonoBehaviour
 
     // Logic
     private const int TileCountX = 8, TileCountY = 8;
+    
     private GameObject[,] tiles;
+    private MeshRenderer[,] tileRenderers; // better for performance
     private Camera currentCamera;
     private Vector2Int currentHover;
     private ChessPiece[,] pieces;
+    private ChessPiece currentlyDragging;
+    private CardBehavior selectedBehavior;
+    private GameObject pieceContainer;
+    private CardDeckHandler handler;
+    private ChessPieceTeam team;
+    
+    //MultiLogic
+    private int playerCount = -1;
+    private int currentTeam = -1;
     
     private void Awake()
     {
+        handler = GetComponent<CardDeckHandler>();
+        pieceContainer = CreateContainer("Pieces", transform);
+        pieces = new ChessPiece[TileCountX, TileCountY];
+        team = ChessPieceTeam.White;
+        
         GenerateAllTiles();
 
-        pieces = new ChessPiece[TileCountX, TileCountY];
-        
-        SpawnPiece(new Vector2Int(7, 7), ChessPieceTeam.Black);
+        RegisterEvents();
     }
 
     private void Update()
@@ -38,16 +56,186 @@ public class Chessboard : MonoBehaviour
             return;
         }
         
-        HoverTileHandler();
+        TileHandler();
+    }
+
+    private void TileHandler() // To have correct order
+    {
+        HighlightTileHandler();
+        if (HoverTileHandler())
+        {
+            SelectTileHandler();
+            DeselectPieceHandler(true);
+        }
+        else
+        {
+            DeselectPieceHandler(false);
+        }
+    }
+
+    public void SetSelectedBehavior(CardBehavior behavior)
+    {
+        selectedBehavior = behavior;
+        UnHighlightAll();
+    }
+
+    // Use card
+    private void SelectTileHandler()
+    {
+        if (currentHover != -Vector2Int.one && Input.GetMouseButtonDown(0))
+        {
+            switch (selectedBehavior.cardType)
+            {
+                case CardType.Summon:
+                    SelectSummon();
+                    break;
+                
+                case CardType.Move:
+                    SelectMove();
+                    break;
+            }
+        }
+    }
+
+    private void SelectMove()
+    {
+        currentlyDragging = pieces[currentHover.x, currentHover.y];
+    }
+
+    private void DeselectPieceHandler(bool wasHighlighted)
+    {
+        if (currentlyDragging is not null && Input.GetMouseButtonUp(0))
+        {
+            if (wasHighlighted)
+            {
+                MoveTo(currentlyDragging.boardPosition, currentHover);
+            }
+            else
+            {
+                PositionPiece(ref currentlyDragging, currentlyDragging.boardPosition);
+                currentlyDragging = null;
+            }
+        }
+    }
+
+    private void MoveTo(Vector2Int from, Vector2Int to)
+    {
+        pieces[to.x, to.y] = currentlyDragging;
+        pieces[from.x, from.y] = null;
+        
+        PositionPiece(ref currentlyDragging, to);
+        
+        currentlyDragging = null;
+        selectedBehavior = null;
+        handler.UseCard();
+    }
+
+    private void SelectSummon()
+    {
+        SpawnPiece(currentHover);
+        selectedBehavior = null;
+        handler.UseCard();
+    }
+    
+    // Receive moves
+    private void ReceiveMove(Vector2Int from, Vector2Int to) // from går att ändra till piece och sedan använda .boardPosition propertyn men mindre data att skicka = bättre så 4 ints är mycket snålare
+    {
+        pieces[to.x, to.y] = pieces[from.x, from.y];
+        pieces[from.x, from.y] = null;
+        
+        PositionPiece(ref pieces[from.x, from.y], to);
+    }
+    
+    // Highlight
+    private void HighlightTileHandler()
+    {
+        UnHighlightAll();
+        if (selectedBehavior != null)
+        {
+            if (currentlyDragging is null)
+            {
+                switch (selectedBehavior.cardType)
+                {
+                    case CardType.Summon:
+                        HighlightSummon();
+                        break;
+                    
+                    case CardType.Move:
+                        HighlightMoves();
+                        break;
+                }
+            }
+            else
+            {
+                HighlightValidMoves();
+            }
+        }
+    }
+
+    private void HighlightValidMoves()
+    {
+        foreach (MovementPattern movementPattern in selectedBehavior.movementPatterns)
+        {
+            Vector2Int move = currentlyDragging.boardPosition + movementPattern.move;
+            ChessPiece piece = pieces[move.x, move.y];
+            if (piece is null)
+            {
+                HighlightTile(move.x, move.y);
+            }
+            else
+            {
+                if (piece.team != team && movementPattern.capture)
+                {
+                    HighlightTile(move.x, move.y);
+                }
+            }
+        }
+    }
+
+    private void HighlightMoves()
+    {
+        for (int x = 0; x < TileCountX; x++)
+        {
+            for (int y = 0; y < TileCountY; y++)
+            {
+                if (pieces[x, y]?.type == selectedBehavior.piecesAffected)
+                {
+                    HighlightTile(x, y);
+                }
+            }
+        }
+    }
+
+    private void HighlightSummon()
+    {
+        for (int x = 0; x < TileCountX; x++)
+        {
+            if (pieces[x, 0] is null)
+            {
+                HighlightTile(x, 0);
+            }
+        }
+    }
+
+    private void HighlightTile(int x, int y)
+    {
+        tileRenderers[x, y].material = highlightMaterial;
+        tileRenderers[x, y].enabled = true;
+    }
+
+    private void UnHighlightAll()
+    {
+        foreach (MeshRenderer renderer in tileRenderers)
+        {
+            renderer.enabled = false;
+        }
     }
 
     // Spawning pieces
-    private void SpawnPiece(Vector2Int position, ChessPieceTeam team)
+    private void SpawnPiece(Vector2Int position) // TODO: Update for all pieces
     {
-        GameObject container = CreateContainer("Pieces", transform);
-
         ChessPiece piece = Instantiate(pawn).GetComponent<ChessPiece>();
-        piece.transform.parent = container.transform;
+        piece.transform.parent = pieceContainer.transform;
 
         piece.team = team;
         piece.GetComponent<MeshRenderer>().material = team == ChessPieceTeam.White ? whiteTeamMaterial : blackTeamMaterial;
@@ -61,40 +249,67 @@ public class Chessboard : MonoBehaviour
     // Position pieces
     private void PositionPiece(ref ChessPiece piece, Vector2Int position, bool spawning = false)
     {
+        piece.boardPosition = position;
         if (spawning)
         {
-            piece.transform.localPosition = GetTileCenter(position);
+            piece.transform.localPosition = GetTileCenter(position) + Vector3.down * 1.5f;
+            piece.SetDesiredPosition(GetTileCenter(position), 6);
+        }
+        else
+        {
+            piece.SetDesiredPosition(GetTileCenter(position));
         }
     }
 
     private Vector3 GetTileCenter(Vector2Int position)
     {
-        return new Vector3((0.5f + position.x - TileCountX / 2f) * tileSize  ,yOffset,
+        return new Vector3((0.5f + position.x - TileCountX / 2f) * tileSize ,yOffset,
             (0.5f + position.y - TileCountY / 2f) * tileSize);
     }
     
     // Hover
-    private void HoverTileHandler()
+    private bool HoverTileHandler()
     {
+        bool highlighted = false;
         Vector2Int hoveredTileIndex = GetHoveredTileIndex();
         if (hoveredTileIndex != currentHover)
         {
             if (currentHover != -Vector2Int.one)
             {
-                tiles[currentHover.x, currentHover.y].GetComponent<MeshRenderer>().enabled = false;
+                tileRenderers[currentHover.x, currentHover.y].enabled = false;
             }
 
             if (hoveredTileIndex != -Vector2Int.one)
             {
-                tiles[hoveredTileIndex.x, hoveredTileIndex.y].GetComponent<MeshRenderer>().enabled = true;
+                if (tileRenderers[hoveredTileIndex.x, hoveredTileIndex.y].sharedMaterial == highlightMaterial)
+                {
+                    highlighted = true;
+                }
+                tileRenderers[hoveredTileIndex.x, hoveredTileIndex.y].enabled = true;
+                tileRenderers[hoveredTileIndex.x, hoveredTileIndex.y].material = hoverMaterial;
             }
 
             currentHover = hoveredTileIndex;
         }
+        else
+        {
+            if (hoveredTileIndex != -Vector2Int.one)
+            {
+                if (tileRenderers[hoveredTileIndex.x, hoveredTileIndex.y].sharedMaterial == highlightMaterial)
+                {
+                    highlighted = true;
+                }
+                tileRenderers[hoveredTileIndex.x, hoveredTileIndex.y].enabled = true;
+                tileRenderers[hoveredTileIndex.x, hoveredTileIndex.y].material = hoverMaterial;
+            }
+        }
+
+        return highlighted;
     }
     
-    private Vector2Int GetHoveredTileIndex()
+    private Vector2Int GetHoveredTileIndex() // TODO: Improve by making bool and sending tile index as out variable
     {
+        Vector2Int vector = -Vector2Int.one;
         Ray ray = currentCamera.ScreenPointToRay(Input.mousePosition);
         if (Physics.Raycast(ray, out RaycastHit hitInfo, 100, LayerMask.GetMask("Tile")))
         {
@@ -105,20 +320,31 @@ public class Chessboard : MonoBehaviour
                 {
                     if (tiles[x, y] == hitGameObject)
                     {
-                        return new Vector2Int(x, y);
+                        vector = new Vector2Int(x, y);
                     }
                 }
             }
         }
 
-        return -Vector2Int.one;
+        if (currentlyDragging is not null)
+        {
+            Plane horizontalPlane = new Plane(Vector3.up, Vector3.up * yOffset);
+            float distance = 0.0f;
+            if (horizontalPlane.Raycast(ray, out distance))
+            {
+                currentlyDragging.SetDesiredPosition(ray.GetPoint(distance));
+            }
+        }
+
+        return vector;
     }
 
     // Generate tiles
     private void GenerateAllTiles()
     {
         GameObject container = CreateContainer("Tiles", transform);
-        
+
+        tileRenderers = new MeshRenderer[TileCountX, TileCountY];
         tiles = new GameObject[TileCountX, TileCountY];
         for (int x = 0; x < TileCountX; x++)
         {
@@ -136,7 +362,11 @@ public class Chessboard : MonoBehaviour
 
         Mesh mesh = new Mesh();
         tile.AddComponent<MeshFilter>().mesh = mesh;
-        tile.AddComponent<MeshRenderer>().material = hoverMaterial;
+
+        MeshRenderer renderer = tile.AddComponent<MeshRenderer>();
+        renderer.material = hoverMaterial;
+        renderer.enabled = false;
+        tileRenderers[x, y] = renderer;
         
         Vector3[] vertices = new Vector3[4];
         
@@ -157,9 +387,7 @@ public class Chessboard : MonoBehaviour
         
         tile.AddComponent<BoxCollider>();
         tile.layer = LayerMask.NameToLayer("Tile");
-
-        tile.GetComponent<MeshRenderer>().enabled = false;
-
+        
         return tile;
     }
     
@@ -173,7 +401,7 @@ public class Chessboard : MonoBehaviour
         
         return container;
     }
-    
+
     // Draw preview of tiles in editor (shows outlines of tiles)
     #if UNITY_EDITOR
             /// <summary>
@@ -205,4 +433,62 @@ public class Chessboard : MonoBehaviour
     			Gizmos.color = prevCol;
             }
     #endif
+
+    #region EventCalling
+
+    private void RegisterEvents()
+    {
+        NetUtility.S_WELCOME += OnWelcomeServer;
+
+        NetUtility.C_WELCOME += OnWelcomeClient;
+        NetUtility.C_START_GAME += OnStartGame;
+    }
+
+    private void UnRegisterEvents()
+    {
+        
+    }
+
+    //Server
+    private void OnWelcomeServer(Netmessage msg, NetworkConnection cnn)
+    {
+        //Client has connected and send back
+        NetWelcome nw = msg as NetWelcome;
+        
+        //Assign team
+        nw.AssignedTeam = ++playerCount;
+        
+        //Return message
+        Server.Instace.SendToClient(cnn, nw);
+        
+        //If full (two players), start game
+        if (playerCount == 1)
+        {
+            Server.Instace.Broadcast(new NetStartGame());
+        }
+    }
+    
+    //Client
+    
+    private void OnWelcomeClient(Netmessage msg)
+    {
+        //Client has connected and send back
+        NetWelcome nw = msg as NetWelcome;
+        
+        //Assign team
+        currentTeam = nw.AssignedTeam;
+        
+        Debug.Log($"My assigned team is {nw.AssignedTeam}");
+    }
+
+    private void OnStartGame(Netmessage msg)
+    {
+        //Change scene and camera fixes
+        //Can only be done after more set up is made
+        //ex. Movement
+        Debug.Log("Game Begin");
+        SceneManager.LoadScene("MedievalChessboard");
+    }
+    
+    #endregion
 }

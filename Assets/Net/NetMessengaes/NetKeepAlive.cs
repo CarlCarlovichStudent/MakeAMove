@@ -9,7 +9,6 @@ public class NetKeepAlive : Netmessage
     {
         Code = OpCode.KEEP_ALIVE;
     }
-
     public NetKeepAlive(DataStreamReader reader) // <-- Reciveing a pack
     {
         Code = OpCode.KEEP_ALIVE;

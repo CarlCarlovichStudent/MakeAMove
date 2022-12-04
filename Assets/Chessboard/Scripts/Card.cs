@@ -1,22 +1,26 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class Card : MonoBehaviour
 {
-    private CardBehavior behavior;
-    private Canvas canvas;
-    private int slot = -1;
-    private int totalSlots;
+    public CardBehavior behavior;
+    public bool forcedMovement; // Should be property
+
+    private const float HoverTime = 0.3f;
+    private const float StartTime = 1f;
+
+    private bool selected;
     private float lerpTime;
-    private Vector2Int cardOffset;
+    private float forcedTime;
+    private int hoverOffset;
     private Vector2 targetPosition;
     private Vector2 previousPosition;
     private RectTransform rectTransform;
 
-    public void SetStartValues(int slot, int totalSlots, Vector2Int offset)
+    public void SetStartValues(float slotOffset, Vector3Int cardOffset, CardBehavior behavior, bool start = false) // TODO: start yay or nay?
     {
-        this.slot = slot;
-        this.totalSlots = totalSlots;
-        cardOffset = offset;
+        this.behavior = behavior;
+        hoverOffset = cardOffset.z;
         
         rectTransform = GetComponent<RectTransform>();
         rectTransform.anchorMin = new Vector2(0.5f, 0);
@@ -24,22 +28,75 @@ public class Card : MonoBehaviour
         rectTransform.pivot = new Vector2(0.5f, 1);
         rectTransform.anchoredPosition = Vector2.zero;
 
-        previousPosition = new Vector2((offset.x + rectTransform.rect.width) * (slot + 0.5f - totalSlots / 2f) * 0.8f, -10);
-        targetPosition = new Vector2((offset.x + rectTransform.rect.width) * (slot + 0.5f - totalSlots / 2f), offset.y + rectTransform.rect.height);
+        Rect rect = rectTransform.rect;
+        previousPosition = new Vector2((cardOffset.x + rect.width) * slotOffset * (start ? 0.75f : 1), -rect.height);
+        targetPosition = new Vector2((cardOffset.x + rect.width) * slotOffset, cardOffset.y + rect.height);
+        
         lerpTime = 0f;
+        forcedMovement = true;
+        forcedTime = StartTime;
+        selected = false;
+    }
+    
+    // Use card
+    public void Use(float exitTime)
+    {
+        Destroy(gameObject, exitTime);
+        lerpTime = 0f;
+        forcedMovement = true;
+        forcedTime = exitTime;
+        targetPosition -= new Vector2(0, rectTransform.rect.height + rectTransform.position.y);
     }
 
-    public void Update()
+    // Hover
+    public void Hover()
     {
-        if (slot < 0) return;
+        if (forcedMovement) return;
+        
+        previousPosition = targetPosition;
+        targetPosition += new Vector2(0, hoverOffset);
+        lerpTime = 1f - lerpTime;
+    }
+
+    public void Select()
+    {
+        if (forcedMovement) return;
+        
+        selected = true;
+    }
+
+    public void Unhover()
+    {
+        if (forcedMovement) return;
+        if (selected) return;
+        
+        previousPosition = targetPosition;
+        targetPosition -= new Vector2(0, hoverOffset);
+        lerpTime = 1f - lerpTime;
+    }
+
+    public void Deselect()
+    {
+        if (forcedMovement) return;
+        
+        selected = false;
+        Unhover();
+    }
+
+    private void Update()
+    {
+        if (behavior == null) return;
         if (lerpTime >= 1f) return;
 
         rectTransform.anchoredPosition = Vector2.Lerp(previousPosition, targetPosition, lerpTime);
+
+        lerpTime += Time.deltaTime / (forcedMovement ? forcedTime : HoverTime);
         
-        lerpTime += Time.deltaTime;
         if (lerpTime >= 1f)
         {
             rectTransform.anchoredPosition = targetPosition;
+            lerpTime = 1f;
+            forcedMovement = false;
         }
     }
 }

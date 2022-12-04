@@ -8,62 +8,125 @@ public class CardDeckHandler : MonoBehaviour
 {
     [Header("Settings")]
     [SerializeField] private int handSize;
-    [SerializeField] private Vector2Int cardOffset;
+    [SerializeField] private Vector2Int cardSize;
+    [SerializeField] private Vector3Int cardOffset; // z value is hover offset
     
     [Header("General references")]
     [SerializeField] private CardDeck deck;
     [SerializeField] private Canvas canvas;
-    [SerializeField] private Sprite cardSprite;
 
-    [Header("Piece Sprites")]
-    [SerializeField] private Sprite pawn;
-
-    [Header("Card Type Sprites")]
-    [SerializeField] private Sprite summon;
-    [SerializeField] private Sprite move;
-    [SerializeField] private Sprite special;
-
+    private const float UseCardTime = 0.5f;
+    private const float RespawnOffset = 0.3f;
+    
+    private Chessboard board;
+    private float[] respawnTimers;
+    
+    // Cards
     private List<CardBehavior> cardPool;
-    private CardBehavior[] hand;
+    private Card[] hand;
+    private Card lastSelected;
+    private Card lastHovered;
 
     private void Awake()
     {
         cardPool = deck.GetCards();
-        hand = new CardBehavior[handSize];
-
+        board = GetComponent<Chessboard>();
         InitializeHand();
+    }
+
+    private void Update()
+    {
+        for (int i = 0; i < handSize; i++)
+        {
+            if (respawnTimers[i] <= 0) continue;
+            else
+            {
+                respawnTimers[i] -= Time.deltaTime;
+                if (respawnTimers[i] <= 0)
+                {
+                    hand[i] = InitializeCard(i);
+                }
+            }
+        }
+    }
+
+    public void UseCard()
+    {
+        lastSelected.Hover();
+        lastSelected.Use(UseCardTime);
+        for (int i = 0; i < hand.Length; i++)
+        {
+            if (lastSelected == hand[i])
+            {
+                respawnTimers[i] = RespawnOffset;
+            }
+        }
+    }
+
+    // Hover and select handlers for HUD Raycaster
+    public void HandleCardHover(Card card)
+    {
+        if (card == lastHovered || card == lastSelected) return;
+        
+        lastHovered?.Unhover();
+        lastHovered = card;
+        card.Hover();
+    }
+
+    public void HandleCardSelect(Card card) // TODO: handle deselect when already selected
+    {
+        if (card == lastSelected) return;
+        
+        lastSelected?.Deselect();
+        lastSelected = card;
+        lastSelected.Select();
+        
+        board.SetSelectedBehavior(lastSelected.behavior);
+    }
+
+    public void HandleNoCardHover()
+    {
+        lastHovered?.Unhover();
+        lastHovered = null;
     }
 
     // Initialize cards
     private void InitializeHand()
     {
+        hand = new Card[handSize];
+        respawnTimers = new float[handSize];
+        
         for (int i = 0; i < handSize; i++)
         {
             hand[i] = InitializeCard(i);
         }
     }
 
-    private CardBehavior InitializeCard(int slot)
+    private Card InitializeCard(int slot)
     {
         CardBehavior behavior = GetRandomCardBehavior();
         
-        GameObject gameObject = InstantiateImageObject("Card " + slot, canvas.transform, cardSprite);
+        GameObject gameObject = InstantiateImageObject("Card " + slot, canvas.transform, behavior.sprite, cardSize);
         Card card = gameObject.AddComponent<Card>();
-        
-        InstantiateImageObject("Piece Image", gameObject.transform, PieceSprite(behavior.piecesAffected));
-        InstantiateImageObject("Card Type Image", gameObject.transform, CardTypeSprite(behavior.cardType));
-        
-        card.SetStartValues(slot, handSize, cardOffset);
 
-        return behavior;
+        //InstantiateImageObject("Piece Image", gameObject.transform, PieceSprite(behavior.piecesAffected));
+        //InstantiateImageObject("Card Type Image", gameObject.transform, CardTypeSprite(behavior.cardType));
+        
+        card.SetStartValues(slot + 0.5f - handSize / 2f, cardOffset, behavior);
+
+        return card;
     }
 
     // Instantiate objects
-    private GameObject InstantiateImageObject(string name, Transform parent, Sprite sprite)
+    private GameObject InstantiateImageObject(string name, Transform parent, Sprite sprite, Vector2 size)
     {
         GameObject gameObject = InstantiateGameObject(name, parent);
+        
         Image image = gameObject.AddComponent<Image>();
         image.sprite = sprite;
+        
+        RectTransform rectTransform = gameObject.GetComponent<RectTransform>();
+        rectTransform.sizeDelta = size;
 
         return gameObject;
     }
@@ -91,36 +154,5 @@ public class CardDeckHandler : MonoBehaviour
         }
 
         return behaviors[Random.Range(0, behaviors.Count - 1)];
-    }
-    
-    // Look up textures
-    private Sprite PieceSprite(ChessPieceType pieceType)
-    {
-        switch (pieceType)
-        {
-            case ChessPieceType.Pawn:
-                return pawn;
-            
-            default:
-                throw new Exception("Invalid Piece Type");
-        }
-    }
-    
-    private Sprite CardTypeSprite(CardType cardType)
-    {
-        switch (cardType)
-        {
-            case CardType.Move:
-                return move;
-            
-            case CardType.Summon:
-                return summon;
-            
-            case CardType.Special:
-                return special;
-            
-            default:
-                throw new Exception("Invalid Card Type");
-        }
     }
 }
