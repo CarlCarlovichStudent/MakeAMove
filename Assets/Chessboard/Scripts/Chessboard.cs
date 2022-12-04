@@ -1,6 +1,7 @@
 using Unity.Networking.Transport;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Chessboard : MonoBehaviour
 {
@@ -447,7 +448,7 @@ public class Chessboard : MonoBehaviour
     {
         
     }
-    
+
     //Server
     private void OnWelcomeServer(Netmessage msg, NetworkConnection cnn)
     {
@@ -485,6 +486,8 @@ public class Chessboard : MonoBehaviour
         //Change scene and camera fixes
         //Can only be done after more set up is made
         //ex. Movement
+        Debug.Log("Game Begin");
+        SceneManager.LoadScene("MedievalChessboard");
     }
     
     #endregion
