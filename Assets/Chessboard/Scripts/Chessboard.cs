@@ -141,7 +141,7 @@ public class Chessboard : MonoBehaviour
     }
     
     // Receive moves
-    private void ReceiveMove(Vector2Int from, Vector2Int to) // from går att ändra till piece och sedan använda .boardPosition propertyn men mindre data att skicka = bättre så 4 ints är mycket snålare
+    private void ReceiveMove(Vector2Int from, Vector2Int to) // TODO: network
     {
         pieces[to.x, to.y] = pieces[from.x, from.y];
         pieces[from.x, from.y] = null;
@@ -242,7 +242,7 @@ public class Chessboard : MonoBehaviour
     }
 
     // Spawning pieces
-    private void SpawnPiece(Vector2Int position) // TODO: Update for all pieces
+    private void SpawnPiece(Vector2Int position) // TODO: network
     {
         ChessPiece piece = Instantiate(pawn).GetComponent<ChessPiece>();
         piece.transform.parent = pieceContainer.transform;
@@ -507,7 +507,7 @@ public class Chessboard : MonoBehaviour
         
         Debug.Log("Game Begin");
         GameUINet.Instance.ChangeCamera((currentTeam==0) ? CameraAngle.whiteTeam : CameraAngle.blackTeam);
-        
+        team = currentTeam == 0 ? ChessPieceTeam.White : ChessPieceTeam.Black;
     }
     
     private void OnSetLocalGame(bool obj)
