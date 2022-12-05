@@ -16,6 +16,7 @@ public enum OpCode
 
 public static class NetUtility
 {
+    
     public static void OnData(DataStreamReader stream, NetworkConnection cnn, Server server = null)
     {
         Netmessage msg = null;

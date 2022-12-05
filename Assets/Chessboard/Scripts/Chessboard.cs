@@ -1,3 +1,4 @@
+using System;
 using Unity.Networking.Transport;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -35,6 +36,7 @@ public class Chessboard : MonoBehaviour
     //MultiLogic
     private int playerCount = -1;
     private int currentTeam = -1;
+    private bool localGame = true;
     
     private void Awake()
     {
@@ -442,11 +444,18 @@ public class Chessboard : MonoBehaviour
 
         NetUtility.C_WELCOME += OnWelcomeClient;
         NetUtility.C_START_GAME += OnStartGame;
+
+        GameUINet.Instance.SetLocalGame += OnSetLocalGame;
     }
 
     private void UnRegisterEvents()
     {
-        
+        NetUtility.S_WELCOME -= OnWelcomeServer;
+
+        NetUtility.C_WELCOME -= OnWelcomeClient;
+        NetUtility.C_START_GAME -= OnStartGame;
+
+        GameUINet.Instance.SetLocalGame -= OnSetLocalGame;
     }
 
     //Server
@@ -460,7 +469,6 @@ public class Chessboard : MonoBehaviour
         
         //Return message
         Server.Instace.SendToClient(cnn, nw);
-        
         //If full (two players), start game
         if (playerCount == 1)
         {
@@ -479,15 +487,24 @@ public class Chessboard : MonoBehaviour
         currentTeam = nw.AssignedTeam;
         
         Debug.Log($"My assigned team is {nw.AssignedTeam}");
+        
+        if (localGame && currentTeam == 0)
+        {
+            Server.Instace.Broadcast(new NetStartGame());
+        }
     }
 
     private void OnStartGame(Netmessage msg)
     {
-        //Change scene and camera fixes
-        //Can only be done after more set up is made
-        //ex. Movement
+        
         Debug.Log("Game Begin");
-        SceneManager.LoadScene("MedievalChessboard");
+        GameUINet.Instance.ChangeCamera((currentTeam==0) ? CameraAngle.whiteTeam : CameraAngle.blackTeam);
+        
+    }
+    
+    private void OnSetLocalGame(bool obj)
+    {
+        localGame = obj;
     }
     
     #endregion
