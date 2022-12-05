@@ -28,9 +28,14 @@ public abstract class ChessPiece : MonoBehaviour
         transform.position = Vector3.Lerp(transform.position, desiredPosition, Time.deltaTime * speed); // maybe fix linear speed option
     }
 
+    public void DestroyPiece()
+    {
+        Destroy(gameObject, 0.5f);
+    }
+
     public void SetDesiredPosition(Vector3 position, int speed = 9)
     {
         this.speed = speed;
-        desiredPosition = position;
+        desiredPosition = position + Vector3.up * 0.44f;
     }
 }

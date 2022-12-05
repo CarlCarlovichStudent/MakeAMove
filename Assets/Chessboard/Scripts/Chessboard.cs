@@ -1,4 +1,5 @@
 using System;
+using TMPro;
 using TowerDefense.UI.HUD;
 using Unity.Networking.Transport;
 using Unity.VisualScripting;
@@ -22,14 +23,18 @@ public class Chessboard : MonoBehaviour
     [Header("Piece prefabs")]
     [SerializeField] private GameObject pawn;
 
-    //Rematch
+    [Header("Points and mana")] 
+    [SerializeField] private int winPoints;
+    [SerializeField] private TextMeshProUGUI scoreText;
+
+    [Header("Rematch")]
     [SerializeField] private GameObject victoryScreen;
     [SerializeField] private Transform rematchIndicator;
     [SerializeField] private Button rematchButton;
     
     // Logic
     private const int TileCountX = 8, TileCountY = 8;
-    
+
     private GameObject[,] tiles;
     private MeshRenderer[,] tileRenderers; // better for performance
     private Camera currentCamera;
@@ -40,6 +45,9 @@ public class Chessboard : MonoBehaviour
     private GameObject pieceContainer;
     private CardDeckHandler handler;
     private ChessPieceTeam team;
+    private int myPoints;
+    private int enemyPoints;
+    private bool myTurn; // Improve when mana and multiple cards per round is implemented (fully fix current logic)
     
     //MultiLogic
     private int playerCount = -1;
@@ -53,6 +61,7 @@ public class Chessboard : MonoBehaviour
         pieceContainer = CreateContainer("Pieces", transform);
         pieces = new ChessPiece[TileCountX, TileCountY];
         team = ChessPieceTeam.White;
+        myTurn = false;
         
         GenerateAllTiles();
 
@@ -66,7 +75,23 @@ public class Chessboard : MonoBehaviour
             currentCamera = Camera.current;
             return;
         }
+
+        if (myPoints >= winPoints)
+        {
+            // rematch skärm där du vinner
+            myPoints = 0;
+            enemyPoints = 0;
+        }
+
+        if (enemyPoints >= winPoints)
+        {
+            // rematch skärm där motståndaren vinner
+            myPoints = 0;
+            enemyPoints = 0;
+        }
         
+        scoreText.text = (myTurn ? "Your" : "Enemy") + $" turn\n\nYour points: {myPoints}/{winPoints}\nEnemy points: {enemyPoints}/{winPoints}";
+
         TileHandler();
     }
 
@@ -117,7 +142,7 @@ public class Chessboard : MonoBehaviour
     {
         if (currentlyDragging is not null && Input.GetMouseButtonUp(0))
         {
-            if (wasHighlighted)
+            if (wasHighlighted && myTurn)
             {
                 MoveTo(currentlyDragging.boardPosition, currentHover);
             }
@@ -131,6 +156,7 @@ public class Chessboard : MonoBehaviour
 
     private void MoveTo(Vector2Int from, Vector2Int to)
     {
+        pieces[to.x, to.y]?.DestroyPiece();
         pieces[to.x, to.y] = currentlyDragging;
         pieces[from.x, from.y] = null;
         
@@ -139,6 +165,26 @@ public class Chessboard : MonoBehaviour
         currentlyDragging = null;
         selectedBehavior = null;
         handler.UseCard();
+        myTurn = false;
+
+        if (team == ChessPieceTeam.White)
+        {
+            if (to.y == 7)
+            {
+                myPoints++;
+                pieces[to.x, to.y].DestroyPiece();
+                pieces[to.x, to.y] = null;
+            }
+        }
+        else
+        {
+            if (to.y == 0)
+            {
+                myPoints++;
+                pieces[to.x, to.y].DestroyPiece();
+                pieces[to.x, to.y] = null;
+            }
+        }
         
         //Net Implementation
         NetMakeMove mm = new NetMakeMove();
@@ -152,18 +198,44 @@ public class Chessboard : MonoBehaviour
 
     private void SelectSummon()
     {
-        SpawnPiece(currentHover);
-        selectedBehavior = null;
-        handler.UseCard();
+        if (myTurn)
+        {
+            SpawnPiece(currentHover);
+            selectedBehavior = null;
+            handler.UseCard();
+            myTurn = false;
+        }
     }
     
     // Receive moves
-    private void ReceiveMove(Vector2Int from, Vector2Int to) // TODO: network
+    private void ReceiveMove(Vector2Int from, Vector2Int to)
     {
+        pieces[to.x, to.y]?.DestroyPiece();
         pieces[to.x, to.y] = pieces[from.x, from.y];
         pieces[from.x, from.y] = null;
         
         PositionPiece(ref pieces[to.x, to.y], to);
+
+        myTurn = true;
+        
+        if (team != ChessPieceTeam.White)
+        {
+            if (to.y == 7)
+            {
+                enemyPoints++;
+                pieces[to.x, to.y].DestroyPiece();
+                pieces[to.x, to.y] = null;
+            }
+        }
+        else
+        {
+            if (to.y == 0)
+            {
+                enemyPoints++;
+                pieces[to.x, to.y].DestroyPiece();
+                pieces[to.x, to.y] = null;
+            }
+        }
     }
     
     // Highlight
@@ -224,7 +296,7 @@ public class Chessboard : MonoBehaviour
         {
             for (int y = 0; y < TileCountY; y++)
             {
-                if (pieces[x, y]?.type == selectedBehavior.piecesAffected)
+                if (pieces[x, y]?.type == selectedBehavior.piecesAffected && pieces[x, y].team == team)
                 {
                     HighlightTile(x, y);
                 }
@@ -259,18 +331,9 @@ public class Chessboard : MonoBehaviour
     }
 
     // Spawning pieces
-    private void SpawnPiece(Vector2Int position) // TODO: network
+    private void SpawnPiece(Vector2Int position)
     {
-        ChessPiece piece = Instantiate(pawn).GetComponent<ChessPiece>();
-        piece.transform.parent = pieceContainer.transform;
-
-        piece.team = team;
-        piece.GetComponent<MeshRenderer>().material = team == ChessPieceTeam.White ? whiteTeamMaterial : blackTeamMaterial;
-
-        PositionPiece(ref piece, position, true);
-        piece.boardPosition = position;
-
-        pieces[position.x, position.y] = piece;
+        InstantiatePiece(position, ChessPieceType.Pawn, team);
         
         //Net Implementation
         NetSpawnPiece sp = new NetSpawnPiece();
@@ -280,14 +343,19 @@ public class Chessboard : MonoBehaviour
         Client.Instace.SendToServer(sp);
     }
 
-    private void ReceiveSpawnedPiece(Vector2Int position, int teamId) // TODO: network
+    private void ReceiveSpawnedPiece(Vector2Int position, int teamId) // teamId could be replaced with reversing own team
+    {
+        InstantiatePiece(position, ChessPieceType.Pawn, teamId == 0 ? ChessPieceTeam.White : ChessPieceTeam.Black);
+        myTurn = true;
+    }
+
+    private void InstantiatePiece(Vector2Int position, ChessPieceType type, ChessPieceTeam team) // fix for all types
     {
         ChessPiece piece = Instantiate(pawn).GetComponent<ChessPiece>();
         piece.transform.parent = pieceContainer.transform;
 
-        piece.team = teamId==0 ? ChessPieceTeam.White: ChessPieceTeam.Black;
-        piece.GetComponent<MeshRenderer>().material =
-            piece.team == ChessPieceTeam.White ? whiteTeamMaterial : blackTeamMaterial;
+        piece.team = team;
+        piece.GetComponent<MeshRenderer>().material = team == ChessPieceTeam.White ? whiteTeamMaterial : blackTeamMaterial;
 
         PositionPiece(ref piece, position, true);
         piece.boardPosition = position;
@@ -301,7 +369,7 @@ public class Chessboard : MonoBehaviour
         piece.boardPosition = position;
         if (spawning)
         {
-            piece.transform.localPosition = GetTileCenter(position) + Vector3.down * 1.5f;
+            piece.transform.localPosition = GetTileCenter(position) + Vector3.down * 1f;
             piece.SetDesiredPosition(GetTileCenter(position), 6);
         }
         else
@@ -659,7 +727,9 @@ public class Chessboard : MonoBehaviour
         
         Debug.Log("Game Begin");
         GameUINet.Instance.ChangeCamera((currentTeam==0) ? CameraAngle.whiteTeam : CameraAngle.blackTeam);
+        
         team = currentTeam == 0 ? ChessPieceTeam.White : ChessPieceTeam.Black;
+        if (team == ChessPieceTeam.White) myTurn = true;
     }
     
     private void OnMakeMoveClient(Netmessage msg)

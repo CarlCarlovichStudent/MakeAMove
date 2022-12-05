@@ -142,9 +142,61 @@ public class CardDeckHandler : MonoBehaviour
     }
     
     // Randomizer
-    private CardBehavior GetRandomCardBehavior()
+    private CardBehavior GetRandomCardBehavior() // TODO: Improve
     {
+        int cardCount = 0;
+        int moveCount = 0;
+        int summonCount = 0;
+        foreach (Card card in hand)
+        {
+            if (card is not null && !card.forcedMovement)
+            {
+                cardCount++;
+            }
+            
+            if (card?.behavior.cardType == CardType.Move && !card.forcedMovement)
+            {
+                moveCount++;
+            }
+
+            if (card?.behavior.cardType == CardType.Summon && !card.forcedMovement)
+            {
+                summonCount++;
+            }
+        }
+
         List<CardBehavior> behaviors = new List<CardBehavior>();
+        
+        if (moveCount == cardCount)
+        {
+            foreach (CardBehavior behavior in cardPool)
+            {
+                if (behavior.cardType == CardType.Summon)
+                {
+                    for (int i = 0; i < behavior.weightedChance; i++)
+                    {
+                        behaviors.Add(behavior);
+                    }
+                }
+            }
+            return behaviors[Random.Range(0, behaviors.Count)];
+        }
+        
+        if (summonCount == cardCount)
+        {
+            foreach (CardBehavior behavior in cardPool)
+            {
+                if (behavior.cardType == CardType.Move)
+                {
+                    for (int i = 0; i < behavior.weightedChance; i++)
+                    {
+                        behaviors.Add(behavior);
+                    }
+                }
+            }
+            return behaviors[Random.Range(0, behaviors.Count)];
+        }
+        
         foreach (CardBehavior behavior in cardPool)
         {
             for (int i = 0; i < behavior.weightedChance; i++)
@@ -153,6 +205,6 @@ public class CardDeckHandler : MonoBehaviour
             }
         }
 
-        return behaviors[Random.Range(0, behaviors.Count - 1)];
+        return behaviors[Random.Range(0, behaviors.Count)];
     }
 }
