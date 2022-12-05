@@ -1,8 +1,11 @@
 using System;
+using TowerDefense.UI.HUD;
 using Unity.Networking.Transport;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Android;
 using UnityEngine.SceneManagement;
+using UnityEngine.UIElements;
 
 public class Chessboard : MonoBehaviour
 {
@@ -19,6 +22,11 @@ public class Chessboard : MonoBehaviour
     [Header("Piece prefabs")]
     [SerializeField] private GameObject pawn;
 
+    //Rematch
+    [SerializeField] private GameObject victoryScreen;
+    [SerializeField] private Transform rematchIndicator;
+    [SerializeField] private Button rematchButton;
+    
     // Logic
     private const int TileCountX = 8, TileCountY = 8;
     
@@ -37,7 +45,8 @@ public class Chessboard : MonoBehaviour
     private int playerCount = -1;
     private int currentTeam = -1;
     private bool localGame = true;
-    
+    private bool[] playerRematch = new bool[2];
+
     private void Awake()
     {
         handler = GetComponent<CardDeckHandler>();
@@ -130,6 +139,15 @@ public class Chessboard : MonoBehaviour
         currentlyDragging = null;
         selectedBehavior = null;
         handler.UseCard();
+        
+        //Net Implementation
+        NetMakeMove mm = new NetMakeMove();
+        mm.originalX = from.x;
+        mm.originalY = from.y;
+        mm.destinationX = to.x;
+        mm.destinationY = to.y;
+        mm.teamId = currentTeam;
+        Client.Instace.SendToServer(mm);
     }
 
     private void SelectSummon()
@@ -140,12 +158,12 @@ public class Chessboard : MonoBehaviour
     }
     
     // Receive moves
-    private void ReceiveMove(Vector2Int from, Vector2Int to) // from går att ändra till piece och sedan använda .boardPosition propertyn men mindre data att skicka = bättre så 4 ints är mycket snålare
+    private void ReceiveMove(Vector2Int from, Vector2Int to) // TODO: network
     {
         pieces[to.x, to.y] = pieces[from.x, from.y];
         pieces[from.x, from.y] = null;
         
-        PositionPiece(ref pieces[from.x, from.y], to);
+        PositionPiece(ref pieces[to.x, to.y], to);
     }
     
     // Highlight
@@ -163,7 +181,7 @@ public class Chessboard : MonoBehaviour
                         break;
                     
                     case CardType.Move:
-                        HighlightMoves();
+                        HighlightMovablePieces();
                         break;
                 }
             }
@@ -178,7 +196,13 @@ public class Chessboard : MonoBehaviour
     {
         foreach (MovementPattern movementPattern in selectedBehavior.movementPatterns)
         {
-            Vector2Int move = currentlyDragging.boardPosition + movementPattern.move;
+            Vector2Int move = currentlyDragging.boardPosition + (team == ChessPieceTeam.White ? movementPattern.move : movementPattern.move * Vector2Int.down);
+            
+            if (move.x < 0) move.x = 0;
+            if (move.x > 7) move.x = 7;
+            if (move.y < 0) move.y = 0;
+            if (move.y > 7) move.y = 7;
+            
             ChessPiece piece = pieces[move.x, move.y];
             if (piece is null)
             {
@@ -194,7 +218,7 @@ public class Chessboard : MonoBehaviour
         }
     }
 
-    private void HighlightMoves()
+    private void HighlightMovablePieces()
     {
         for (int x = 0; x < TileCountX; x++)
         {
@@ -210,11 +234,12 @@ public class Chessboard : MonoBehaviour
 
     private void HighlightSummon()
     {
+        int teamSide = team == ChessPieceTeam.White ? 0 : 7;
         for (int x = 0; x < TileCountX; x++)
         {
-            if (pieces[x, 0] is null)
+            if (pieces[x, teamSide] is null)
             {
-                HighlightTile(x, 0);
+                HighlightTile(x, teamSide);
             }
         }
     }
@@ -234,7 +259,7 @@ public class Chessboard : MonoBehaviour
     }
 
     // Spawning pieces
-    private void SpawnPiece(Vector2Int position) // TODO: Update for all pieces
+    private void SpawnPiece(Vector2Int position) // TODO: network
     {
         ChessPiece piece = Instantiate(pawn).GetComponent<ChessPiece>();
         piece.transform.parent = pieceContainer.transform;
@@ -246,8 +271,30 @@ public class Chessboard : MonoBehaviour
         piece.boardPosition = position;
 
         pieces[position.x, position.y] = piece;
+        
+        //Net Implementation
+        NetSpawnPiece sp = new NetSpawnPiece();
+        sp.spawnX = position.x;
+        sp.spawnY = position.y;
+        sp.teamId = currentTeam;
+        Client.Instace.SendToServer(sp);
     }
-    
+
+    private void ReceiveSpawnedPiece(Vector2Int position, int teamId) // TODO: network
+    {
+        ChessPiece piece = Instantiate(pawn).GetComponent<ChessPiece>();
+        piece.transform.parent = pieceContainer.transform;
+
+        piece.team = teamId==0 ? ChessPieceTeam.White: ChessPieceTeam.Black;
+        piece.GetComponent<MeshRenderer>().material =
+            piece.team == ChessPieceTeam.White ? whiteTeamMaterial : blackTeamMaterial;
+
+        PositionPiece(ref piece, position, true);
+        piece.boardPosition = position;
+
+        pieces[position.x, position.y] = piece;
+    }
+
     // Position pieces
     private void PositionPiece(ref ChessPiece piece, Vector2Int position, bool spawning = false)
     {
@@ -436,14 +483,94 @@ public class Chessboard : MonoBehaviour
             }
     #endif
 
+    #region Rematch
+
+    public void OnRematchButton()
+    {
+        if (localGame)
+        {
+            NetRematch wrm = new NetRematch();
+            wrm.teamId = 0;
+            wrm.wantRematch = 1;
+            Client.Instace.SendToServer(wrm);
+            
+            NetRematch brm = new NetRematch();
+            brm.teamId = 1;
+            brm.wantRematch = 1;
+            Client.Instace.SendToServer(brm);
+        }
+        else
+        {
+            NetRematch rm = new NetRematch();
+            rm.teamId = currentTeam;
+            rm.wantRematch = 1;
+            Client.Instace.SendToServer(rm);
+        }
+    }
+
+    public void ResetGame() //Todo: Fix if a reset is going to be made
+    {
+        //UI
+        rematchButton.SetEnabled(true);
+        
+        rematchIndicator.transform.GetChild(0).gameObject.SetActive(false);
+        rematchIndicator.transform.GetChild(1).gameObject.SetActive(false);
+        
+        victoryScreen.transform.GetChild(0).gameObject.SetActive(false);
+        victoryScreen.transform.GetChild(1).gameObject.SetActive(false);
+        victoryScreen.SetActive(false);
+        
+        //Field reset
+        currentlyDragging = null;
+        playerRematch[0] = playerRematch[1] = false;
+
+        //clean up
+        /*
+        for (int x = 0; x < TileCountX; x++)
+        {
+            for (int y = 0; y < TileCountY; y++)
+            {
+                //Remove all pieces
+            }
+        }
+        
+        //Set up all cards
+        */
+    }
+
+    public void OnMenuButton()
+    {
+        NetRematch rm = new NetRematch();
+        rm.teamId = currentTeam;
+        rm.wantRematch = 0;
+        Client.Instace.SendToServer(rm);
+        
+        ResetGame();
+        GameUINet.Instance.OnLeaveFromGameMenu();
+
+        Invoke("ShutdownRelay", 1.0f);
+        
+        //resetValues
+        playerCount = -1;
+        currentTeam = -1;
+    }
+
+    #endregion
+
     #region EventCalling
 
     private void RegisterEvents()
     {
         NetUtility.S_WELCOME += OnWelcomeServer;
+        NetUtility.S_MAKE_MOVE += OnMakeMoveServer;
+        NetUtility.S_SPAWN_PIECE += OnSpawnPieceServer;
+        NetUtility.S_REMATCH += OnRematchServer;
 
         NetUtility.C_WELCOME += OnWelcomeClient;
         NetUtility.C_START_GAME += OnStartGame;
+        NetUtility.C_MAKE_MOVE += OnMakeMoveClient;
+        NetUtility.C_SPAWN_PIECE += OnSpawnPieceClient;
+        NetUtility.C_REMATCH += OnRematchClient;
 
         GameUINet.Instance.SetLocalGame += OnSetLocalGame;
     }
@@ -451,9 +578,13 @@ public class Chessboard : MonoBehaviour
     private void UnRegisterEvents()
     {
         NetUtility.S_WELCOME -= OnWelcomeServer;
-
+        NetUtility.S_MAKE_MOVE -= OnMakeMoveServer;
+        NetUtility.S_SPAWN_PIECE -= OnSpawnPieceServer;
+        
         NetUtility.C_WELCOME -= OnWelcomeClient;
         NetUtility.C_START_GAME -= OnStartGame;
+        NetUtility.C_MAKE_MOVE -= OnMakeMoveClient;
+        NetUtility.C_SPAWN_PIECE -= OnSpawnPieceClient;
 
         GameUINet.Instance.SetLocalGame -= OnSetLocalGame;
     }
@@ -474,6 +605,35 @@ public class Chessboard : MonoBehaviour
         {
             Server.Instace.Broadcast(new NetStartGame());
         }
+    }
+    
+    private void OnMakeMoveServer(Netmessage msg, NetworkConnection cnn)
+    {
+        //Receive, and just broadcast it back
+        NetMakeMove mm = msg as NetMakeMove;
+        
+        //This is where we could do validation checks
+        
+        // Send it back
+        Server.Instace.Broadcast(msg);
+        
+    }
+    
+    private void OnSpawnPieceServer(Netmessage msg, NetworkConnection cnn)
+    {
+        //Receive, and just broadcast it back
+        NetSpawnPiece sp = msg as NetSpawnPiece;
+        
+        //This is where we could do validation checks
+        
+        // Send it back
+        Server.Instace.Broadcast(msg);
+        
+    }
+    
+    private void OnRematchServer(Netmessage msg, NetworkConnection cnn)
+    {
+        Server.Instace.Broadcast(msg);
     }
     
     //Client
@@ -499,13 +659,74 @@ public class Chessboard : MonoBehaviour
         
         Debug.Log("Game Begin");
         GameUINet.Instance.ChangeCamera((currentTeam==0) ? CameraAngle.whiteTeam : CameraAngle.blackTeam);
+        team = currentTeam == 0 ? ChessPieceTeam.White : ChessPieceTeam.Black;
+    }
+    
+    private void OnMakeMoveClient(Netmessage msg)
+    {
+        NetMakeMove mm = msg as NetMakeMove;
         
+        Debug.Log($"MM : {mm.teamId} : {mm.originalX}, {mm.originalY} -> {mm.destinationX}, {mm.destinationY}");
+
+        if (mm.teamId != currentTeam)
+        {
+            ReceiveMove(new Vector2Int(mm.originalX, mm.originalY), new Vector2Int(mm.destinationX, mm.destinationY));
+        }
+        
+    }
+    
+    private void OnSpawnPieceClient(Netmessage msg)
+    {
+        NetSpawnPiece sp = msg as NetSpawnPiece;
+        
+        Debug.Log($"SP : {sp.teamId} : {sp.spawnX}, {sp.spawnY}");
+        
+        if (sp.teamId != currentTeam)
+        {
+            ReceiveSpawnedPiece(new Vector2Int(sp.spawnX, sp.spawnY), sp.teamId);
+        }
+        
+    }
+    
+    private void OnRematchClient(Netmessage msg)
+    {
+        //Receive the connection message
+        NetRematch rm = msg as NetRematch;
+        
+        //Set the boolean for rematch
+        playerRematch[rm.teamId] = rm.wantRematch == 1;
+        
+        //Activate the piece of UI
+        if (rm.teamId != currentTeam)
+        {
+            rematchIndicator.transform.GetChild((rm.wantRematch == 1) ? 0 : 1).gameObject.SetActive(true);
+            if (rm.wantRematch != 1)
+            {
+                //Not exactly the same as interactable but it is good enough
+                rematchButton.SetEnabled(false);
+            }
+        }
+
+        //If both wants to rematch
+        if (playerRematch[0] && playerRematch[1])
+        {
+            ResetGame();
+        }
+    }
+
+    //Other
+    private void ShutdownRelay()
+    {
+        Client.Instace.ShutDown();
+        Server.Instace.ShutDown();
     }
     
     private void OnSetLocalGame(bool obj)
     {
+        playerCount = -1;
+        currentTeam = -1;
         localGame = obj;
     }
-    
+
     #endregion
 }
