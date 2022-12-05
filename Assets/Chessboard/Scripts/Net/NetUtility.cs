@@ -34,6 +34,8 @@ public static class NetUtility
                 break;
             case OpCode.SPAWN_PIECE: msg = new NetSpawnPiece(stream);
                 break;
+            case OpCode.REMATCH: msg = new NetRematch(stream);
+                break;
             default:
                 Debug.LogError("Message received had no OpCode");
                 break;

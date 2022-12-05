@@ -31,6 +31,10 @@ public class Chessboard : MonoBehaviour
     [SerializeField] private GameObject victoryScreen;
     [SerializeField] private Transform rematchIndicator;
     [SerializeField] private Button rematchButton;
+
+    [Header("Remove this")] 
+    [SerializeField] private TextMeshProUGUI whiteWinText;
+    [SerializeField] private TextMeshProUGUI blackWinText;
     
     // Logic
     private const int TileCountX = 8, TileCountY = 8;
@@ -78,14 +82,34 @@ public class Chessboard : MonoBehaviour
 
         if (myPoints >= winPoints)
         {
-            // rematch skärm där du vinner
+            GameUINet.Instance.OnRematchMenuTrigger();
+            if (team == ChessPieceTeam.White)
+            {
+                whiteWinText.enabled = true;
+                blackWinText.enabled = false;
+            }
+            else
+            {
+                whiteWinText.enabled = false;
+                blackWinText.enabled = true;
+            }
             myPoints = 0;
             enemyPoints = 0;
         }
 
         if (enemyPoints >= winPoints)
         {
-            // rematch skärm där motståndaren vinner
+            GameUINet.Instance.OnRematchMenuTrigger();
+            if (team != ChessPieceTeam.White)
+            {
+                whiteWinText.enabled = true;
+                blackWinText.enabled = false;
+            }
+            else
+            {
+                whiteWinText.enabled = false;
+                blackWinText.enabled = true;
+            }
             myPoints = 0;
             enemyPoints = 0;
         }
@@ -613,7 +637,7 @@ public class Chessboard : MonoBehaviour
         rm.wantRematch = 0;
         Client.Instace.SendToServer(rm);
         
-        ResetGame();
+        //ResetGame();
         GameUINet.Instance.OnLeaveFromGameMenu();
 
         Invoke("ShutdownRelay", 1.0f);

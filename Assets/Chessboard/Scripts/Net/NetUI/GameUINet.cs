@@ -100,5 +100,10 @@ public class GameUINet : MonoBehaviour
         menuAnimation.SetTrigger("InGameMenu");
     }
 
+    public void OnRematchMenuTrigger()
+    {
+        menuAnimation.SetTrigger("RematchMenu");
+    }
+
     #endregion
 }
