@@ -3,6 +3,7 @@ using Unity.Networking.Transport;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UIElements;
 
 public class Chessboard : MonoBehaviour
 {
@@ -163,7 +164,7 @@ public class Chessboard : MonoBehaviour
                         break;
                     
                     case CardType.Move:
-                        HighlightMoves();
+                        HighlightMovablePieces();
                         break;
                 }
             }
@@ -178,7 +179,13 @@ public class Chessboard : MonoBehaviour
     {
         foreach (MovementPattern movementPattern in selectedBehavior.movementPatterns)
         {
-            Vector2Int move = currentlyDragging.boardPosition + movementPattern.move;
+            Vector2Int move = currentlyDragging.boardPosition + (team == ChessPieceTeam.White ? movementPattern.move : movementPattern.move * Vector2Int.down);
+            
+            if (move.x < 0) move.x = 0;
+            if (move.x > 7) move.x = 7;
+            if (move.y < 0) move.y = 0;
+            if (move.y > 7) move.y = 7;
+            
             ChessPiece piece = pieces[move.x, move.y];
             if (piece is null)
             {
@@ -194,7 +201,7 @@ public class Chessboard : MonoBehaviour
         }
     }
 
-    private void HighlightMoves()
+    private void HighlightMovablePieces()
     {
         for (int x = 0; x < TileCountX; x++)
         {
@@ -210,11 +217,12 @@ public class Chessboard : MonoBehaviour
 
     private void HighlightSummon()
     {
+        int teamSide = team == ChessPieceTeam.White ? 0 : 7;
         for (int x = 0; x < TileCountX; x++)
         {
-            if (pieces[x, 0] is null)
+            if (pieces[x, teamSide] is null)
             {
-                HighlightTile(x, 0);
+                HighlightTile(x, teamSide);
             }
         }
     }
