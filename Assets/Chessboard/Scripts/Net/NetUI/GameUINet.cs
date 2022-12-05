@@ -77,6 +77,12 @@ public class GameUINet : MonoBehaviour
         menuAnimation.SetTrigger("OnlineMenu");
     }
 
+    public void OnLeaveFromGameMenu()
+    {
+        ChangeCamera(CameraAngle.menu);
+        menuAnimation.SetTrigger("StartMenu");
+    }
+
     #region Events
 
     private void RegisterEvents()
