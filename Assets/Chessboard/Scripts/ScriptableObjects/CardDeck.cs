@@ -29,9 +29,9 @@ public class CardBehavior
 public class MovementPattern
 {
     public Vector2Int move;
-    public bool repeating;
-    public bool symmetric; // Rotational symmetry 
-    public bool capture;
+    public MoveType moveType;
+    //public bool repeating;
+    //public bool symmetric; // Rotational symmetry 
 }
 
 public enum CardType
@@ -40,4 +40,11 @@ public enum CardType
     Move = 1,
     Summon = 2,
     Special = 3
+}
+
+public enum MoveType
+{
+    MoveOnly = 0,
+    CaptureOnly = 1,
+    MoveAndCapture = 2
 }

@@ -302,11 +302,14 @@ public class Chessboard : MonoBehaviour
             ChessPiece piece = pieces[move.x, move.y];
             if (piece is null)
             {
-                HighlightTile(move.x, move.y);
+                if (movementPattern.moveType is MoveType.MoveOnly or MoveType.MoveAndCapture)
+                {
+                    HighlightTile(move.x, move.y);
+                }
             }
             else
             {
-                if (piece.team != team && movementPattern.capture)
+                if (piece.team != team && movementPattern.moveType is MoveType.CaptureOnly or MoveType.MoveAndCapture)
                 {
                     HighlightTile(move.x, move.y);
                 }

@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e6a5a4a8f0e0ab24f9515b6f69186624, type: 3}
-  m_Name: Card Deck
+  m_Name: Speltest 1 Card Deck
   m_EditorClassIdentifier: 
   cards:
   - piecesAffected: 1
@@ -24,15 +24,11 @@ MonoBehaviour:
     weightedChance: 10
     movementPatterns:
     - move: {x: 0, y: 1}
-      moveType: 0
-    - move: {x: 1, y: 1}
-      moveType: 1
-    - move: {x: 1, y: 1}
-      moveType: 1
+      moveType: 2
   - piecesAffected: 1
     cardType: 1
     sprite: {fileID: 21300000, guid: 62133642043669f46ae60ab828eed2d3, type: 3}
-    weightedChance: 7
+    weightedChance: 8
     movementPatterns:
     - move: {x: 0, y: 2}
       moveType: 2
@@ -42,4 +38,4 @@ MonoBehaviour:
     weightedChance: 4
     movementPatterns:
     - move: {x: 0, y: 3}
-      moveType: 0
+      moveType: 2

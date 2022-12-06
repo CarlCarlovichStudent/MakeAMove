@@ -6823,7 +6823,7 @@ MonoBehaviour:
   handSize: 5
   cardSize: {x: 411, y: 561}
   cardOffset: {x: 25, y: -278, z: 228}
-  deck: {fileID: 11400000, guid: 30eba2334256fa346b647f7574a8c7d0, type: 2}
+  deck: {fileID: 11400000, guid: 0345350eea5627249a73444024c1d500, type: 2}
   canvas: {fileID: 2024887876}
 --- !u!4 &2056848574 stripped
 Transform:
