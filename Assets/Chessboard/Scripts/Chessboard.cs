@@ -535,6 +535,21 @@ public class Chessboard : MonoBehaviour
         return tile;
     }
     
+    // For handler TODO: improve or remove (make in to property)
+    public int GetPieceAmount()
+    {
+        int amount = 0;
+        foreach (ChessPiece piece in pieces)
+        {
+            if (piece is not null)
+            {
+                amount++;
+            }
+        }
+
+        return amount;
+    }
+    
     // Reusable code
     private GameObject CreateContainer(string name, Transform parent)
     {

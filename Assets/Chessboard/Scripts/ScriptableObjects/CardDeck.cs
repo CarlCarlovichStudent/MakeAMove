@@ -21,7 +21,7 @@ public class CardBehavior
     public ChessPieceType piecesAffected;
     public CardType cardType;
     public Sprite sprite;
-    [Range(1, 10)] public int weightedChance;
+    [Range(1, 20)] public int weightedChance;
     [NonReorderable] public List<MovementPattern> movementPatterns;
 }
 

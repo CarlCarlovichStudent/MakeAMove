@@ -144,30 +144,18 @@ public class CardDeckHandler : MonoBehaviour
     // Randomizer
     private CardBehavior GetRandomCardBehavior() // TODO: Improve
     {
-        int cardCount = 0;
-        int moveCount = 0;
-        int summonCount = 0;
+        int spawnAmount = board.GetPieceAmount();
+
         foreach (Card card in hand)
         {
-            if (card is not null && !card.forcedMovement)
+            if (card?.behavior.cardType == CardType.Summon)
             {
-                cardCount++;
-            }
-            
-            if (card?.behavior.cardType == CardType.Move && !card.forcedMovement)
-            {
-                moveCount++;
-            }
-
-            if (card?.behavior.cardType == CardType.Summon && !card.forcedMovement)
-            {
-                summonCount++;
+                spawnAmount++;
             }
         }
 
         List<CardBehavior> behaviors = new List<CardBehavior>();
-        
-        if (moveCount == cardCount)
+        if (spawnAmount < 1)
         {
             foreach (CardBehavior behavior in cardPool)
             {
@@ -179,14 +167,22 @@ public class CardDeckHandler : MonoBehaviour
                     }
                 }
             }
+
             return behaviors[Random.Range(0, behaviors.Count)];
         }
-        
-        if (summonCount == cardCount)
+
+        if (spawnAmount > 5)
         {
             foreach (CardBehavior behavior in cardPool)
             {
-                if (behavior.cardType == CardType.Move)
+                if (behavior.cardType == CardType.Summon)
+                {
+                    for (int i = 0; i < behavior.weightedChance - (spawnAmount - 5) * 2; i++)
+                    {
+                        behaviors.Add(behavior);
+                    }
+                }
+                else
                 {
                     for (int i = 0; i < behavior.weightedChance; i++)
                     {
@@ -194,9 +190,10 @@ public class CardDeckHandler : MonoBehaviour
                     }
                 }
             }
+            
             return behaviors[Random.Range(0, behaviors.Count)];
         }
-        
+
         foreach (CardBehavior behavior in cardPool)
         {
             for (int i = 0; i < behavior.weightedChance; i++)
@@ -204,7 +201,6 @@ public class CardDeckHandler : MonoBehaviour
                 behaviors.Add(behavior);
             }
         }
-
         return behaviors[Random.Range(0, behaviors.Count)];
     }
 }
