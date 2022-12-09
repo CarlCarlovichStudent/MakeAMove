@@ -14,7 +14,9 @@ public class CardDeckHandler : MonoBehaviour
     [Header("General references")]
     [SerializeField] private CardDeck deck;
     [SerializeField] private Canvas canvas;
-    [SerializeField] private AudioPlay audioPlay;
+    [SerializeField] private AudioPlay audioHoverCard;
+    [SerializeField] private AudioPlay audioSelectCard;
+    
 
     private const float UseCardTime = 0.5f;
     private const float RespawnOffset = 0.3f;
@@ -113,7 +115,7 @@ public class CardDeckHandler : MonoBehaviour
         //InstantiateImageObject("Piece Image", gameObject.transform, PieceSprite(behavior.piecesAffected));
         //InstantiateImageObject("Card Type Image", gameObject.transform, CardTypeSprite(behavior.cardType));
         
-        card.SetStartValues(slot + 0.5f - handSize / 2f, cardOffset, behavior, audioPlay);
+        card.SetStartValues(slot + 0.5f - handSize / 2f, cardOffset, behavior, audioHoverCard, audioSelectCard);
 
         return card;
     }

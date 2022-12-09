@@ -33,6 +33,17 @@ public class Chessboard : MonoBehaviour
     [SerializeField] private TextMeshProUGUI otherWantRematch;
     [SerializeField] private TextMeshProUGUI noToRematch;
     
+    
+    [Header("Audio")] 
+    [SerializeField] private AudioPlay playList;
+    [SerializeField] private AudioPlay entryStinger;
+    [SerializeField] private AudioSource menuMusic;
+    [SerializeField] private AudioPlay summonGame;
+    [SerializeField] private AudioPlay SummonKnight;
+    
+    
+    
+    
     // Logic
     private const int TileCountX = 8, TileCountY = 8;
 
@@ -228,6 +239,7 @@ public class Chessboard : MonoBehaviour
             SpawnPiece(currentHover);
             selectedBehavior = null;
             handler.UseCard();
+            
             myTurn = false;
         }
     }
@@ -369,6 +381,7 @@ public class Chessboard : MonoBehaviour
         sp.spawnY = position.y;
         sp.teamId = currentTeam;
         Client.Instace.SendToServer(sp);
+        SummonKnight.PlayAudio();
     }
 
     private void ReceiveSpawnedPiece(Vector2Int position, int teamId) // teamId could be replaced with reversing own team
@@ -771,6 +784,12 @@ public class Chessboard : MonoBehaviour
     {
         
         Debug.Log("Game Begin");
+        summonGame.PlayAudio();
+        entryStinger.PlayAudio();
+        playList.PlayAudio();
+        menuMusic.Stop();
+        
+        
         GameUINet.Instance.ChangeCamera((currentTeam==0) ? CameraAngle.whiteTeam : CameraAngle.blackTeam);
         
         team = currentTeam == 0 ? ChessPieceTeam.White : ChessPieceTeam.Black;

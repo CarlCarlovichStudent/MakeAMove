@@ -902,8 +902,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playOnStart: 0
-  oneShot: 0
-  startDelay: 0
+  oneShot: 1
+  startDelay: -1.3
   playWithFade: 0
   targetVolume: 1
   fadeSpeed: 1
@@ -1771,7 +1771,7 @@ MonoBehaviour:
         m_CallState: 2
       - m_Target: {fileID: 2017435588}
         m_TargetAssemblyTypeName: AudioPlay, Assembly-CSharp
-        m_MethodName: PlayAudio
+        m_MethodName: 
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1783,7 +1783,7 @@ MonoBehaviour:
         m_CallState: 2
       - m_Target: {fileID: 62459019}
         m_TargetAssemblyTypeName: AudioPlay, Assembly-CSharp
-        m_MethodName: PlayAudio
+        m_MethodName: 
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1795,7 +1795,7 @@ MonoBehaviour:
         m_CallState: 2
       - m_Target: {fileID: 667926876}
         m_TargetAssemblyTypeName: UnityEngine.AudioSource, UnityEngine
-        m_MethodName: Play
+        m_MethodName: 
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1807,7 +1807,7 @@ MonoBehaviour:
         m_CallState: 2
       - m_Target: {fileID: 2100576379}
         m_TargetAssemblyTypeName: UnityEngine.AudioSource, UnityEngine
-        m_MethodName: Stop
+        m_MethodName: 
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1819,7 +1819,7 @@ MonoBehaviour:
         m_CallState: 2
       - m_Target: {fileID: 1624765721}
         m_TargetAssemblyTypeName: UnityEngine.AudioSource, UnityEngine
-        m_MethodName: Play
+        m_MethodName: 
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1831,7 +1831,7 @@ MonoBehaviour:
         m_CallState: 2
       - m_Target: {fileID: 1905437531}
         m_TargetAssemblyTypeName: AudioPlay, Assembly-CSharp
-        m_MethodName: PlayAudio
+        m_MethodName: 
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -7536,6 +7536,11 @@ MonoBehaviour:
   blackWinText: {fileID: 731556919}
   otherWantRematch: {fileID: 936993671}
   noToRematch: {fileID: 913406584}
+  playList: {fileID: 62459019}
+  entryStinger: {fileID: 2017435588}
+  menuMusic: {fileID: 2100576379}
+  summonGame: {fileID: 1905437531}
+  SummonKnight: {fileID: 76217531}
 --- !u!114 &2056848573
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7553,7 +7558,8 @@ MonoBehaviour:
   cardOffset: {x: 25, y: -278, z: 228}
   deck: {fileID: 11400000, guid: 0345350eea5627249a73444024c1d500, type: 2}
   canvas: {fileID: 2024887876}
-  audioPlay: {fileID: 1361835335}
+  audioHoverCard: {fileID: 1361835335}
+  audioSelectCard: {fileID: 2131199603}
 --- !u!1 &2073471999
 GameObject:
   m_ObjectHideFlags: 3
@@ -7919,7 +7925,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playOnStart: 0
-  oneShot: 0
+  oneShot: 1
   startDelay: 0
   playWithFade: 0
   targetVolume: 0.602

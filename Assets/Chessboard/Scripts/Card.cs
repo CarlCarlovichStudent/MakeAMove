@@ -16,13 +16,15 @@ public class Card : MonoBehaviour
     private Vector2 targetPosition;
     private Vector2 previousPosition;
     private RectTransform rectTransform;
-    private AudioPlay audioPlay;
+    private AudioPlay audioHoverCard;
+    private AudioPlay audioSelectCard;
 
     public void SetStartValues(float slotOffset, Vector3Int cardOffset, CardBehavior behavior, AudioPlay play, bool start = false) // TODO: start yay or nay?
     {
         this.behavior = behavior;
         hoverOffset = cardOffset.z;
-        audioPlay = play;
+        audioHoverCard = play;
+        audioSelectCard = play;
         
         rectTransform = GetComponent<RectTransform>();
         rectTransform.anchorMin = new Vector2(0.5f, 0);
@@ -55,7 +57,7 @@ public class Card : MonoBehaviour
     {
         if (forcedMovement) return;
         
-        audioPlay.PlayAudio();
+        audioHoverCard.PlayAudio();
         
         previousPosition = targetPosition;
         targetPosition += new Vector2(0, hoverOffset);
@@ -65,8 +67,11 @@ public class Card : MonoBehaviour
     public void Select()
     {
         if (forcedMovement) return;
-        
+
         selected = true;
+        
+        audioSelectCard.PlayAudio();
+        
     }
 
     public void Unhover()
