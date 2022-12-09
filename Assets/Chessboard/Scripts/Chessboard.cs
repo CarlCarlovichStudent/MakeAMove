@@ -39,11 +39,15 @@ public class Chessboard : MonoBehaviour
     [SerializeField] private AudioPlay entryStinger;
     [SerializeField] private AudioSource menuMusic;
     [SerializeField] private AudioPlay summonGame;
-    [SerializeField] private AudioPlay SummonKnight;
-    
-    
-    
-    
+    [SerializeField] private AudioPlay summonKnight;
+    [SerializeField] private AudioPlay score;
+    [SerializeField] private AudioSource victoryStinger;
+    [SerializeField] private AudioSource defeatStinger;
+    [SerializeField] private bool fadeOut;
+
+
+
+
     // Logic
     private const int TileCountX = 8, TileCountY = 8;
 
@@ -90,6 +94,7 @@ public class Chessboard : MonoBehaviour
 
         if (myPoints >= winPoints)
         {
+            
             GameUINet.Instance.OnRematchMenuTrigger();
             otherWantRematch.enabled = false;
             noToRematch.enabled = false;
@@ -97,6 +102,7 @@ public class Chessboard : MonoBehaviour
             {
                 whiteWinText.enabled = true;
                 blackWinText.enabled = false;
+               
             }
             else
             {
@@ -105,6 +111,8 @@ public class Chessboard : MonoBehaviour
             }
             myPoints = 0;
             enemyPoints = 0;
+            playList.StopAudio(fadeOut);
+            victoryStinger.Play();
         }
 
         if (enemyPoints >= winPoints)
@@ -124,6 +132,9 @@ public class Chessboard : MonoBehaviour
             }
             myPoints = 0;
             enemyPoints = 0;
+            playList.StopAudio(fadeOut);
+            defeatStinger.Play();
+            
         }
         
         scoreText.text = (myTurn ? "Your" : "Enemy") + $" turn\n\nYour points: {myPoints}/{winPoints}\nEnemy points: {enemyPoints}/{winPoints}";
@@ -381,7 +392,7 @@ public class Chessboard : MonoBehaviour
         sp.spawnY = position.y;
         sp.teamId = currentTeam;
         Client.Instace.SendToServer(sp);
-        SummonKnight.PlayAudio();
+        summonKnight.PlayAudio();
     }
 
     private void ReceiveSpawnedPiece(Vector2Int position, int teamId) // teamId could be replaced with reversing own team
@@ -788,6 +799,7 @@ public class Chessboard : MonoBehaviour
         entryStinger.PlayAudio();
         playList.PlayAudio();
         menuMusic.Stop();
+        
         
         
         GameUINet.Instance.ChangeCamera((currentTeam==0) ? CameraAngle.whiteTeam : CameraAngle.blackTeam);

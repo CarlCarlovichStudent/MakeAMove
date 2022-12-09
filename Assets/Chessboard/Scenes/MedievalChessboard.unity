@@ -903,7 +903,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playOnStart: 0
   oneShot: 1
-  startDelay: -1.3
+  startDelay: -10
   playWithFade: 0
   targetVolume: 1
   fadeSpeed: 1
@@ -7006,7 +7006,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playOnStart: 0
-  oneShot: 0
+  oneShot: 1
   startDelay: 0
   playWithFade: 0
   targetVolume: 1
@@ -7540,7 +7540,11 @@ MonoBehaviour:
   entryStinger: {fileID: 2017435588}
   menuMusic: {fileID: 2100576379}
   summonGame: {fileID: 1905437531}
-  SummonKnight: {fileID: 76217531}
+  summonKnight: {fileID: 76217531}
+  score: {fileID: 1985839187}
+  victoryStinger: {fileID: 32101814}
+  defeatStinger: {fileID: 1023445388}
+  fadeOut: 1
 --- !u!114 &2056848573
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7928,14 +7932,14 @@ MonoBehaviour:
   oneShot: 1
   startDelay: 0
   playWithFade: 0
-  targetVolume: 0.602
+  targetVolume: 0.7
   fadeSpeed: 1
   clipsToPlay:
-  - {fileID: 8300000, guid: dd36196dda90fb64b94d866a2cbf4dde, type: 3}
+  - {fileID: 8300000, guid: c87b121e05fbb7a4da7e1cf3d0b99488, type: 3}
   minTime: 0
   maxTime: 0
-  minVolume: 1
-  maxVolume: 1
+  minVolume: 0.7
+  maxVolume: 0.7
   minPitch: 1
   maxPitch: 1
 --- !u!1 &1000010357434584

@@ -19,12 +19,12 @@ public class Card : MonoBehaviour
     private AudioPlay audioHoverCard;
     private AudioPlay audioSelectCard;
 
-    public void SetStartValues(float slotOffset, Vector3Int cardOffset, CardBehavior behavior, AudioPlay play, bool start = false) // TODO: start yay or nay?
+    public void SetStartValues(float slotOffset, Vector3Int cardOffset, CardBehavior behavior,AudioPlay audioHoverCard,AudioPlay audioSelectCard, bool start = false) // TODO: start yay or nay?
     {
         this.behavior = behavior;
         hoverOffset = cardOffset.z;
-        audioHoverCard = play;
-        audioSelectCard = play;
+        this.audioHoverCard = audioHoverCard;
+        this.audioSelectCard = audioSelectCard;
         
         rectTransform = GetComponent<RectTransform>();
         rectTransform.anchorMin = new Vector2(0.5f, 0);
