@@ -177,7 +177,7 @@ public class CardDeckHandler : MonoBehaviour
             {
                 if (behavior.cardType == CardType.Summon)
                 {
-                    for (int i = 0; i < behavior.weightedChance - (spawnAmount - 5) * 2; i++)
+                    for (int i = 0; i < behavior.weightedChance - (spawnAmount - 5) * 3; i++)
                     {
                         behaviors.Add(behavior);
                     }
