@@ -10,11 +10,11 @@ public class NetRematch : Netmessage
     
     public NetRematch() // <-- Making a pack
     {
-        Code = OpCode.KEEP_ALIVE;
+        Code = OpCode.REMATCH;
     }
     public NetRematch(DataStreamReader reader) // <-- Reciveing a pack
     {
-        Code = OpCode.KEEP_ALIVE;
+        Code = OpCode.REMATCH;
         Deserialize(reader);
     }
 

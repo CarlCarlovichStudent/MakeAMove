@@ -1,12 +1,7 @@
-using System;
 using TMPro;
-using TowerDefense.UI.HUD;
 using Unity.Networking.Transport;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Android;
-using UnityEngine.SceneManagement;
-using UnityEngine.UIElements;
+using Button = UnityEngine.UI.Button;
 
 public class Chessboard : MonoBehaviour
 {
@@ -35,6 +30,8 @@ public class Chessboard : MonoBehaviour
     [Header("Remove this")] 
     [SerializeField] private TextMeshProUGUI whiteWinText;
     [SerializeField] private TextMeshProUGUI blackWinText;
+    [SerializeField] private TextMeshProUGUI otherWantRematch;
+    [SerializeField] private TextMeshProUGUI noToRematch;
     
     // Logic
     private const int TileCountX = 8, TileCountY = 8;
@@ -83,6 +80,8 @@ public class Chessboard : MonoBehaviour
         if (myPoints >= winPoints)
         {
             GameUINet.Instance.OnRematchMenuTrigger();
+            otherWantRematch.enabled = false;
+            noToRematch.enabled = false;
             if (team == ChessPieceTeam.White)
             {
                 whiteWinText.enabled = true;
@@ -100,6 +99,8 @@ public class Chessboard : MonoBehaviour
         if (enemyPoints >= winPoints)
         {
             GameUINet.Instance.OnRematchMenuTrigger();
+            otherWantRematch.enabled = false;
+            noToRematch.enabled = false;
             if (team != ChessPieceTeam.White)
             {
                 whiteWinText.enabled = true;
@@ -621,10 +622,10 @@ public class Chessboard : MonoBehaviour
     public void ResetGame() //Todo: Fix if a reset is going to be made
     {
         //UI
-        rematchButton.SetEnabled(true);
+        rematchButton.interactable.Equals(true);
         
+        rematchIndicator.transform.gameObject.SetActive(false);
         rematchIndicator.transform.GetChild(0).gameObject.SetActive(false);
-        rematchIndicator.transform.GetChild(1).gameObject.SetActive(false);
         
         victoryScreen.transform.GetChild(0).gameObject.SetActive(false);
         victoryScreen.transform.GetChild(1).gameObject.SetActive(false);
@@ -690,11 +691,13 @@ public class Chessboard : MonoBehaviour
         NetUtility.S_WELCOME -= OnWelcomeServer;
         NetUtility.S_MAKE_MOVE -= OnMakeMoveServer;
         NetUtility.S_SPAWN_PIECE -= OnSpawnPieceServer;
+        NetUtility.S_REMATCH -= OnRematchServer;
         
         NetUtility.C_WELCOME -= OnWelcomeClient;
         NetUtility.C_START_GAME -= OnStartGame;
         NetUtility.C_MAKE_MOVE -= OnMakeMoveClient;
         NetUtility.C_SPAWN_PIECE -= OnSpawnPieceClient;
+        NetUtility.C_REMATCH -= OnRematchClient;
 
         GameUINet.Instance.SetLocalGame -= OnSetLocalGame;
     }
@@ -811,11 +814,18 @@ public class Chessboard : MonoBehaviour
         //Activate the piece of UI
         if (rm.teamId != currentTeam)
         {
-            rematchIndicator.transform.GetChild((rm.wantRematch == 1) ? 0 : 1).gameObject.SetActive(true);
+            //rematchIndicator.transform.GetChild((rm.wantRematch == 1) ? 0 : 1).gameObject.SetActive(true);
             if (rm.wantRematch != 1)
             {
-                //Not exactly the same as interactable but it is good enough
-                rematchButton.SetEnabled(false);
+                //TODO: Seems not to be working properly and unsure of how to fix.
+                rematchButton.interactable.Equals(false);
+                //
+                noToRematch.enabled = true;
+                otherWantRematch.enabled = false;
+            }
+            else
+            {
+                otherWantRematch.enabled = true;
             }
         }
 
@@ -823,6 +833,7 @@ public class Chessboard : MonoBehaviour
         if (playerRematch[0] && playerRematch[1])
         {
             ResetGame();
+            GameUINet.Instance.OnResetToGameMenu();
         }
     }
 

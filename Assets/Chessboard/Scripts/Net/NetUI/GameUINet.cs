@@ -83,6 +83,12 @@ public class GameUINet : MonoBehaviour
         menuAnimation.SetTrigger("StartMenu");
     }
 
+    public void OnResetToGameMenu()
+    {
+        menuAnimation.SetTrigger("InGameMenu");
+        Server.Instace.Broadcast(new NetStartGame());
+    }
+
     #region Events
 
     private void RegisterEvents()
