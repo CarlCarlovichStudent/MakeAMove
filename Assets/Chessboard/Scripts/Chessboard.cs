@@ -41,9 +41,14 @@ public class Chessboard : MonoBehaviour
     [SerializeField] private AudioPlay summonGame;
     [SerializeField] private AudioPlay summonKnight;
     [SerializeField] private AudioPlay score;
-    [SerializeField] private AudioSource victoryStinger;
-    [SerializeField] private AudioSource defeatStinger;
+    [SerializeField] private AudioPlay victoryStinger;
+    [SerializeField] private AudioPlay defeatStinger;
     [SerializeField] private bool fadeOut;
+    [SerializeField] private AudioPlay killKnight;
+    [SerializeField] private AudioPlay moveKnight;
+    [SerializeField] private AudioPlay wrongMove;
+    [SerializeField] private AudioPlay loosePoint;
+    
 
 
 
@@ -112,7 +117,7 @@ public class Chessboard : MonoBehaviour
             myPoints = 0;
             enemyPoints = 0;
             playList.StopAudio(fadeOut);
-            victoryStinger.Play();
+            victoryStinger.PlayAudio();
         }
 
         if (enemyPoints >= winPoints)
@@ -133,7 +138,7 @@ public class Chessboard : MonoBehaviour
             myPoints = 0;
             enemyPoints = 0;
             playList.StopAudio(fadeOut);
-            defeatStinger.Play();
+            defeatStinger.PlayAudio();
             
         }
         
@@ -192,11 +197,13 @@ public class Chessboard : MonoBehaviour
             if (wasHighlighted && myTurn)
             {
                 MoveTo(currentlyDragging.boardPosition, currentHover);
+                moveKnight.PlayAudio();
             }
             else
             {
                 PositionPiece(ref currentlyDragging, currentlyDragging.boardPosition);
                 currentlyDragging = null;
+                wrongMove.PlayAudio();
             }
         }
     }
@@ -206,6 +213,8 @@ public class Chessboard : MonoBehaviour
         pieces[to.x, to.y]?.DestroyPiece();
         pieces[to.x, to.y] = currentlyDragging;
         pieces[from.x, from.y] = null;
+      
+        
         
         PositionPiece(ref currentlyDragging, to);
         
@@ -213,6 +222,7 @@ public class Chessboard : MonoBehaviour
         selectedBehavior = null;
         handler.UseCard();
         myTurn = false;
+        
 
         if (team == ChessPieceTeam.White)
         {
@@ -221,6 +231,7 @@ public class Chessboard : MonoBehaviour
                 myPoints++;
                 pieces[to.x, to.y].DestroyPiece();
                 pieces[to.x, to.y] = null;
+                score.PlayAudio();
             }
         }
         else
@@ -230,6 +241,7 @@ public class Chessboard : MonoBehaviour
                 myPoints++;
                 pieces[to.x, to.y].DestroyPiece();
                 pieces[to.x, to.y] = null;
+                score.PlayAudio();
             }
         }
         
@@ -262,6 +274,7 @@ public class Chessboard : MonoBehaviour
         pieces[to.x, to.y] = pieces[from.x, from.y];
         pieces[from.x, from.y] = null;
         
+        
         PositionPiece(ref pieces[to.x, to.y], to);
 
         myTurn = true;
@@ -273,6 +286,7 @@ public class Chessboard : MonoBehaviour
                 enemyPoints++;
                 pieces[to.x, to.y].DestroyPiece();
                 pieces[to.x, to.y] = null;
+                loosePoint.PlayAudio();
             }
         }
         else
@@ -282,6 +296,7 @@ public class Chessboard : MonoBehaviour
                 enemyPoints++;
                 pieces[to.x, to.y].DestroyPiece();
                 pieces[to.x, to.y] = null;
+                loosePoint.PlayAudio();
             }
         }
     }
