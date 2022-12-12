@@ -38,6 +38,7 @@ public class Chessboard : MonoBehaviour
     [SerializeField] private AudioPlay entryStinger;
     [SerializeField] private AudioPlay ambLoop;
     [SerializeField] private AudioSource menuMusic;
+    [SerializeField] private AudioPlay exitMenuMusic;
     [SerializeField] private AudioPlay summonGame;
     [SerializeField] private AudioPlay summonKnight;
     [SerializeField] private AudioPlay score;
@@ -117,7 +118,9 @@ public class Chessboard : MonoBehaviour
             myPoints = 0;
             enemyPoints = 0;
             playList.StopAudio(fadeOut);
+            ambLoop.StopAudio(fadeOut);
             victoryStinger.PlayAudio();
+            exitMenuMusic.PlayAudio();
         }
 
         if (enemyPoints >= winPoints)
@@ -138,7 +141,10 @@ public class Chessboard : MonoBehaviour
             myPoints = 0;
             enemyPoints = 0;
             playList.StopAudio(fadeOut);
+            ambLoop.StopAudio(fadeOut);
             defeatStinger.PlayAudio();
+            exitMenuMusic.PlayAudio();
+            
             
         }
         
@@ -883,6 +889,7 @@ public class Chessboard : MonoBehaviour
         {
             ResetGame();
             GameUINet.Instance.OnResetToGameMenu();
+            exitMenuMusic.StopAudio(fadeOut);
         }
     }
 
