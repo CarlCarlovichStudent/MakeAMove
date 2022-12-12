@@ -3,20 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="bfe3b8ba-cb53-4228-a205-616e68e17408" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.MakeAMove/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.MakeAMove/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Chessboard/Scenes/MedievalChessboard.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Chessboard/Scenes/MedievalChessboard.unity" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Chessboard/Scripts/Net/NetUI/Canvas.controller" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Chessboard/Scripts/Net/NetUI/Canvas.controller" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Chessboard/Scripts/Net/NetUI/GameUINet.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Chessboard/Scripts/Net/NetUI/GameUINet.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Chessboard/Scripts/Net/NetUI/Host Menu.anim" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Chessboard/Scripts/Net/NetUI/Host Menu.anim.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Chessboard/Scripts/Net/NetUI/InGameMenu.anim" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Chessboard/Scripts/Net/NetUI/InGameMenu.anim.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Chessboard/Scripts/Net/NetUI/Online Menu.anim" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Chessboard/Scripts/Net/NetUI/Online Menu.anim.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Chessboard/Scripts/Net/NetUI/RematchMenu.anim" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Chessboard/Scripts/Net/NetUI/RematchMenu.anim.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Chessboard/Scripts/Net/NetUI/Start Menu.anim" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Chessboard/Scripts/Net/NetUI/Start Menu.anim.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/TextMesh Pro/Resources/Fonts &amp; Materials/LiberationSans SDF - Fallback.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TextMesh Pro/Resources/Fonts &amp; Materials/LiberationSans SDF - Fallback.asset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ProjectSettings/Packages/com.unity.testtools.codecoverage/Settings.json" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/Packages/com.unity.testtools.codecoverage/Settings.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
