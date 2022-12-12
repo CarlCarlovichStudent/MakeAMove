@@ -37,6 +37,7 @@ public class Chessboard : MonoBehaviour
     [Header("Audio")] 
     [SerializeField] private AudioPlay playList;
     [SerializeField] private AudioPlay entryStinger;
+    [SerializeField] private AudioPlay ambLoop;
     [SerializeField] private AudioSource menuMusic;
     [SerializeField] private AudioPlay summonGame;
     [SerializeField] private AudioPlay summonKnight;
@@ -814,6 +815,7 @@ public class Chessboard : MonoBehaviour
         entryStinger.PlayAudio();
         playList.PlayAudio();
         menuMusic.Stop();
+        ambLoop.PlayAudio();
         
         
         

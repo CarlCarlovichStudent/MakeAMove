@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.37311953, g: 0.38074014, b: 0.3587274, a: 1}
+  m_IndirectSpecularColor: {r: 0.37311918, g: 0.3807398, b: 0.35872716, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -620,7 +620,7 @@ PrefabInstance:
     - target: {fileID: 8645041981929125096, guid: 550140bef995a264c850245c5c90be49,
         type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8645041981929125096, guid: 550140bef995a264c850245c5c90be49,
         type: 3}
@@ -730,7 +730,7 @@ PrefabInstance:
     - target: {fileID: 8645041981929125103, guid: 550140bef995a264c850245c5c90be49,
         type: 3}
       propertyPath: targetVolume
-      value: 0.282
+      value: 0.35
       objectReference: {fileID: 0}
     - target: {fileID: 8645041981929125103, guid: 550140bef995a264c850245c5c90be49,
         type: 3}
@@ -761,7 +761,7 @@ PrefabInstance:
         type: 3}
       propertyPath: clipsToPlay.Array.data[4]
       value: 
-      objectReference: {fileID: 8300000, guid: 92ba3763e0ea38d4dab370f3cdcb8385, type: 3}
+      objectReference: {fileID: 8300000, guid: e586069e564abfb4aa4eb1d783fccd43, type: 3}
     - target: {fileID: 8645041981929125103, guid: 550140bef995a264c850245c5c90be49,
         type: 3}
       propertyPath: clipsToPlay.Array.data[5]
@@ -2912,6 +2912,7 @@ GameObject:
   m_Component:
   - component: {fileID: 667926877}
   - component: {fileID: 667926876}
+  - component: {fileID: 667926878}
   m_Layer: 0
   m_Name: Amb loop
   m_TagString: Untagged
@@ -2929,7 +2930,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: bb5672a3a02799f43ac25a37cb67294c, type: 3}
+  m_audioClip: {fileID: 0}
   m_PlayOnAwake: 0
   m_Volume: 0.186
   m_Pitch: 1
@@ -3030,6 +3031,32 @@ Transform:
   m_Father: {fileID: 822087782}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &667926878
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 667926875}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6b8b4d9a43f0f9241b01357efad86428, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playOnStart: 0
+  oneShot: 0
+  startDelay: 1
+  playWithFade: 1
+  targetVolume: 0.3
+  fadeSpeed: 0.2
+  clipsToPlay:
+  - {fileID: 8300000, guid: bb5672a3a02799f43ac25a37cb67294c, type: 3}
+  minTime: 0
+  maxTime: 0
+  minVolume: 1
+  maxVolume: 1
+  minPitch: 1
+  maxPitch: 1
 --- !u!1 &671746805
 GameObject:
   m_ObjectHideFlags: 0
@@ -8366,6 +8393,7 @@ MonoBehaviour:
   noToRematch: {fileID: 913406584}
   playList: {fileID: 62459019}
   entryStinger: {fileID: 2017435588}
+  ambLoop: {fileID: 667926878}
   menuMusic: {fileID: 2100576379}
   summonGame: {fileID: 1905437531}
   summonKnight: {fileID: 76217531}
@@ -8767,7 +8795,7 @@ MonoBehaviour:
   targetVolume: 0.7
   fadeSpeed: 1
   clipsToPlay:
-  - {fileID: 8300000, guid: c87b121e05fbb7a4da7e1cf3d0b99488, type: 3}
+  - {fileID: 8300000, guid: f9b58d66363eed84397662095b8722c9, type: 3}
   minTime: 0
   maxTime: 0
   minVolume: 0.7
