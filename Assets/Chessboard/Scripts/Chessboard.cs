@@ -32,8 +32,7 @@ public class Chessboard : MonoBehaviour
     [SerializeField] private TextMeshProUGUI blackWinText;
     [SerializeField] private TextMeshProUGUI otherWantRematch;
     [SerializeField] private TextMeshProUGUI noToRematch;
-    
-    
+
     [Header("Audio")] 
     [SerializeField] private AudioPlay playList;
     [SerializeField] private AudioPlay entryStinger;
@@ -275,6 +274,7 @@ public class Chessboard : MonoBehaviour
         pieces[to.x, to.y] = pieces[from.x, from.y];
         pieces[from.x, from.y] = null;
         
+        moveKnight.PlayAudio();
         
         PositionPiece(ref pieces[to.x, to.y], to);
 
@@ -414,6 +414,7 @@ public class Chessboard : MonoBehaviour
     private void ReceiveSpawnedPiece(Vector2Int position, int teamId) // teamId could be replaced with reversing own team
     {
         InstantiatePiece(position, ChessPieceType.Pawn, teamId == 0 ? ChessPieceTeam.White : ChessPieceTeam.Black);
+        summonKnight.PlayAudio();
         myTurn = true;
     }
 
