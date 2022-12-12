@@ -89,6 +89,12 @@ public class GameUINet : MonoBehaviour
         Server.Instace.Broadcast(new NetStartGame());
     }
 
+    public void OnTutorialStart()
+    {
+        menuAnimation.SetTrigger("StartTutorial");
+        ChangeCamera(CameraAngle.whiteTeam);
+    }
+
     #region Events
 
     private void RegisterEvents()
