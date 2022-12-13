@@ -1854,7 +1854,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 216072262}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1821492537}
+        m_TargetAssemblyTypeName: GameUINet, Assembly-CSharp
+        m_MethodName: OnAfterOpponent
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &216072262
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4053,7 +4065,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 485963005}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1821492537}
+        m_TargetAssemblyTypeName: GameUINet, Assembly-CSharp
+        m_MethodName: OnLeaveFromGameMenu
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &485963005
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4988,7 +5012,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 641976461}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1821492537}
+        m_TargetAssemblyTypeName: GameUINet, Assembly-CSharp
+        m_MethodName: OnSpawnPieceTutorial
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &641976461
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7833,7 +7869,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1020876126}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1821492537}
+        m_TargetAssemblyTypeName: GameUINet, Assembly-CSharp
+        m_MethodName: OnWinTutorila
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1020876126
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8110,7 +8158,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1033444928}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1821492537}
+        m_TargetAssemblyTypeName: GameUINet, Assembly-CSharp
+        m_MethodName: OnOpponentTutorial
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1033444928
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10448,7 +10508,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1468834795}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1821492537}
+        m_TargetAssemblyTypeName: GameUINet, Assembly-CSharp
+        m_MethodName: OnFreePlayTutorial
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1468834795
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10658,7 +10730,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 333.0943, y: 10}
+  m_SizeDelta: {x: 300.38, y: 10}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1475335979
 MonoBehaviour:
@@ -12975,7 +13047,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1788942240}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1821492537}
+        m_TargetAssemblyTypeName: GameUINet, Assembly-CSharp
+        m_MethodName: OnOpponentTutorial
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1788942240
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14972,7 +15056,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2034163119}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1821492537}
+        m_TargetAssemblyTypeName: GameUINet, Assembly-CSharp
+        m_MethodName: OnOpponentTutorial
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &2034163119
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15209,7 +15305,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2047007641}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1821492537}
+        m_TargetAssemblyTypeName: GameUINet, Assembly-CSharp
+        m_MethodName: OnCardTutorial
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &2047007641
 MonoBehaviour:
   m_ObjectHideFlags: 0

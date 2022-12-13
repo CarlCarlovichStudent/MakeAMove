@@ -20,6 +20,8 @@ public class GameUINet : MonoBehaviour
     [SerializeField] private GameObject[] cameraAngles;
     [SerializeField] private Animator menuAnimation;
     [SerializeField] private TMP_InputField addressInput;
+    
+    private int opponentTurn = 0;
 
 
     public Action<bool> SetLocalGame;
@@ -81,6 +83,7 @@ public class GameUINet : MonoBehaviour
     {
         ChangeCamera(CameraAngle.menu);
         menuAnimation.SetTrigger("StartMenu");
+        menuAnimation.SetInteger("TutorialStep", 0);
     }
 
     public void OnResetToGameMenu()
@@ -91,8 +94,60 @@ public class GameUINet : MonoBehaviour
 
     public void OnTutorialStart()
     {
-        menuAnimation.SetTrigger("StartTutorial");
+        menuAnimation.SetInteger("TutorialStep", 1);
         ChangeCamera(CameraAngle.whiteTeam);
+    }
+    
+    public void OnCardTutorial()
+    {
+        menuAnimation.SetInteger("TutorialStep", 2);
+    }
+    
+    public void OnSpawnPieceTutorial()
+    {
+        menuAnimation.SetInteger("TutorialStep", 3);
+    }
+    
+    public void OnOpponentTutorial()
+    {
+        switch (opponentTurn)
+        {
+            case 0:
+                menuAnimation.SetInteger("TutorialStep", 4);
+                break;
+            case 1:
+                menuAnimation.SetInteger("TutorialStep", 6);
+                break;
+            case 2:
+                menuAnimation.SetInteger("TutorialStep", 8);
+                break;
+        }
+
+        opponentTurn++;
+    }
+
+
+    public void OnAfterOpponent()
+    {
+        switch (menuAnimation.GetInteger("TutorialStep"))
+        {
+            case 4: menuAnimation.SetInteger("TutorialStep", 5);
+                break;
+            case 6: menuAnimation.SetInteger("TutorialStep", 7);
+                break;
+            case 8: menuAnimation.SetInteger("TutorialStep", 9);
+                break;
+        }
+    }
+
+    public void OnFreePlayTutorial()
+    {
+        menuAnimation.SetInteger("TutorialStep", 10);
+    }
+
+    public void OnWinTutorila()
+    {
+        menuAnimation.SetInteger("TutorialStep", 11);
     }
 
     #region Events
