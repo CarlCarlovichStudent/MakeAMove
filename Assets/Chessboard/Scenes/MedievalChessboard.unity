@@ -15260,8 +15260,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d4ad13664fcd3304ebe087f67673ca3d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hoverMaterial: {fileID: 2100000, guid: c1b456032e190814b9280d407dbcdb47, type: 2}
-  highlightMaterial: {fileID: 2100000, guid: ce84168a7c6dde84cb9a1a5713175d94, type: 2}
+  highlightMaterial: {fileID: 2100000, guid: 7289249f348b00846859e453c7db58ef, type: 2}
+  validHoverMaterial: {fileID: 2100000, guid: c1b456032e190814b9280d407dbcdb47, type: 2}
+  invalidHoverMaterial: {fileID: 2100000, guid: 3a2daff4aff9cd54f9e52898f3a90492,
+    type: 2}
+  selectedMaterial: {fileID: 2100000, guid: ce84168a7c6dde84cb9a1a5713175d94, type: 2}
   tileSize: 0.6
   yOffset: 0.28
   whiteTeamMaterial: {fileID: 2100000, guid: 0ef10e3435586144f8b772cff8a377c1, type: 2}

@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -41,7 +42,7 @@ public class Card : MonoBehaviour
         forcedTime = StartTime;
         selected = false;
     }
-    
+
     // Use card
     public void Use(float exitTime)
     {

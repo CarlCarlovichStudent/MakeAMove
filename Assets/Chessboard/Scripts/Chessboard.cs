@@ -6,8 +6,10 @@ using Button = UnityEngine.UI.Button;
 public class Chessboard : MonoBehaviour
 {
     [Header("Tile Settings")] 
-    [SerializeField] private Material hoverMaterial;
     [SerializeField] private Material highlightMaterial;
+    [SerializeField] private Material validHoverMaterial;
+    [SerializeField] private Material invalidHoverMaterial;
+    [SerializeField] private Material selectedMaterial;
     [SerializeField] private float tileSize = 1.0f;
     [SerializeField] private float yOffset = 1.0f;
 
@@ -36,18 +38,22 @@ public class Chessboard : MonoBehaviour
     [Header("Handlers")]
     [SerializeField] private AudioHandler audioHandler;
     [SerializeField] private CardDeckHandler cardDeckHandler;
-
-
-
-
+    
+    // Getters for tile
+    public Vector2Int BoardSize => new Vector2Int(TileCountX, TileCountY);
+    public Material HighlightMaterial => highlightMaterial;
+    public Material ValidHoverMaterial => validHoverMaterial;
+    public Material InvalidHoverMaterial => invalidHoverMaterial;
+    public Material SelectedMaterial => selectedMaterial;
+    public float TileSize => tileSize;
+    public float YOffset => yOffset;
+    
     // Logic
     private const int TileCountX = 8, TileCountY = 8;
 
-    private GameObject[,] tiles;
-    private MeshRenderer[,] tileRenderers; // better for performance
+    private Tile[,] tiles;
     private Camera currentCamera;
-    private Vector2Int currentHover;
-    private ChessPiece[,] pieces;
+    private Tile currentHover;
     private ChessPiece currentlyDragging;
     private CardBehavior selectedBehavior;
     private GameObject pieceContainer;
@@ -66,7 +72,6 @@ public class Chessboard : MonoBehaviour
     {
         cardDeckHandler = GetComponent<CardDeckHandler>();
         pieceContainer = CreateContainer("Pieces", transform);
-        pieces = new ChessPiece[TileCountX, TileCountY];
         team = ChessPieceTeam.White;
         myTurn = false;
         
@@ -141,15 +146,9 @@ public class Chessboard : MonoBehaviour
     private void TileHandler() // To have correct order
     {
         HighlightTileHandler();
-        if (HoverTileHandler())
-        {
-            SelectTileHandler();
-            DeselectPieceHandler(true);
-        }
-        else
-        {
-            DeselectPieceHandler(false);
-        }
+        HoverTileHandler();
+        SelectTileHandler();
+        DeselectPieceHandler();
     }
 
     public void SetSelectedBehavior(CardBehavior behavior)
@@ -161,7 +160,7 @@ public class Chessboard : MonoBehaviour
     // Use card
     private void SelectTileHandler()
     {
-        if (currentHover != -Vector2Int.one && Input.GetMouseButtonDown(0))
+        if (currentHover is not null && currentHover.highlighted && Input.GetMouseButtonDown(0))
         {
             switch (selectedBehavior.cardType)
             {
@@ -178,16 +177,16 @@ public class Chessboard : MonoBehaviour
 
     private void SelectMove()
     {
-        currentlyDragging = pieces[currentHover.x, currentHover.y];
+        currentlyDragging = currentHover.Select();
     }
 
-    private void DeselectPieceHandler(bool wasHighlighted)
+    private void DeselectPieceHandler()
     {
         if (currentlyDragging is not null && Input.GetMouseButtonUp(0))
         {
-            if (wasHighlighted && myTurn)
+            if (myTurn && currentHover is not null && currentHover.highlighted)
             {
-                MoveTo(currentlyDragging.boardPosition, currentHover);
+                MoveTo(currentlyDragging.boardPosition, currentHover.Position);
                 audioHandler.moveKnight.PlayAudio();
             }
             else
@@ -201,27 +200,23 @@ public class Chessboard : MonoBehaviour
 
     private void MoveTo(Vector2Int from, Vector2Int to)
     {
-        pieces[to.x, to.y]?.DestroyPiece();
-        pieces[to.x, to.y] = currentlyDragging;
-        pieces[from.x, from.y] = null;
-      
-        
-        
+        tiles[to.x, to.y].piece?.DestroyPiece();
+        tiles[to.x, to.y].piece = currentlyDragging;
+        tiles[from.x, from.y].piece = null;
+
         PositionPiece(ref currentlyDragging, to);
         
         currentlyDragging = null;
         selectedBehavior = null;
         cardDeckHandler.UseCard();
-        myTurn = false;
         
-
         if (team == ChessPieceTeam.White)
         {
             if (to.y == 7)
             {
                 myPoints++;
-                pieces[to.x, to.y].DestroyPiece();
-                pieces[to.x, to.y] = null;
+                tiles[to.x, to.y].piece.DestroyPiece();
+                tiles[to.x, to.y].piece = null;
                 audioHandler.score.PlayAudio();
             }
         }
@@ -230,11 +225,13 @@ public class Chessboard : MonoBehaviour
             if (to.y == 0)
             {
                 myPoints++;
-                pieces[to.x, to.y].DestroyPiece();
-                pieces[to.x, to.y] = null;
+                tiles[to.x, to.y].piece.DestroyPiece();
+                tiles[to.x, to.y].piece = null;
                 audioHandler.score.PlayAudio();
             }
         }
+        
+        HandleTurn();
         
         //Net Implementation
         NetMakeMove mm = new NetMakeMove();
@@ -250,24 +247,24 @@ public class Chessboard : MonoBehaviour
     {
         if (myTurn)
         {
-            SpawnPiece(currentHover);
+            SpawnPiece(currentHover.Position);
             selectedBehavior = null;
             cardDeckHandler.UseCard();
-            
-            myTurn = false;
+
+            HandleTurn();
         }
     }
     
     // Receive moves
     private void ReceiveMove(Vector2Int from, Vector2Int to)
     {
-        pieces[to.x, to.y]?.DestroyPiece();
-        pieces[to.x, to.y] = pieces[from.x, from.y];
-        pieces[from.x, from.y] = null;
+        tiles[to.x, to.y].piece?.DestroyPiece();
+        tiles[to.x, to.y].piece = tiles[from.x, from.y].piece;
+        tiles[from.x, from.y].piece = null;
         
         audioHandler.moveKnight.PlayAudio();
         
-        PositionPiece(ref pieces[to.x, to.y], to);
+        PositionPiece(ref tiles[to.x, to.y].piece, to);
 
         myTurn = true;
         
@@ -276,8 +273,8 @@ public class Chessboard : MonoBehaviour
             if (to.y == 7)
             {
                 enemyPoints++;
-                pieces[to.x, to.y].DestroyPiece();
-                pieces[to.x, to.y] = null;
+                tiles[to.x, to.y].piece.DestroyPiece();
+                tiles[to.x, to.y].piece = null;
                 audioHandler.loosePoint.PlayAudio();
             }
         }
@@ -286,8 +283,8 @@ public class Chessboard : MonoBehaviour
             if (to.y == 0)
             {
                 enemyPoints++;
-                pieces[to.x, to.y].DestroyPiece();
-                pieces[to.x, to.y] = null;
+                tiles[to.x, to.y].piece.DestroyPiece();
+                tiles[to.x, to.y].piece = null;
                 audioHandler.loosePoint.PlayAudio();
             }
         }
@@ -297,7 +294,7 @@ public class Chessboard : MonoBehaviour
     private void HighlightTileHandler()
     {
         UnHighlightAll();
-        if (selectedBehavior != null)
+        if (selectedBehavior is not null)
         {
             if (currentlyDragging is null)
             {
@@ -323,14 +320,14 @@ public class Chessboard : MonoBehaviour
     {
         foreach (MovementPattern movementPattern in selectedBehavior.movementPatterns)
         {
-            Vector2Int move = currentlyDragging.boardPosition + (team == ChessPieceTeam.White ? movementPattern.move : movementPattern.move * Vector2Int.down);
+            Vector2Int move = currentlyDragging.boardPosition + (team == ChessPieceTeam.White ? movementPattern.move : movementPattern.move * new Vector2Int(1, -1));
             
-            if (move.x < 0) move.x = 0;
-            if (move.x > 7) move.x = 7;
+            if (move.x < 0) continue;
+            if (move.x > 7) continue;
             if (move.y < 0) move.y = 0;
             if (move.y > 7) move.y = 7;
             
-            ChessPiece piece = pieces[move.x, move.y];
+            ChessPiece piece = tiles[move.x, move.y].piece;
             if (piece is null)
             {
                 if (movementPattern.moveType is MoveType.MoveOnly or MoveType.MoveAndCapture)
@@ -340,6 +337,8 @@ public class Chessboard : MonoBehaviour
             }
             else
             {
+                Debug.Log(team);
+                
                 if (piece.team != team && movementPattern.moveType is MoveType.CaptureOnly or MoveType.MoveAndCapture)
                 {
                     HighlightTile(move.x, move.y);
@@ -348,13 +347,13 @@ public class Chessboard : MonoBehaviour
         }
     }
 
-    private void HighlightMovablePieces()
+    private void HighlightMovablePieces() 
     {
         for (int x = 0; x < TileCountX; x++)
         {
             for (int y = 0; y < TileCountY; y++)
             {
-                if (pieces[x, y]?.type == selectedBehavior.piecesAffected && pieces[x, y].team == team)
+                if (tiles[x, y].piece?.type == selectedBehavior.piecesAffected && tiles[x, y].piece.team == team) // not needed?
                 {
                     HighlightTile(x, y);
                 }
@@ -367,7 +366,7 @@ public class Chessboard : MonoBehaviour
         int teamSide = team == ChessPieceTeam.White ? 0 : 7;
         for (int x = 0; x < TileCountX; x++)
         {
-            if (pieces[x, teamSide] is null)
+            if (tiles[x, teamSide].piece is null)
             {
                 HighlightTile(x, teamSide);
             }
@@ -376,15 +375,14 @@ public class Chessboard : MonoBehaviour
 
     private void HighlightTile(int x, int y)
     {
-        tileRenderers[x, y].material = highlightMaterial;
-        tileRenderers[x, y].enabled = true;
+        tiles[x, y].highlighted = true;
     }
 
     private void UnHighlightAll()
     {
-        foreach (MeshRenderer renderer in tileRenderers)
+        foreach (Tile tile in tiles)
         {
-            renderer.enabled = false;
+            tile.highlighted = false;
         }
     }
 
@@ -420,12 +418,13 @@ public class Chessboard : MonoBehaviour
         PositionPiece(ref piece, position, true);
         piece.boardPosition = position;
 
-        pieces[position.x, position.y] = piece;
+        tiles[position.x, position.y].piece = piece;
     }
 
     // Position pieces
     private void PositionPiece(ref ChessPiece piece, Vector2Int position, bool spawning = false)
     {
+        tiles[piece.boardPosition.x, piece.boardPosition.y].selected = false;
         piece.boardPosition = position;
         if (spawning)
         {
@@ -445,60 +444,29 @@ public class Chessboard : MonoBehaviour
     }
     
     // Hover
-    private bool HoverTileHandler()
+    private void HoverTileHandler()
     {
-        bool highlighted = false;
-        Vector2Int hoveredTileIndex = GetHoveredTileIndex();
-        if (hoveredTileIndex != currentHover)
-        {
-            if (currentHover != -Vector2Int.one)
-            {
-                tileRenderers[currentHover.x, currentHover.y].enabled = false;
-            }
+        Tile hoveredTile = GetHoveredTile();
 
-            if (hoveredTileIndex != -Vector2Int.one)
-            {
-                if (tileRenderers[hoveredTileIndex.x, hoveredTileIndex.y].sharedMaterial == highlightMaterial)
-                {
-                    highlighted = true;
-                }
-                tileRenderers[hoveredTileIndex.x, hoveredTileIndex.y].enabled = true;
-                tileRenderers[hoveredTileIndex.x, hoveredTileIndex.y].material = hoverMaterial;
-            }
-
-            currentHover = hoveredTileIndex;
-        }
-        else
-        {
-            if (hoveredTileIndex != -Vector2Int.one)
-            {
-                if (tileRenderers[hoveredTileIndex.x, hoveredTileIndex.y].sharedMaterial == highlightMaterial)
-                {
-                    highlighted = true;
-                }
-                tileRenderers[hoveredTileIndex.x, hoveredTileIndex.y].enabled = true;
-                tileRenderers[hoveredTileIndex.x, hoveredTileIndex.y].material = hoverMaterial;
-            }
-        }
-
-        return highlighted;
+        if (currentHover is not null) currentHover.hovered = false;
+        if (hoveredTile is not null) hoveredTile.hovered = true;
+        
+        currentHover = hoveredTile;
     }
-    
-    private Vector2Int GetHoveredTileIndex() // TODO: Improve by making bool and sending tile index as out variable
+
+    private Tile GetHoveredTile()
     {
-        Vector2Int vector = -Vector2Int.one;
+        Tile foundTile = null;
         Ray ray = currentCamera.ScreenPointToRay(Input.mousePosition);
         if (Physics.Raycast(ray, out RaycastHit hitInfo, 100, LayerMask.GetMask("Tile")))
         {
             GameObject hitGameObject = hitInfo.transform.gameObject;
-            for (int x = 0; x < TileCountX; x++)
+
+            foreach (Tile tile in tiles)
             {
-                for (int y = 0; y < TileCountY; y++)
+                if (tile.gameObject == hitGameObject)
                 {
-                    if (tiles[x, y] == hitGameObject)
-                    {
-                        vector = new Vector2Int(x, y);
-                    }
+                    foundTile = tile;
                 }
             }
         }
@@ -513,7 +481,7 @@ public class Chessboard : MonoBehaviour
             }
         }
 
-        return vector;
+        return foundTile;
     }
 
     // Generate tiles
@@ -521,60 +489,23 @@ public class Chessboard : MonoBehaviour
     {
         GameObject container = CreateContainer("Tiles", transform);
 
-        tileRenderers = new MeshRenderer[TileCountX, TileCountY];
-        tiles = new GameObject[TileCountX, TileCountY];
+        tiles = new Tile[TileCountX, TileCountY];
         for (int x = 0; x < TileCountX; x++)
         {
             for (int y = 0; y < TileCountY; y++)
             {
-                tiles[x, y] = GenerateTile(x, y, container);
+                tiles[x, y] = new GameObject($"X:{x}, Y:{y}").AddComponent<Tile>().CreateTile(x, y, container, this);
             }
         }
     }
 
-    private GameObject GenerateTile(int x, int y, GameObject container)
-    {
-        GameObject tile = new GameObject(string.Format("X:{0}, Y:{1}", x, y));
-        tile.transform.parent = container.transform;
-
-        Mesh mesh = new Mesh();
-        tile.AddComponent<MeshFilter>().mesh = mesh;
-
-        MeshRenderer renderer = tile.AddComponent<MeshRenderer>();
-        renderer.material = hoverMaterial;
-        renderer.enabled = false;
-        tileRenderers[x, y] = renderer;
-        
-        Vector3[] vertices = new Vector3[4];
-        
-        Vector3 position = transform.position;
-        float centerOffsetX = TileCountX / 2f;
-        float centerOffsetY = TileCountY / 2f;
-        
-        vertices[0] = new Vector3((x - centerOffsetX) * tileSize + position.x, yOffset, (y - centerOffsetY) * tileSize + position.y);
-        vertices[1] = new Vector3((x - centerOffsetX) * tileSize + position.x, yOffset, (y + 1 - centerOffsetY) * tileSize + position.y);
-        vertices[2] = new Vector3((x + 1 - centerOffsetX) * tileSize + position.x, yOffset, (y - centerOffsetY) * tileSize + position.y);
-        vertices[3] = new Vector3((x + 1 - centerOffsetX) * tileSize + position.x, yOffset, (y + 1 - centerOffsetY) * tileSize + position.y);
-
-        int[] tris = new int[] { 0, 1, 2, 1, 3, 2 };
-
-        mesh.vertices = vertices;
-        mesh.triangles = tris;
-        mesh.RecalculateNormals();
-        
-        tile.AddComponent<BoxCollider>();
-        tile.layer = LayerMask.NameToLayer("Tile");
-        
-        return tile;
-    }
-    
     // For handler TODO: improve or remove (make in to property)
     public int GetPieceAmount()
     {
         int amount = 0;
-        foreach (ChessPiece piece in pieces)
+        foreach (Tile tile in tiles)
         {
-            if (piece is not null)
+            if (tile.piece?.team == team)
             {
                 amount++;
             }
@@ -592,6 +523,18 @@ public class Chessboard : MonoBehaviour
         container.transform.localRotation = Quaternion.identity;
         
         return container;
+    }
+
+    private void HandleTurn()
+    {
+        if (localGame)
+        {
+            team = team == ChessPieceTeam.White ? ChessPieceTeam.Black : ChessPieceTeam.White;
+        }
+        else
+        {
+            myTurn = false;
+        }
     }
 
     // Draw preview of tiles in editor (shows outlines of tiles)
