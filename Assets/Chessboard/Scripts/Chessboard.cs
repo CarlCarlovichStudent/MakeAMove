@@ -32,24 +32,10 @@ public class Chessboard : MonoBehaviour
     [SerializeField] private TextMeshProUGUI blackWinText;
     [SerializeField] private TextMeshProUGUI otherWantRematch;
     [SerializeField] private TextMeshProUGUI noToRematch;
-
-    [Header("Audio")] 
-    [SerializeField] private AudioPlay playList;
-    [SerializeField] private AudioPlay entryStinger;
-    [SerializeField] private AudioPlay ambLoop;
-    [SerializeField] private AudioSource menuMusic;
-    [SerializeField] private AudioPlay exitMenuMusic;
-    [SerializeField] private AudioPlay summonGame;
-    [SerializeField] private AudioPlay summonKnight;
-    [SerializeField] private AudioPlay score;
-    [SerializeField] private AudioPlay victoryStinger;
-    [SerializeField] private AudioPlay defeatStinger;
-    [SerializeField] private bool fadeOut;
-    [SerializeField] private AudioPlay killKnight;
-    [SerializeField] private AudioPlay moveKnight;
-    [SerializeField] private AudioPlay wrongMove;
-    [SerializeField] private AudioPlay loosePoint;
     
+    [Header("Handlers")]
+    [SerializeField] private AudioHandler audioHandler;
+    [SerializeField] private CardDeckHandler cardDeckHandler;
 
 
 
@@ -65,7 +51,6 @@ public class Chessboard : MonoBehaviour
     private ChessPiece currentlyDragging;
     private CardBehavior selectedBehavior;
     private GameObject pieceContainer;
-    private CardDeckHandler handler;
     private ChessPieceTeam team;
     private int myPoints;
     private int enemyPoints;
@@ -79,7 +64,7 @@ public class Chessboard : MonoBehaviour
 
     private void Awake()
     {
-        handler = GetComponent<CardDeckHandler>();
+        cardDeckHandler = GetComponent<CardDeckHandler>();
         pieceContainer = CreateContainer("Pieces", transform);
         pieces = new ChessPiece[TileCountX, TileCountY];
         team = ChessPieceTeam.White;
@@ -117,10 +102,10 @@ public class Chessboard : MonoBehaviour
             }
             myPoints = 0;
             enemyPoints = 0;
-            playList.StopAudio(fadeOut);
-            ambLoop.StopAudio(fadeOut);
-            victoryStinger.PlayAudio();
-            exitMenuMusic.PlayAudio();
+            audioHandler.playList.StopAudio(audioHandler.fadeOut);
+            audioHandler.ambLoop.StopAudio(audioHandler.fadeOut);
+            audioHandler.victoryStinger.PlayAudio();
+            audioHandler.exitMenuMusic.PlayAudio();
         }
 
         if (enemyPoints >= winPoints)
@@ -140,10 +125,10 @@ public class Chessboard : MonoBehaviour
             }
             myPoints = 0;
             enemyPoints = 0;
-            playList.StopAudio(fadeOut);
-            ambLoop.StopAudio(fadeOut);
-            defeatStinger.PlayAudio();
-            exitMenuMusic.PlayAudio();
+            audioHandler.playList.StopAudio(audioHandler.fadeOut);
+            audioHandler.ambLoop.StopAudio(audioHandler.fadeOut);
+            audioHandler.defeatStinger.PlayAudio();
+            audioHandler.exitMenuMusic.PlayAudio();
             
             
         }
@@ -203,13 +188,13 @@ public class Chessboard : MonoBehaviour
             if (wasHighlighted && myTurn)
             {
                 MoveTo(currentlyDragging.boardPosition, currentHover);
-                moveKnight.PlayAudio();
+                audioHandler.moveKnight.PlayAudio();
             }
             else
             {
                 PositionPiece(ref currentlyDragging, currentlyDragging.boardPosition);
                 currentlyDragging = null;
-                wrongMove.PlayAudio();
+                audioHandler.wrongMove.PlayAudio();
             }
         }
     }
@@ -226,7 +211,7 @@ public class Chessboard : MonoBehaviour
         
         currentlyDragging = null;
         selectedBehavior = null;
-        handler.UseCard();
+        cardDeckHandler.UseCard();
         myTurn = false;
         
 
@@ -237,7 +222,7 @@ public class Chessboard : MonoBehaviour
                 myPoints++;
                 pieces[to.x, to.y].DestroyPiece();
                 pieces[to.x, to.y] = null;
-                score.PlayAudio();
+                audioHandler.score.PlayAudio();
             }
         }
         else
@@ -247,7 +232,7 @@ public class Chessboard : MonoBehaviour
                 myPoints++;
                 pieces[to.x, to.y].DestroyPiece();
                 pieces[to.x, to.y] = null;
-                score.PlayAudio();
+                audioHandler.score.PlayAudio();
             }
         }
         
@@ -267,7 +252,7 @@ public class Chessboard : MonoBehaviour
         {
             SpawnPiece(currentHover);
             selectedBehavior = null;
-            handler.UseCard();
+            cardDeckHandler.UseCard();
             
             myTurn = false;
         }
@@ -280,7 +265,7 @@ public class Chessboard : MonoBehaviour
         pieces[to.x, to.y] = pieces[from.x, from.y];
         pieces[from.x, from.y] = null;
         
-        moveKnight.PlayAudio();
+        audioHandler.moveKnight.PlayAudio();
         
         PositionPiece(ref pieces[to.x, to.y], to);
 
@@ -293,7 +278,7 @@ public class Chessboard : MonoBehaviour
                 enemyPoints++;
                 pieces[to.x, to.y].DestroyPiece();
                 pieces[to.x, to.y] = null;
-                loosePoint.PlayAudio();
+                audioHandler.loosePoint.PlayAudio();
             }
         }
         else
@@ -303,7 +288,7 @@ public class Chessboard : MonoBehaviour
                 enemyPoints++;
                 pieces[to.x, to.y].DestroyPiece();
                 pieces[to.x, to.y] = null;
-                loosePoint.PlayAudio();
+                audioHandler.loosePoint.PlayAudio();
             }
         }
     }
@@ -414,13 +399,13 @@ public class Chessboard : MonoBehaviour
         sp.spawnY = position.y;
         sp.teamId = currentTeam;
         Client.Instace.SendToServer(sp);
-        summonKnight.PlayAudio();
+        audioHandler.summonKnight.PlayAudio();
     }
 
     private void ReceiveSpawnedPiece(Vector2Int position, int teamId) // teamId could be replaced with reversing own team
     {
         InstantiatePiece(position, ChessPieceType.Pawn, teamId == 0 ? ChessPieceTeam.White : ChessPieceTeam.Black);
-        summonKnight.PlayAudio();
+        audioHandler.summonKnight.PlayAudio();
         myTurn = true;
     }
 
@@ -818,11 +803,11 @@ public class Chessboard : MonoBehaviour
     {
         
         Debug.Log("Game Begin");
-        summonGame.PlayAudio();
-        entryStinger.PlayAudio();
-        playList.PlayAudio();
-        menuMusic.Stop();
-        ambLoop.PlayAudio();
+        audioHandler.summonGame.PlayAudio();
+        audioHandler.entryStinger.PlayAudio();
+        audioHandler.playList.PlayAudio();
+        audioHandler.menuMusic.Stop();
+        audioHandler.ambLoop.PlayAudio();
         
         
         
@@ -889,7 +874,7 @@ public class Chessboard : MonoBehaviour
         {
             ResetGame();
             GameUINet.Instance.OnResetToGameMenu();
-            exitMenuMusic.StopAudio(fadeOut);
+            audioHandler.exitMenuMusic.StopAudio(audioHandler.fadeOut);
         }
     }
 

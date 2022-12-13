@@ -15276,21 +15276,8 @@ MonoBehaviour:
   blackWinText: {fileID: 731556919}
   otherWantRematch: {fileID: 936993671}
   noToRematch: {fileID: 913406584}
-  playList: {fileID: 62459019}
-  entryStinger: {fileID: 2017435588}
-  ambLoop: {fileID: 667926878}
-  menuMusic: {fileID: 2100576379}
-  exitMenuMusic: {fileID: 1381769471}
-  summonGame: {fileID: 1905437531}
-  summonKnight: {fileID: 76217531}
-  score: {fileID: 1985839187}
-  victoryStinger: {fileID: 32101816}
-  defeatStinger: {fileID: 1023445390}
-  fadeOut: 0
-  killKnight: {fileID: 1840134344}
-  moveKnight: {fileID: 1686463753}
-  wrongMove: {fileID: 111575075}
-  loosePoint: {fileID: 1390889589}
+  audioHandler: {fileID: 4000013639899781}
+  cardDeckHandler: {fileID: 2056848573}
 --- !u!114 &2056848573
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15836,6 +15823,7 @@ GameObject:
   - component: {fileID: 4000013639899780}
   - component: {fileID: 2056848571}
   - component: {fileID: 2056848573}
+  - component: {fileID: 4000013639899781}
   m_Layer: 0
   m_Name: Chess Board
   m_TagString: Untagged
@@ -15859,3 +15847,30 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4000013639899781
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1000010357434584}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 379cc84806b1cd346acc6e59b4dfd7d5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fadeOut: 0
+  playList: {fileID: 62459019}
+  ambLoop: {fileID: 667926878}
+  menuMusic: {fileID: 2100576379}
+  exitMenuMusic: {fileID: 1381769471}
+  entryStinger: {fileID: 2017435588}
+  summonGame: {fileID: 1905437531}
+  summonKnight: {fileID: 76217531}
+  score: {fileID: 1985839187}
+  victoryStinger: {fileID: 32101816}
+  defeatStinger: {fileID: 1023445390}
+  killKnight: {fileID: 1840134344}
+  moveKnight: {fileID: 1686463753}
+  wrongMove: {fileID: 111575075}
+  loosePoint: {fileID: 1390889589}
