@@ -29,7 +29,7 @@ public class Chessboard : MonoBehaviour
     [SerializeField] private Transform rematchIndicator;
     [SerializeField] private Button rematchButton;
 
-    [Header("Remove this")] 
+    [Header("Rematch Text")] 
     [SerializeField] private TextMeshProUGUI whiteWinText;
     [SerializeField] private TextMeshProUGUI blackWinText;
     [SerializeField] private TextMeshProUGUI otherWantRematch;
@@ -88,9 +88,46 @@ public class Chessboard : MonoBehaviour
             return;
         }
 
+        WinConditionHandler();
+
+        TileHandler();
+    }
+
+    private void WinConditionHandler()
+    {
+        scoreText.text = (myTurn ? "Your" : "Enemy") + $" turn\n\nYour points: {myPoints}/{winPoints}\nEnemy points: {enemyPoints}/{winPoints}";
+        
+        if (localGame)
+        {
+            if (myPoints >= winPoints || enemyPoints >= winPoints)
+            {
+                if (myPoints > enemyPoints)
+                {
+                    whiteWinText.enabled = true;
+                    blackWinText.enabled = false;
+                }
+                else
+                {
+                    whiteWinText.enabled = false;
+                    blackWinText.enabled = true;
+                }
+                
+                GameUINet.Instance.OnRematchMenuTrigger();
+                otherWantRematch.enabled = false;
+                noToRematch.enabled = false;
+                myPoints = 0;
+                enemyPoints = 0;
+                audioHandler.playList.StopAudio(audioHandler.fadeOut);
+                audioHandler.ambLoop.StopAudio(audioHandler.fadeOut);
+                audioHandler.victoryStinger.PlayAudio();
+                audioHandler.exitMenuMusic.PlayAudio();
+            }
+
+            return;
+        }
+        
         if (myPoints >= winPoints)
         {
-            
             GameUINet.Instance.OnRematchMenuTrigger();
             otherWantRematch.enabled = false;
             noToRematch.enabled = false;
@@ -134,13 +171,7 @@ public class Chessboard : MonoBehaviour
             audioHandler.ambLoop.StopAudio(audioHandler.fadeOut);
             audioHandler.defeatStinger.PlayAudio();
             audioHandler.exitMenuMusic.PlayAudio();
-            
-            
         }
-        
-        scoreText.text = (myTurn ? "Your" : "Enemy") + $" turn\n\nYour points: {myPoints}/{winPoints}\nEnemy points: {enemyPoints}/{winPoints}";
-
-        TileHandler();
     }
 
     private void TileHandler() // To have correct order
@@ -224,7 +255,14 @@ public class Chessboard : MonoBehaviour
         {
             if (to.y == 0)
             {
-                myPoints++;
+                if (localGame)
+                {
+                    enemyPoints++;
+                }
+                else
+                {
+                    myPoints++;
+                }
                 tiles[to.x, to.y].piece.DestroyPiece();
                 tiles[to.x, to.y].piece = null;
                 audioHandler.score.PlayAudio();
@@ -592,36 +630,30 @@ public class Chessboard : MonoBehaviour
             rm.wantRematch = 1;
             Client.Instace.SendToServer(rm);
         }
+        
+        // Music
+        audioHandler.menuMusic.Play();
+        audioHandler.exitMenuMusic.StopAudio(audioHandler.fadeOut);
     }
 
-    public void ResetGame() //Todo: Fix if a reset is going to be made
+    private void ResetGame()
     {
         //UI
-        rematchButton.interactable.Equals(true);
-        
-        rematchIndicator.transform.gameObject.SetActive(false);
-        rematchIndicator.transform.GetChild(0).gameObject.SetActive(false);
-        
-        victoryScreen.transform.GetChild(0).gameObject.SetActive(false);
-        victoryScreen.transform.GetChild(1).gameObject.SetActive(false);
-        victoryScreen.SetActive(false);
+        rematchButton.gameObject.SetActive(true);
         
         //Field reset
         currentlyDragging = null;
         playerRematch[0] = playerRematch[1] = false;
 
-        //clean up
-        /*
-        for (int x = 0; x < TileCountX; x++)
+        //Clean up
+        foreach (Tile tile in tiles)
         {
-            for (int y = 0; y < TileCountY; y++)
-            {
-                //Remove all pieces
-            }
+            tile.piece?.DestroyPiece();
+            tile.piece = null;
         }
-        
+
         //Set up all cards
-        */
+        cardDeckHandler.ResetHand();
     }
 
     public void OnMenuButton()
@@ -631,10 +663,13 @@ public class Chessboard : MonoBehaviour
         rm.wantRematch = 0;
         Client.Instace.SendToServer(rm);
         
-        //ResetGame();
         GameUINet.Instance.OnLeaveFromGameMenu();
-
+        
         Invoke("ShutdownRelay", 1.0f);
+        
+        // Music
+        audioHandler.menuMusic.Play();
+        audioHandler.exitMenuMusic.StopAudio(audioHandler.fadeOut);
         
         //resetValues
         playerCount = -1;
@@ -744,15 +779,12 @@ public class Chessboard : MonoBehaviour
 
     private void OnStartGame(Netmessage msg)
     {
-        
         Debug.Log("Game Begin");
         audioHandler.summonGame.PlayAudio();
         audioHandler.entryStinger.PlayAudio();
         audioHandler.playList.PlayAudio();
         audioHandler.menuMusic.Stop();
         audioHandler.ambLoop.PlayAudio();
-        
-        
         
         GameUINet.Instance.ChangeCamera((currentTeam==0) ? CameraAngle.whiteTeam : CameraAngle.blackTeam);
         
@@ -770,7 +802,6 @@ public class Chessboard : MonoBehaviour
         {
             ReceiveMove(new Vector2Int(mm.originalX, mm.originalY), new Vector2Int(mm.destinationX, mm.destinationY));
         }
-        
     }
     
     private void OnSpawnPieceClient(Netmessage msg)
@@ -783,7 +814,6 @@ public class Chessboard : MonoBehaviour
         {
             ReceiveSpawnedPiece(new Vector2Int(sp.spawnX, sp.spawnY), sp.teamId);
         }
-        
     }
     
     private void OnRematchClient(Netmessage msg)
@@ -800,9 +830,7 @@ public class Chessboard : MonoBehaviour
             //rematchIndicator.transform.GetChild((rm.wantRematch == 1) ? 0 : 1).gameObject.SetActive(true);
             if (rm.wantRematch != 1)
             {
-                //TODO: Seems not to be working properly and unsure of how to fix.
-                rematchButton.interactable.Equals(false);
-                //
+                rematchButton.gameObject.SetActive(false);
                 noToRematch.enabled = true;
                 otherWantRematch.enabled = false;
             }
@@ -817,7 +845,6 @@ public class Chessboard : MonoBehaviour
         {
             ResetGame();
             GameUINet.Instance.OnResetToGameMenu();
-            audioHandler.exitMenuMusic.StopAudio(audioHandler.fadeOut);
         }
     }
 
@@ -833,6 +860,7 @@ public class Chessboard : MonoBehaviour
         playerCount = -1;
         currentTeam = -1;
         localGame = obj;
+        ResetGame();
     }
 
     #endregion

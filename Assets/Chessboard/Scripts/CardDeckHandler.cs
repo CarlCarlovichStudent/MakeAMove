@@ -53,6 +53,15 @@ public class CardDeckHandler : MonoBehaviour
         }
     }
 
+    public void ResetHand()
+    {
+        foreach (Card card in hand)
+        {
+            card.Use(0.1f);
+        }
+        InitializeHand();
+    }
+
     public void UseCard()
     {
         lastSelected.Hover();

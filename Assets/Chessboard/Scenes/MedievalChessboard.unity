@@ -1281,7 +1281,7 @@ GameObject:
   m_Component:
   - component: {fileID: 115587525}
   m_Layer: 5
-  m_Name: TUTORIAL BELLOW
+  m_Name: TUTORIAL BELOW
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1992,18 +1992,6 @@ MonoBehaviour:
       - m_Target: {fileID: 2056848571}
         m_TargetAssemblyTypeName: Chessboard, Assembly-CSharp
         m_MethodName: OnRematchButton
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 1624765721}
-        m_TargetAssemblyTypeName: UnityEngine.AudioSource, UnityEngine
-        m_MethodName: Play
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -11590,18 +11578,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 729161430}
-        m_TargetAssemblyTypeName: UnityEngine.AudioSource, UnityEngine
-        m_MethodName: 
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
 --- !u!114 &1577688888
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15378,7 +15354,7 @@ MonoBehaviour:
   whiteTeamMaterial: {fileID: 2100000, guid: 0ef10e3435586144f8b772cff8a377c1, type: 2}
   blackTeamMaterial: {fileID: 2100000, guid: 15a94cdb345ef6a46adeee79ac4a58b7, type: 2}
   pawn: {fileID: 1602952819654433359, guid: 7b7faff146758c64093717bb086db519, type: 3}
-  winPoints: 5
+  winPoints: 1
   scoreText: {fileID: 83683443}
   victoryScreen: {fileID: 1042273163}
   rematchIndicator: {fileID: 241666121}
@@ -15402,8 +15378,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   handSize: 5
-  cardSize: {x: 411, y: 561}
-  cardOffset: {x: 25, y: -278, z: 228}
+  cardSize: {x: 205, y: 280}
+  cardOffset: {x: 10, y: -69, z: 111}
   deck: {fileID: 11400000, guid: 0345350eea5627249a73444024c1d500, type: 2}
   canvas: {fileID: 2024887876}
   audioHoverCard: {fileID: 1361835335}
