@@ -67,6 +67,10 @@ public class Chessboard : MonoBehaviour
     private int currentTeam = -1;
     private bool localGame = true;
     private bool[] playerRematch = new bool[2];
+    
+    //TutorialBase
+    private bool tutorialGame = false;
+    private int tutorialGameStep = 0;
 
     private void Awake()
     {
@@ -694,6 +698,8 @@ public class Chessboard : MonoBehaviour
         NetUtility.C_REMATCH += OnRematchClient;
 
         GameUINet.Instance.SetLocalGame += OnSetLocalGame;
+        GameUINet.Instance.SetTutorialGame += OnSetTutorialGame;
+        GameUINet.Instance.SetTutorialGameStep += OnSetTutorialGameStep;
     }
 
     private void UnRegisterEvents()
@@ -710,6 +716,8 @@ public class Chessboard : MonoBehaviour
         NetUtility.C_REMATCH -= OnRematchClient;
 
         GameUINet.Instance.SetLocalGame -= OnSetLocalGame;
+        GameUINet.Instance.SetTutorialGame -= OnSetTutorialGame;
+        GameUINet.Instance.SetTutorialGameStep -= OnSetTutorialGameStep;
     }
 
     //Server
@@ -861,6 +869,20 @@ public class Chessboard : MonoBehaviour
         currentTeam = -1;
         localGame = obj;
         ResetGame();
+    }
+    
+    private void OnSetTutorialGame(bool obj)
+    {
+        playerCount = -1;
+        currentTeam = -1;
+        tutorialGame = obj;
+        myTurn = true;
+        ResetGame();
+    }
+    
+    private void OnSetTutorialGameStep(int obj)
+    {
+        tutorialGameStep = obj;
     }
 
     #endregion

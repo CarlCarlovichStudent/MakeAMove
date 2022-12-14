@@ -22,9 +22,11 @@ public class GameUINet : MonoBehaviour
     [SerializeField] private TMP_InputField addressInput;
     
     private int opponentTurn = 0;
-
-
+    
     public Action<bool> SetLocalGame;
+    public Action<bool> SetTutorialGame;
+    public Action<int> SetTutorialGameStep;
+    
     private void Awake()
     { 
         Instance = this;
@@ -84,6 +86,8 @@ public class GameUINet : MonoBehaviour
         ChangeCamera(CameraAngle.menu);
         menuAnimation.SetTrigger("StartMenu");
         menuAnimation.SetInteger("TutorialStep", 0);
+        SetTutorialGame?.Invoke(false);
+        SetTutorialGameStep?.Invoke(0);
     }
 
     public void OnResetToGameMenu()
@@ -91,21 +95,27 @@ public class GameUINet : MonoBehaviour
         menuAnimation.SetTrigger("InGameMenu");
         Server.Instace.Broadcast(new NetStartGame());
     }
+    
+    //Tutorials
 
     public void OnTutorialStart()
     {
         menuAnimation.SetInteger("TutorialStep", 1);
         ChangeCamera(CameraAngle.whiteTeam);
+        SetTutorialGame?.Invoke(true);
+        SetTutorialGameStep?.Invoke(1);
     }
     
     public void OnCardTutorial()
     {
         menuAnimation.SetInteger("TutorialStep", 2);
+        SetTutorialGameStep?.Invoke(2);
     }
     
     public void OnSpawnPieceTutorial()
     {
         menuAnimation.SetInteger("TutorialStep", 3);
+        SetTutorialGameStep?.Invoke(3);
     }
     
     public void OnOpponentTutorial()
@@ -114,12 +124,15 @@ public class GameUINet : MonoBehaviour
         {
             case 0:
                 menuAnimation.SetInteger("TutorialStep", 4);
+                SetTutorialGameStep?.Invoke(4);
                 break;
             case 1:
                 menuAnimation.SetInteger("TutorialStep", 6);
+                SetTutorialGameStep?.Invoke(6);
                 break;
             case 2:
                 menuAnimation.SetInteger("TutorialStep", 8);
+                SetTutorialGameStep?.Invoke(8);
                 break;
         }
 
@@ -132,10 +145,13 @@ public class GameUINet : MonoBehaviour
         switch (menuAnimation.GetInteger("TutorialStep"))
         {
             case 4: menuAnimation.SetInteger("TutorialStep", 5);
+                SetTutorialGameStep?.Invoke(5);
                 break;
             case 6: menuAnimation.SetInteger("TutorialStep", 7);
+                SetTutorialGameStep?.Invoke(7);
                 break;
             case 8: menuAnimation.SetInteger("TutorialStep", 9);
+                SetTutorialGameStep?.Invoke(9);
                 break;
         }
     }
@@ -143,11 +159,13 @@ public class GameUINet : MonoBehaviour
     public void OnFreePlayTutorial()
     {
         menuAnimation.SetInteger("TutorialStep", 10);
+        SetTutorialGameStep?.Invoke(10);
     }
 
     public void OnWinTutorila()
     {
         menuAnimation.SetInteger("TutorialStep", 11);
+        SetTutorialGameStep?.Invoke(11);
     }
 
     #region Events
