@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.37311953, g: 0.38074014, b: 0.3587274, a: 1}
+  m_IndirectSpecularColor: {r: 0.37311918, g: 0.3807398, b: 0.35872716, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -412,7 +412,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playOnStart: 0
   oneShot: 1
-  startDelay: 1
+  startDelay: 0.3
   playWithFade: 1
   targetVolume: 1
   fadeSpeed: 0.5
@@ -2001,6 +2001,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 1624765721}
+        m_TargetAssemblyTypeName: UnityEngine.AudioSource, UnityEngine
+        m_MethodName: Play
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &241666123
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2932,7 +2944,7 @@ MonoBehaviour:
         m_CallState: 2
       - m_Target: {fileID: 1624765721}
         m_TargetAssemblyTypeName: UnityEngine.AudioSource, UnityEngine
-        m_MethodName: 
+        m_MethodName: Play
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -9889,10 +9901,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playOnStart: 0
   oneShot: 0
-  startDelay: 4
+  startDelay: 5
   playWithFade: 1
-  targetVolume: 1
-  fadeSpeed: 1
+  targetVolume: 0.677
+  fadeSpeed: 0.32
   clipsToPlay:
   - {fileID: 8300000, guid: 8f5a2611ecdcb234d8c94ef409afc560, type: 3}
   minTime: 0
@@ -11578,6 +11590,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 1624765721}
+        m_TargetAssemblyTypeName: UnityEngine.AudioSource, UnityEngine
+        m_MethodName: Play
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1577688888
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12458,8 +12482,8 @@ MonoBehaviour:
   - {fileID: 8300000, guid: dbb21485a7b02c84fb10ecc6f8285e31, type: 3}
   minTime: 0
   maxTime: 0
-  minVolume: 0.941
-  maxVolume: 1
+  minVolume: 0.5
+  maxVolume: 0.6
   minPitch: 1
   maxPitch: 1
 --- !u!82 &1686463754
