@@ -316,8 +316,7 @@ public class Chessboard : MonoBehaviour
             myPoints = 1;
         }
         
-        if (tutorialGame)
-        return;
+        if (tutorialGame) return;
         
         //Net Implementation
         NetMakeMove mm = new NetMakeMove();
@@ -333,17 +332,20 @@ public class Chessboard : MonoBehaviour
     {
         if (myTurn)
         {
-            enemyPlayerSpawnTutorial = currentHover.Position;
             SpawnPiece(currentHover.Position);
             selectedBehavior = null;
             cardDeckHandler.UseCard();
-
-            HandleTurn();
-
-            if (tutorialGameStep == 3)
+            
+            
+            if (tutorialGameStep == 3) // Important order
             {
+                enemyPlayerSpawnTutorial = currentHover.Position;
+                HandleTurn();
                 GameUINet.Instance.OnOpponentTutorial();
-                
+            }
+            else
+            {
+                HandleTurn();
             }
         }
     }
@@ -644,7 +646,7 @@ public class Chessboard : MonoBehaviour
                 case 5:
                     opponentSpawned.enabled = false;
                     opponentMove.enabled = true;
-                    ReceiveMove(new Vector2Int(enemyPlayerSpawnTutorial.x,7),new Vector2Int(enemyPlayerSpawnTutorial.x,5));
+                    ReceiveMove(new Vector2Int(enemyPlayerSpawnTutorial.x,7), new Vector2Int(enemyPlayerSpawnTutorial.x,5));
                     break;
                 case 7:
                     opponentSpawned.enabled = true;

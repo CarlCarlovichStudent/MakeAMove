@@ -192,7 +192,7 @@ public class CardDeckHandler : MonoBehaviour
         //Define all cards
         List<CardBehavior> behaviors = deck.GetCards();
 
-        if (tutorialStepForCards < 6) //For some reason it instantate 6 times even if there is only one card?
+        if (tutorialStepForCards < 6) //For some reason it instantiate 6 times even if there is only one card?
         {
             tutorialStepForCards++;
             return behaviors[0];

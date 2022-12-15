@@ -13714,8 +13714,8 @@ MonoBehaviour:
   blackWinText: {fileID: 731556919}
   otherWantRematch: {fileID: 936993671}
   noToRematch: {fileID: 913406584}
-  opponentMove: {fileID: 0}
-  opponentSpawned: {fileID: 0}
+  opponentMove: {fileID: 1138150830}
+  opponentSpawned: {fileID: 1874023643}
   audioHandler: {fileID: 4000013639899781}
   cardDeckHandler: {fileID: 2056848573}
 --- !u!114 &2056848573
