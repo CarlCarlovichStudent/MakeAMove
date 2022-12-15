@@ -39,7 +39,7 @@ public class Chessboard : MonoBehaviour
     [SerializeField] private AudioHandler audioHandler;
     [SerializeField] private CardDeckHandler cardDeckHandler;
     
-    // Getters for tile
+    // Getters for Tile
     public Vector2Int BoardSize => new Vector2Int(TileCountX, TileCountY);
     public Material HighlightMaterial => highlightMaterial;
     public Material ValidHoverMaterial => validHoverMaterial;
@@ -47,6 +47,10 @@ public class Chessboard : MonoBehaviour
     public Material SelectedMaterial => selectedMaterial;
     public float TileSize => tileSize;
     public float YOffset => yOffset;
+    
+    // Getters for Card Deck Handler
+    public int TutorialGameStep => tutorialGameStep;
+    public AudioHandler AudioHandler => audioHandler;
     
     // Logic
     private const int TileCountX = 8, TileCountY = 8;
@@ -294,6 +298,11 @@ public class Chessboard : MonoBehaviour
             cardDeckHandler.UseCard();
 
             HandleTurn();
+
+            if (tutorialGameStep == 3)
+            {
+                GameUINet.Instance.OnOpponentTutorial();
+            }
         }
     }
     
@@ -379,8 +388,6 @@ public class Chessboard : MonoBehaviour
             }
             else
             {
-                Debug.Log(team);
-                
                 if (piece.team != team && movementPattern.moveType is MoveType.CaptureOnly or MoveType.MoveAndCapture)
                 {
                     HighlightTile(move.x, move.y);
@@ -395,7 +402,7 @@ public class Chessboard : MonoBehaviour
         {
             for (int y = 0; y < TileCountY; y++)
             {
-                if (tiles[x, y].piece?.type == selectedBehavior.piecesAffected && tiles[x, y].piece.team == team) // not needed?
+                if (tiles[x, y].piece?.type == selectedBehavior.piecesAffected && tiles[x, y].piece.team == team) // TODO: not needed!
                 {
                     HighlightTile(x, y);
                 }
@@ -433,13 +440,16 @@ public class Chessboard : MonoBehaviour
     {
         InstantiatePiece(position, ChessPieceType.Pawn, team);
         
+        audioHandler.summonKnight.PlayAudio();
+        
         //Net Implementation
+        if (tutorialGame) return;
+        
         NetSpawnPiece sp = new NetSpawnPiece();
         sp.spawnX = position.x;
         sp.spawnY = position.y;
         sp.teamId = currentTeam;
         Client.Instace.SendToServer(sp);
-        audioHandler.summonKnight.PlayAudio();
     }
 
     private void ReceiveSpawnedPiece(Vector2Int position, int teamId) // teamId could be replaced with reversing own team
@@ -876,13 +886,19 @@ public class Chessboard : MonoBehaviour
         playerCount = -1;
         currentTeam = -1;
         tutorialGame = obj;
-        myTurn = true;
+        myTurn = false;
         ResetGame();
+        cardDeckHandler.ResetHand(1);
     }
     
     private void OnSetTutorialGameStep(int obj)
     {
         tutorialGameStep = obj;
+
+        if (obj == 3)
+        {
+            myTurn = true;
+        }
     }
 
     #endregion

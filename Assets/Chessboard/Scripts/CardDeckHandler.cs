@@ -7,7 +7,7 @@ using Random = UnityEngine.Random;
 public class CardDeckHandler : MonoBehaviour
 {
     [Header("Settings")]
-    [SerializeField] private int handSize;
+    [SerializeField] private int maxHandSize;
     [SerializeField] private Vector2Int cardSize;
     [SerializeField] private Vector3Int cardOffset; // z value is hover offset
     
@@ -30,14 +30,22 @@ public class CardDeckHandler : MonoBehaviour
     private Card lastSelected;
     private Card lastHovered;
 
+    private int handSize;
+
     private void Awake()
     {
         cardPool = deck.GetCards();
         board = GetComponent<Chessboard>();
+        handSize = maxHandSize;
         InitializeHand();
     }
 
     private void Update()
+    {
+        HandleDeath();
+    }
+
+    private void HandleDeath()
     {
         for (int i = 0; i < handSize; i++)
         {
@@ -53,12 +61,15 @@ public class CardDeckHandler : MonoBehaviour
         }
     }
 
-    public void ResetHand()
+    public void ResetHand(int size = 0)
     {
         foreach (Card card in hand)
         {
             card.Use(0.1f);
         }
+
+        handSize = size <= 0 ? maxHandSize : size;
+        
         InitializeHand();
     }
 
@@ -79,7 +90,7 @@ public class CardDeckHandler : MonoBehaviour
     public void HandleCardHover(Card card)
     {
         if (card == lastHovered || card == lastSelected) return;
-        
+
         lastHovered?.Unhover();
         lastHovered = card;
         card.Hover();
@@ -92,7 +103,12 @@ public class CardDeckHandler : MonoBehaviour
         lastSelected?.Deselect();
         lastSelected = card;
         lastSelected.Select();
-        
+
+        if (board.TutorialGameStep == 2)
+        {
+            GameUINet.Instance.OnSpawnPieceTutorial();
+        }
+
         board.SetSelectedBehavior(lastSelected.behavior);
     }
 

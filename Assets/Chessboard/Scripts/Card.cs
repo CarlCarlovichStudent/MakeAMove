@@ -11,6 +11,7 @@ public class Card : MonoBehaviour
     private const float StartTime = 1f;
 
     private bool selected;
+    private bool wasSelected;
     private float lerpTime;
     private float forcedTime;
     private int hoverOffset;
@@ -41,6 +42,7 @@ public class Card : MonoBehaviour
         forcedMovement = true;
         forcedTime = StartTime;
         selected = false;
+        wasSelected = false;
     }
 
     // Use card
@@ -70,16 +72,15 @@ public class Card : MonoBehaviour
         if (forcedMovement) return;
 
         selected = true;
-        
+
         audioSelectCard.PlayAudio();
-        
     }
 
     public void Unhover()
     {
         if (forcedMovement) return;
         if (selected) return;
-        
+
         previousPosition = targetPosition;
         targetPosition -= new Vector2(0, hoverOffset);
         lerpTime = 1f - lerpTime;

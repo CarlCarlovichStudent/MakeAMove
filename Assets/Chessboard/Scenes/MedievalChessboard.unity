@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.37311918, g: 0.3807398, b: 0.35872716, a: 1}
+  m_IndirectSpecularColor: {r: 0.37311953, g: 0.38074014, b: 0.3587274, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -15378,7 +15378,7 @@ MonoBehaviour:
   whiteTeamMaterial: {fileID: 2100000, guid: 0ef10e3435586144f8b772cff8a377c1, type: 2}
   blackTeamMaterial: {fileID: 2100000, guid: 15a94cdb345ef6a46adeee79ac4a58b7, type: 2}
   pawn: {fileID: 1602952819654433359, guid: 7b7faff146758c64093717bb086db519, type: 3}
-  winPoints: 1
+  winPoints: 5
   scoreText: {fileID: 83683443}
   victoryScreen: {fileID: 1042273163}
   rematchIndicator: {fileID: 241666121}
@@ -15401,7 +15401,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 91f57ea45ff3f484b960d0688fd5de7f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  handSize: 1
+  maxHandSize: 5
   cardSize: {x: 205, y: 280}
   cardOffset: {x: 10, y: -69, z: 111}
   deck: {fileID: 11400000, guid: 0345350eea5627249a73444024c1d500, type: 2}
