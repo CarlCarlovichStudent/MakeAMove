@@ -10,6 +10,8 @@ public class AudioHandler : MonoBehaviour
     [Header("Music")] 
     public AudioPlay playList;
     public AudioPlay ambLoop;
+    public AudioPlay randomSounds;
+    public AudioPlay fire;
     public AudioSource menuMusic;
     public AudioPlay exitMenuMusic;
     

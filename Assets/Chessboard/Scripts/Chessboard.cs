@@ -871,11 +871,13 @@ public class Chessboard : MonoBehaviour
     private void OnStartGame(Netmessage msg)
     {
         Debug.Log("Game Begin");
+        audioHandler.menuMusic.Stop();
         audioHandler.summonGame.PlayAudio();
         audioHandler.entryStinger.PlayAudio();
         audioHandler.playList.PlayAudio();
-        audioHandler.menuMusic.Stop();
         audioHandler.ambLoop.PlayAudio();
+        audioHandler.fire.PlayAudio();
+        audioHandler.randomSounds.PlayAudio();
         
         GameUINet.Instance.ChangeCamera((currentTeam==0) ? CameraAngle.whiteTeam : CameraAngle.blackTeam);
         
