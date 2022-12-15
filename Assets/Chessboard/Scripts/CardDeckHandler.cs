@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Unity.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
@@ -31,6 +32,8 @@ public class CardDeckHandler : MonoBehaviour
     private Card lastHovered;
 
     private int handSize;
+    
+    private int tutorialStepForCards = 0;
 
     private void Awake()
     {
@@ -132,8 +135,23 @@ public class CardDeckHandler : MonoBehaviour
 
     private Card InitializeCard(int slot)
     {
-        CardBehavior behavior = GetRandomCardBehavior();
-        
+        CardBehavior behavior = new CardBehavior();
+        if (board.TutorialGame && board.TutorialGameStep<9)
+        {
+            behavior = GetTutorialCardBehavior();
+        }
+        else
+        {
+            behavior = GetRandomCardBehavior();
+        }
+
+        if (board.TutorialGameStep >= 10)
+        {
+            Debug.Log("Hello");
+            tutorialStepForCards = 0;
+        }
+
+
         GameObject gameObject = InstantiateImageObject("Card " + slot, canvas.transform, behavior.sprite, cardSize);
         Card card = gameObject.AddComponent<Card>();
 
@@ -169,6 +187,29 @@ public class CardDeckHandler : MonoBehaviour
         return gameObject;
     }
     
+    private CardBehavior GetTutorialCardBehavior()
+    {
+        //Define all cards
+        List<CardBehavior> behaviors = deck.GetCards();
+
+        if (tutorialStepForCards < 6) //For some reason it instantate 6 times even if there is only one card?
+        {
+            tutorialStepForCards++;
+            return behaviors[0];
+        }
+        else if (tutorialStepForCards < 7)
+        {
+            tutorialStepForCards++;
+            return behaviors[3];
+        }
+        else
+        {
+            tutorialStepForCards++;
+            return behaviors[2];
+        }
+        return null;
+    }
+    
     // Randomizer
     private CardBehavior GetRandomCardBehavior() // TODO: Improve
     {
@@ -181,7 +222,7 @@ public class CardDeckHandler : MonoBehaviour
                 spawnAmount++;
             }
         }
-
+        
         List<CardBehavior> behaviors = new List<CardBehavior>();
         if (spawnAmount < 1)
         {

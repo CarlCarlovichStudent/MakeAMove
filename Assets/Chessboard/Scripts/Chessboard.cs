@@ -1,4 +1,6 @@
 using TMPro;
+using TowerDefense.UI.HUD;
+using Unity.Collections;
 using Unity.Networking.Transport;
 using UnityEngine;
 using Button = UnityEngine.UI.Button;
@@ -34,6 +36,10 @@ public class Chessboard : MonoBehaviour
     [SerializeField] private TextMeshProUGUI blackWinText;
     [SerializeField] private TextMeshProUGUI otherWantRematch;
     [SerializeField] private TextMeshProUGUI noToRematch;
+
+    [Header("Tutorial")] 
+    [SerializeField] private TextMeshProUGUI opponentMove;
+    [SerializeField] private TextMeshProUGUI opponentSpawned;
     
     [Header("Handlers")]
     [SerializeField] private AudioHandler audioHandler;
@@ -50,6 +56,7 @@ public class Chessboard : MonoBehaviour
     
     // Getters for Card Deck Handler
     public int TutorialGameStep => tutorialGameStep;
+    public bool TutorialGame => tutorialGame;
     public AudioHandler AudioHandler => audioHandler;
     
     // Logic
@@ -75,6 +82,7 @@ public class Chessboard : MonoBehaviour
     //TutorialBase
     private bool tutorialGame = false;
     private int tutorialGameStep = 0;
+    private Vector2Int enemyPlayerSpawnTutorial;
 
     private void Awake()
     {
@@ -103,7 +111,24 @@ public class Chessboard : MonoBehaviour
 
     private void WinConditionHandler()
     {
-        scoreText.text = (myTurn ? "Your" : "Enemy") + $" turn\n\nYour points: {myPoints}/{winPoints}\nEnemy points: {enemyPoints}/{winPoints}";
+        if (!tutorialGame || tutorialGameStep > 9)
+        {
+            scoreText.text = (myTurn ? "Your" : "Enemy") +
+                             $" turn\n\nYour points: {myPoints}/{winPoints}\nEnemy points: {enemyPoints}/{winPoints}";
+        }
+        else
+        {
+            scoreText.text = "";
+        }
+
+        if (tutorialGame)
+        {
+            if (myPoints >= winPoints)
+            {
+                GameUINet.Instance.OnWinTutorila();
+            }
+            return;
+        }
         
         if (localGame)
         {
@@ -278,6 +303,21 @@ public class Chessboard : MonoBehaviour
         }
         
         HandleTurn();
+
+        if (tutorialGameStep == 5 || tutorialGameStep == 7)
+        {
+            GameUINet.Instance.OnOpponentTutorial();
+        }
+
+        if (tutorialGameStep == 9)
+        {
+            ResetGame();
+            GameUINet.Instance.OnFreePlayTutorial();
+            myPoints = 1;
+        }
+        
+        if (tutorialGame)
+        return;
         
         //Net Implementation
         NetMakeMove mm = new NetMakeMove();
@@ -293,6 +333,7 @@ public class Chessboard : MonoBehaviour
     {
         if (myTurn)
         {
+            enemyPlayerSpawnTutorial = currentHover.Position;
             SpawnPiece(currentHover.Position);
             selectedBehavior = null;
             cardDeckHandler.UseCard();
@@ -302,6 +343,7 @@ public class Chessboard : MonoBehaviour
             if (tutorialGameStep == 3)
             {
                 GameUINet.Instance.OnOpponentTutorial();
+                
             }
         }
     }
@@ -579,13 +621,38 @@ public class Chessboard : MonoBehaviour
 
     private void HandleTurn()
     {
-        if (localGame)
+        if (!tutorialGame)
         {
-            team = team == ChessPieceTeam.White ? ChessPieceTeam.Black : ChessPieceTeam.White;
+            if (localGame)
+            {
+                team = team == ChessPieceTeam.White ? ChessPieceTeam.Black : ChessPieceTeam.White;
+            }
+            else
+            {
+                myTurn = false;
+            }
         }
         else
         {
-            myTurn = false;
+            switch (tutorialGameStep)
+            {
+                case 3:
+                    opponentSpawned.enabled = true;
+                    opponentMove.enabled = false;
+                    ReceiveSpawnedPiece(new Vector2Int(enemyPlayerSpawnTutorial.x,7),1);//Not sure why this exactly but eh who cares
+                    break;
+                case 5:
+                    opponentSpawned.enabled = false;
+                    opponentMove.enabled = true;
+                    ReceiveMove(new Vector2Int(enemyPlayerSpawnTutorial.x,7),new Vector2Int(enemyPlayerSpawnTutorial.x,5));
+                    break;
+                case 7:
+                    opponentSpawned.enabled = true;
+                    opponentMove.enabled = false;
+                    ReceiveSpawnedPiece(new Vector2Int(3,7),1);
+                    break;
+            }
+            myTurn = true;
         }
     }
 
@@ -668,6 +735,10 @@ public class Chessboard : MonoBehaviour
 
         //Set up all cards
         cardDeckHandler.ResetHand();
+        
+        //Points restart
+        myPoints = 0;
+        enemyPoints = 0;
     }
 
     public void OnMenuButton()
