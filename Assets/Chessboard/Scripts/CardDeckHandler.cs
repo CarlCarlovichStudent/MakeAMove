@@ -206,7 +206,6 @@ public class CardDeckHandler : MonoBehaviour
             tutorialStepForCards++;
             return behaviors[2];
         }
-        return null;
     }
     
     // Randomizer
