@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.37311918, g: 0.3807398, b: 0.35872716, a: 1}
+  m_IndirectSpecularColor: {r: 0.37311953, g: 0.38074014, b: 0.3587274, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -14300,9 +14300,9 @@ MonoBehaviour:
   selectedMaterial: {fileID: 2100000, guid: ce84168a7c6dde84cb9a1a5713175d94, type: 2}
   tileSize: 0.6
   yOffset: 0.28
-  whiteTeamMaterial: {fileID: 2100000, guid: 0ef10e3435586144f8b772cff8a377c1, type: 2}
-  blackTeamMaterial: {fileID: 2100000, guid: 15a94cdb345ef6a46adeee79ac4a58b7, type: 2}
-  pawn: {fileID: 1602952819654433359, guid: 7b7faff146758c64093717bb086db519, type: 3}
+  whiteTeamMaterial: {fileID: 2100000, guid: 998347fddee9ffd429b9a99375fd432d, type: 2}
+  blackTeamMaterial: {fileID: 2100000, guid: 2f9f67fa0d298944f95cba13e03fb77f, type: 2}
+  pawn: {fileID: 5832795104108962804, guid: d86f16433ff85064685a398846b2ec08, type: 3}
   winPoints: 5
   scoreText: {fileID: 83683443}
   victoryScreen: {fileID: 1042273163}

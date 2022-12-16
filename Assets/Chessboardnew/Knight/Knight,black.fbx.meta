@@ -3,7 +3,17 @@ guid: df1c5984149a1c44e90cd4b97fa045f1
 ModelImporter:
   serializedVersion: 21202
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: lambert3
+    second: {fileID: 2100000, guid: 2f9f67fa0d298944f95cba13e03fb77f, type: 2}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Knightuvblack
+    second: {fileID: 2800000, guid: cc2ff7e7ec18d9642b3984ceaf804410, type: 3}
   materials:
     materialImportMode: 2
     materialName: 0

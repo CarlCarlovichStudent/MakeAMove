@@ -513,6 +513,11 @@ public class Chessboard : MonoBehaviour
         piece.team = team;
         piece.GetComponent<MeshRenderer>().material = team == ChessPieceTeam.White ? whiteTeamMaterial : blackTeamMaterial;
 
+        if (team == ChessPieceTeam.Black)
+        {
+            piece.transform.eulerAngles = transform.eulerAngles + 180f * Vector3.up;
+        }
+
         PositionPiece(ref piece, position, true);
         piece.boardPosition = position;
 
