@@ -49,6 +49,10 @@ public class Card : MonoBehaviour
     public void Use(float exitTime)
     {
         Destroy(gameObject, exitTime);
+        
+        previousPosition = targetPosition;
+        targetPosition += new Vector2(0, hoverOffset);
+        
         lerpTime = 0f;
         forcedMovement = true;
         forcedTime = exitTime;

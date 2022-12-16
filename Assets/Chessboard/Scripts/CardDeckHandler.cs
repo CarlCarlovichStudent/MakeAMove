@@ -78,7 +78,6 @@ public class CardDeckHandler : MonoBehaviour
 
     public void UseCard()
     {
-        lastSelected.Hover();
         lastSelected.Use(UseCardTime);
         for (int i = 0; i < hand.Length; i++)
         {

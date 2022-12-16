@@ -250,8 +250,10 @@ public class Chessboard : MonoBehaviour
         {
             if (myTurn && currentHover is not null && currentHover.highlighted)
             {
+                if (currentHover.piece is null) audioHandler.moveKnight.PlayAudio();
+                else audioHandler.killKnight.PlayAudio();
+
                 MoveTo(currentlyDragging.boardPosition, currentHover.Position);
-                audioHandler.moveKnight.PlayAudio();
             }
             else
             {
@@ -641,20 +643,39 @@ public class Chessboard : MonoBehaviour
                 case 3:
                     opponentSpawned.enabled = true;
                     opponentMove.enabled = false;
-                    ReceiveSpawnedPiece(new Vector2Int(enemyPlayerSpawnTutorial.x,7),1);//Not sure why this exactly but eh who cares
+                    Invoke("DelayedTutorialAction", 0.6f);
                     break;
                 case 5:
                     opponentSpawned.enabled = false;
                     opponentMove.enabled = true;
-                    ReceiveMove(new Vector2Int(enemyPlayerSpawnTutorial.x,7), new Vector2Int(enemyPlayerSpawnTutorial.x,5));
+                    Invoke("DelayedTutorialAction", 0.6f);
                     break;
                 case 7:
                     opponentSpawned.enabled = true;
                     opponentMove.enabled = false;
-                    ReceiveSpawnedPiece(new Vector2Int(enemyPlayerSpawnTutorial.x,7),1);
+                    Invoke("DelayedTutorialAction", 0.7f);
                     break;
             }
             myTurn = true;
+        }
+    }
+
+    private void DelayedTutorialAction()
+    {
+        switch (tutorialGameStep)
+        {
+            case 3:
+            case 4:
+                ReceiveSpawnedPiece(new Vector2Int(enemyPlayerSpawnTutorial.x,7),1);//Not sure why this exactly but eh who cares
+                break;
+            case 5:
+            case 6:
+                ReceiveMove(new Vector2Int(enemyPlayerSpawnTutorial.x,7), new Vector2Int(enemyPlayerSpawnTutorial.x,5));
+                break;
+            case 7:
+            case 8:
+                ReceiveSpawnedPiece(new Vector2Int(enemyPlayerSpawnTutorial.x,7),1);
+                break;
         }
     }
 
