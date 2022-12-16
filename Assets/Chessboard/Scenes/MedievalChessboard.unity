@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.37311953, g: 0.38074014, b: 0.3587274, a: 1}
+  m_IndirectSpecularColor: {r: 0.37311918, g: 0.3807398, b: 0.35872716, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -4610,7 +4610,7 @@ GameObject:
   - component: {fileID: 667926876}
   - component: {fileID: 667926878}
   m_Layer: 0
-  m_Name: Amb loop
+  m_Name: Voices
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4746,7 +4746,7 @@ MonoBehaviour:
   targetVolume: 0.687
   fadeSpeed: 0.2
   clipsToPlay:
-  - {fileID: 8300000, guid: 016412fbece17b4419aad663305b5fa2, type: 3}
+  - {fileID: 8300000, guid: cd2fb01589e8fd7448bfb07637e43439, type: 3}
   minTime: 0
   maxTime: 0
   minVolume: 1
