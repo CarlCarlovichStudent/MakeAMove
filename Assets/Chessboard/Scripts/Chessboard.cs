@@ -100,7 +100,7 @@ public class Chessboard : MonoBehaviour
     {
         if (!currentCamera)
         {
-            currentCamera = Camera.current;
+            currentCamera = Camera.main;
             return;
         }
 
@@ -471,6 +471,7 @@ public class Chessboard : MonoBehaviour
     private void HighlightTile(int x, int y)
     {
         tiles[x, y].highlighted = true;
+        tiles[x, y].GetComponent<Renderer>().renderingLayerMask = (uint)LayerMask.NameToLayer("hover");
     }
 
     private void UnHighlightAll()
@@ -561,10 +562,10 @@ public class Chessboard : MonoBehaviour
     {
         Tile foundTile = null;
         Ray ray = currentCamera.ScreenPointToRay(Input.mousePosition);
-        if (Physics.Raycast(ray, out RaycastHit hitInfo, 100, LayerMask.GetMask("Tile")))
+        if (Physics.Raycast(ray, out RaycastHit hitInfo, 100, LayerMask.GetMask("Tile","Hover")))
         {
             GameObject hitGameObject = hitInfo.transform.gameObject;
-
+            Debug.Log(hitInfo);
             foreach (Tile tile in tiles)
             {
                 if (tile.gameObject == hitGameObject)

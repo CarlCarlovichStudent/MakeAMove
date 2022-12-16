@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class Tile : MonoBehaviour
 {
@@ -84,6 +85,8 @@ public class Tile : MonoBehaviour
         
         gameObject.AddComponent<BoxCollider>();
         gameObject.layer = LayerMask.NameToLayer("Tile");
+
+        //gameObject.GetComponent<MeshRenderer>().shadowCastingMode == ShadowCastingMode.Off;
 
         return this;
     }
