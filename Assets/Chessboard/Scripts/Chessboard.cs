@@ -651,7 +651,7 @@ public class Chessboard : MonoBehaviour
                 case 7:
                     opponentSpawned.enabled = true;
                     opponentMove.enabled = false;
-                    ReceiveSpawnedPiece(new Vector2Int(3,7),1);
+                    ReceiveSpawnedPiece(new Vector2Int(enemyPlayerSpawnTutorial.x,7),1);
                     break;
             }
             myTurn = true;
