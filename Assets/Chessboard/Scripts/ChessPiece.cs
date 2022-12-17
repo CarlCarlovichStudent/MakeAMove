@@ -33,7 +33,7 @@ public abstract class ChessPiece : MonoBehaviour
     public void DestroyPiece()
     {
         OnDestroyEvents.Invoke();
-        Destroy(gameObject, 3f);
+        Destroy(gameObject, 2f);
     }
 
     public void SetDesiredPosition(Vector3 position, int speed = 9)
