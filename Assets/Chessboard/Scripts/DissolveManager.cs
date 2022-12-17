@@ -1,24 +1,29 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class DissolveManager : MonoBehaviour
 {
-    public List<Material> materialsForward;
-    public List<Material> materialsBackward;
+    [SerializeField] private List<Material> materialsForward;
+    [SerializeField] private List<Material> materialsBackward;
 
     [Range(0.01f, 1f)]
-    public float dissolveSpeed = 0.05f;
+    private float dissolveSpeed = 0.01f;
 
-    public float dissolveFrom = 13f;
+    private float dissolveFrom = 3f;
 
-    public float dissolveTo = -5f;
+    private float dissolveTo = -3f;
 
-    private void Awake() {
-        SetTo();
+    private void Start()
+    {
+        materialsForward.Add(GetComponent<MeshRenderer>().material);
+        Debug.Log(materialsForward.First().name);
+        OnReset();
     }
 
-    private void Dissolve()
+    public void Dissolve()
     {
         foreach (Material mat in materialsForward)
         {
@@ -46,17 +51,20 @@ public class DissolveManager : MonoBehaviour
         {
             StartCoroutine(DissolveSmoothly(mat));
         }
+        Debug.Log("dissolveing");
+        
     }
 
     private IEnumerator DissolveSmoothly(Material mat)
     {
-
+        //Material mat = GetComponent<MeshRenderer>().material;
         float dissolveAmount = dissolveFrom;
 
         mat.SetFloat("_CutOfHight", dissolveAmount);
 
         while (dissolveAmount > dissolveTo)
         {
+
             dissolveAmount -= dissolveSpeed;
 
             //Set the _CutOfHight amount to the dissolve amount.
@@ -66,16 +74,19 @@ public class DissolveManager : MonoBehaviour
             yield return new WaitForSeconds(Time.deltaTime);
         }
     }
-
-    private IEnumerator DissolveSmoothlyBackwards(Material mat)
+ 
+   private IEnumerator DissolveSmoothlyBackwards(Material mat)
     {
 
         float dissolveAmount = dissolveTo;
+        
+        Debug.Log(dissolveAmount);
 
         mat.SetFloat("_CutOfHight", dissolveAmount);
 
         while (dissolveAmount < dissolveFrom)
         {
+            Debug.Log(dissolveAmount);
             dissolveAmount += dissolveSpeed;
 
             //Set the _CutOfHight amount to the dissolve amount.
@@ -92,23 +103,27 @@ public class DissolveManager : MonoBehaviour
         {
             mat.SetFloat("_CutOfHight", dissolveFrom);
         }
-
+        /*
         foreach (Material mat in materialsBackward)
         {
             mat.SetFloat("_CutOfHight", dissolveFrom);
         }
+        */
     }
 
     public void SetTo()
     {
+        
         foreach (Material mat in materialsForward)
         {
             mat.SetFloat("_CutOfHight", dissolveTo);
         }
-
+        
+        /*
         foreach (Material mat in materialsBackward)
         {
             mat.SetFloat("_CutOfHight", dissolveTo);
         }
+        */
     }
 }

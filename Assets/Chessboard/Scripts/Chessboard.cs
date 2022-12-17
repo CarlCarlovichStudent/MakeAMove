@@ -15,10 +15,10 @@ public class Chessboard : MonoBehaviour
     [SerializeField] private float tileSize = 1.0f;
     [SerializeField] private float yOffset = 1.0f;
 
-    [Header("Team Materials")] 
-    [SerializeField] private Material whiteTeamMaterial;
-    [SerializeField] private Material blackTeamMaterial;
-    
+    [Header("Team Textures")] 
+    [SerializeField] private Texture whiteTeamTexture;
+    [SerializeField] private Texture blackTeamTexture;
+
     [Header("Piece prefabs")]
     [SerializeField] private GameObject pawn;
 
@@ -512,8 +512,13 @@ public class Chessboard : MonoBehaviour
         piece.transform.parent = pieceContainer.transform;
 
         piece.team = team;
-        piece.GetComponent<MeshRenderer>().material = team == ChessPieceTeam.White ? whiteTeamMaterial : blackTeamMaterial;
+        //piece.GetComponent<MeshRenderer>().material = team == ChessPieceTeam.White ? whiteTeamMaterial : blackTeamMaterial;
 
+        MeshRenderer teamMeshRenderer = piece.GetComponent<MeshRenderer>();
+        teamMeshRenderer.material = new Material(Shader.Find("Shader Graphs/Dissolve"));
+        
+        teamMeshRenderer.material.SetTexture("Texture_",team == ChessPieceTeam.White ? whiteTeamTexture : blackTeamTexture);
+        
         if (team == ChessPieceTeam.Black)
         {
             piece.transform.eulerAngles = transform.eulerAngles + 180f * Vector3.up;
@@ -565,7 +570,6 @@ public class Chessboard : MonoBehaviour
         if (Physics.Raycast(ray, out RaycastHit hitInfo, 100, LayerMask.GetMask("Tile","Hover")))
         {
             GameObject hitGameObject = hitInfo.transform.gameObject;
-            Debug.Log(hitInfo);
             foreach (Tile tile in tiles)
             {
                 if (tile.gameObject == hitGameObject)
