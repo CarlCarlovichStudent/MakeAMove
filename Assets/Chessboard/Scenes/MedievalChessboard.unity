@@ -807,7 +807,7 @@ PrefabInstance:
     - target: {fileID: 8645041981929125096, guid: 550140bef995a264c850245c5c90be49,
         type: 3}
       propertyPath: m_Volume
-      value: 0.311
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 8645041981929125096, guid: 550140bef995a264c850245c5c90be49,
         type: 3}
@@ -906,6 +906,16 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8645041981929125103, guid: 550140bef995a264c850245c5c90be49,
         type: 3}
+      propertyPath: maxVolume
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 8645041981929125103, guid: 550140bef995a264c850245c5c90be49,
+        type: 3}
+      propertyPath: minVolume
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 8645041981929125103, guid: 550140bef995a264c850245c5c90be49,
+        type: 3}
       propertyPath: startDelay
       value: 3.29
       objectReference: {fileID: 0}
@@ -922,12 +932,12 @@ PrefabInstance:
     - target: {fileID: 8645041981929125103, guid: 550140bef995a264c850245c5c90be49,
         type: 3}
       propertyPath: targetVolume
-      value: 0.35
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 8645041981929125103, guid: 550140bef995a264c850245c5c90be49,
         type: 3}
       propertyPath: clipsToPlay.Array.size
-      value: 4
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 8645041981929125103, guid: 550140bef995a264c850245c5c90be49,
         type: 3}
@@ -953,12 +963,12 @@ PrefabInstance:
         type: 3}
       propertyPath: clipsToPlay.Array.data[4]
       value: 
-      objectReference: {fileID: 8300000, guid: 6e384eea55b33da41b4b499fe16bcdd5, type: 3}
+      objectReference: {fileID: 8300000, guid: 247c3d66cc5e4004ba1706b5e74db2b0, type: 3}
     - target: {fileID: 8645041981929125103, guid: 550140bef995a264c850245c5c90be49,
         type: 3}
       propertyPath: clipsToPlay.Array.data[5]
       value: 
-      objectReference: {fileID: 8300000, guid: 67084995a9492d24db7e38ab4da352d4, type: 3}
+      objectReference: {fileID: 8300000, guid: f1863aa6a65ac02489dcdced0af8d6c6, type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 550140bef995a264c850245c5c90be49, type: 3}
 --- !u!114 &62459019 stripped
