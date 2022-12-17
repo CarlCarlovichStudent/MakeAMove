@@ -251,7 +251,11 @@ public class Chessboard : MonoBehaviour
             if (myTurn && currentHover is not null && currentHover.highlighted)
             {
                 if (currentHover.piece is null) audioHandler.moveKnight.PlayAudio();
-                else audioHandler.killKnight.PlayAudio();
+                else audioHandler.killKnight.PlayAudio(); 
+                
+                if (currentHover.piece is null) audioHandler.moveKnight.PlayAudio();
+                else audioHandler.killKnightSwosh.PlayAudio(); 
+                
 
                 MoveTo(currentlyDragging.boardPosition, currentHover.Position);
             }

@@ -23,6 +23,7 @@ public class AudioHandler : MonoBehaviour
     public AudioPlay victoryStinger;
     public AudioPlay defeatStinger;
     public AudioPlay killKnight;
+    public AudioPlay killKnightSwosh;
     public AudioPlay moveKnight;
     public AudioPlay wrongMove;
     public AudioPlay loosePoint;
