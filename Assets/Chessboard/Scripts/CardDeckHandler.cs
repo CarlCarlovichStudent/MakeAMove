@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
@@ -33,6 +35,7 @@ public class CardDeckHandler : MonoBehaviour
 
     private int handSize;
     
+    //Tutorial
     private int tutorialStepForCards = 0;
 
     private void Awake()
@@ -50,30 +53,54 @@ public class CardDeckHandler : MonoBehaviour
 
     private void HandleDeath()
     {
-        for (int i = 0; i < handSize; i++)
+        if (!board.PuzzleActive)
         {
-            if (respawnTimers[i] <= 0) continue;
-            else
+            for (int i = 0; i < handSize; i++)
             {
-                respawnTimers[i] -= Time.deltaTime;
-                if (respawnTimers[i] <= 0)
+                if (respawnTimers[i] <= 0) continue;
+                else
                 {
-                    hand[i] = InitializeCard(i);
-                }
+                    respawnTimers[i] -= Time.deltaTime;
+                    if (respawnTimers[i] <= 0)
+                    {
+                        hand[i] = InitializeCard(i);
+
+                    }
+                } 
             }
         }
     }
 
     public void ResetHand(int size = 0)
     {
-        foreach (Card card in hand)
+        if (!board.PuzzleActive)
         {
-            card.Use(0.1f);
+            foreach (Card card in hand)
+            {
+                card.Use(0.1f);
+            }
+        }
+        else
+        {
+            board.PuzzleActive = false;
         }
 
         handSize = size <= 0 ? maxHandSize : size;
         
         InitializeHand();
+    }
+
+    public int GetCurrentAmountCardsHeld()
+    {
+        int totalCards = 0;
+        foreach (Card c in hand)
+        {
+            if (c != null)
+            {
+                totalCards++;
+            }
+        }
+        return totalCards;
     }
 
     public void UseCard()
@@ -86,6 +113,7 @@ public class CardDeckHandler : MonoBehaviour
                 respawnTimers[i] = RespawnOffset;
             }
         }
+        
     }
 
     // Hover and select handlers for HUD Raycaster
@@ -135,7 +163,7 @@ public class CardDeckHandler : MonoBehaviour
     private Card InitializeCard(int slot)
     {
         CardBehavior behavior = new CardBehavior();
-        if (board.TutorialGame && board.TutorialGameStep<9)
+        if (board.TutorialGame && board.TutorialGameStep<10)
         {
             behavior = GetTutorialCardBehavior();
         }
@@ -144,9 +172,8 @@ public class CardDeckHandler : MonoBehaviour
             behavior = GetRandomCardBehavior();
         }
 
-        if (board.TutorialGameStep >= 10)
+        if (board.TutorialGameStep >= 11)
         {
-            Debug.Log("Hello");
             tutorialStepForCards = 0;
         }
 
@@ -191,20 +218,34 @@ public class CardDeckHandler : MonoBehaviour
         //Define all cards
         List<CardBehavior> behaviors = deck.GetCards();
 
-        if (tutorialStepForCards < 6) //For some reason it instantiate 6 times even if there is only one card?
+        switch (tutorialStepForCards)
         {
-            tutorialStepForCards++;
-            return behaviors[0];
-        }
-        else if (tutorialStepForCards < 7)
-        {
-            tutorialStepForCards++;
-            return behaviors[3];
-        }
-        else
-        {
-            tutorialStepForCards++;
-            return behaviors[2];
+            case <6 :
+                tutorialStepForCards++;
+                return behaviors[0];
+            case <7 :
+                tutorialStepForCards++;
+                return behaviors[3];
+            case <8 :
+                tutorialStepForCards++;
+                return behaviors[2];
+            case <9 :
+                tutorialStepForCards++;
+                return behaviors[2];
+            case <10 :
+                tutorialStepForCards++;
+                return behaviors[1];
+            case <11 :
+                tutorialStepForCards++;
+                return behaviors[3];
+            case <12 :
+                tutorialStepForCards++;
+                return behaviors[1];
+            case <13 :
+                tutorialStepForCards++;
+                return behaviors[3];
+            default:
+                return null;
         }
     }
     

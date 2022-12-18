@@ -10,11 +10,11 @@ public class DissolveManager : MonoBehaviour
     [SerializeField] private List<Material> materialsBackward;
 
     [Range(0.01f, 1f)]
-    private float dissolveSpeed = 0.01f;
+    private float dissolveSpeed = 0.015f;
 
-    private float dissolveFrom = 3f;
+    private float dissolveFrom = 2.5f;
 
-    private float dissolveTo = -3f;
+    private float dissolveTo = -1f;
 
     private void Start()
     {

@@ -156,16 +156,22 @@ public class GameUINet : MonoBehaviour
         }
     }
 
-    public void OnFreePlayTutorial()
+    public void OnPuzzleTutorial()
     {
         menuAnimation.SetInteger("TutorialStep", 10);
         SetTutorialGameStep?.Invoke(10);
     }
 
-    public void OnWinTutorila()
+    public void OnFreePlayTutorial()
     {
         menuAnimation.SetInteger("TutorialStep", 11);
         SetTutorialGameStep?.Invoke(11);
+    }
+
+    public void OnWinTutorila()
+    {
+        menuAnimation.SetInteger("TutorialStep", 12);
+        SetTutorialGameStep?.Invoke(12);
     }
 
     #region Events

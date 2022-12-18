@@ -1,8 +1,10 @@
+using System;
 using TMPro;
 using TowerDefense.UI.HUD;
 using Unity.Collections;
 using Unity.Networking.Transport;
 using UnityEngine;
+using UnityEngine.tvOS;
 using Button = UnityEngine.UI.Button;
 
 public class Chessboard : MonoBehaviour
@@ -18,6 +20,8 @@ public class Chessboard : MonoBehaviour
     [Header("Team Textures")] 
     [SerializeField] private Texture whiteTeamTexture;
     [SerializeField] private Texture blackTeamTexture;
+    [SerializeField] private Material blackTeamMaterial;
+    [SerializeField] private Material whiteTeamMaterial;
 
     [Header("Piece prefabs")]
     [SerializeField] private GameObject pawn;
@@ -80,9 +84,21 @@ public class Chessboard : MonoBehaviour
     private bool[] playerRematch = new bool[2];
     
     //TutorialBase
-    private bool tutorialGame = false;
-    private int tutorialGameStep = 0;
+    private bool tutorialGame;
+    private int tutorialGameStep;
     private Vector2Int enemyPlayerSpawnTutorial;
+    
+    private bool puzzleSetUp = true;
+    public bool PuzzleActive { get; set; }
+
+    private Material shaderMaterial;
+    //[Header("Shader test")]
+    //[SerializeField] private shaderGraph;
+
+    private void Start()
+    {
+        shaderMaterial = new Material(Shader.Find("Shader Graphs/Dissolve"));
+    }
 
     private void Awake()
     {
@@ -90,7 +106,7 @@ public class Chessboard : MonoBehaviour
         pieceContainer = CreateContainer("Pieces", transform);
         team = ChessPieceTeam.White;
         myTurn = false;
-        
+
         GenerateAllTiles();
 
         RegisterEvents();
@@ -111,7 +127,7 @@ public class Chessboard : MonoBehaviour
 
     private void WinConditionHandler()
     {
-        if (!tutorialGame || tutorialGameStep > 9)
+        if (!tutorialGame || tutorialGameStep > 10)
         {
             scoreText.text = (myTurn ? "Your" : "Enemy") +
                              $" turn\n\nYour points: {myPoints}/{winPoints}\nEnemy points: {enemyPoints}/{winPoints}";
@@ -258,6 +274,13 @@ public class Chessboard : MonoBehaviour
                 
 
                 MoveTo(currentlyDragging.boardPosition, currentHover.Position);
+                if (tutorialGameStep == 10 && PuzzleActive && myPoints>1)
+                {
+                    ResetGame();
+                    GameUINet.Instance.OnFreePlayTutorial();
+                    myPoints = 2;
+                    Debug.Log("Hefoegeo");
+                }
             }
             else
             {
@@ -307,7 +330,7 @@ public class Chessboard : MonoBehaviour
                 audioHandler.score.PlayAudio();
             }
         }
-        
+
         HandleTurn();
 
         if (tutorialGameStep == 5 || tutorialGameStep == 7)
@@ -317,11 +340,12 @@ public class Chessboard : MonoBehaviour
 
         if (tutorialGameStep == 9)
         {
-            ResetGame();
-            GameUINet.Instance.OnFreePlayTutorial();
+            cardDeckHandler.ResetHand(4);
+            GameUINet.Instance.OnPuzzleTutorial();
+            Invoke("DelayedTutorialAction", 0.7f);
             myPoints = 1;
         }
-        
+
         if (tutorialGame) return;
         
         //Net Implementation
@@ -494,7 +518,10 @@ public class Chessboard : MonoBehaviour
         audioHandler.summonKnight.PlayAudio();
         
         //Net Implementation
-        if (tutorialGame) return;
+        if (tutorialGame)
+        {
+            return;
+        }
         
         NetSpawnPiece sp = new NetSpawnPiece();
         sp.spawnX = position.x;
@@ -516,12 +543,8 @@ public class Chessboard : MonoBehaviour
         piece.transform.parent = pieceContainer.transform;
 
         piece.team = team;
-        //piece.GetComponent<MeshRenderer>().material = team == ChessPieceTeam.White ? whiteTeamMaterial : blackTeamMaterial;
 
-        MeshRenderer teamMeshRenderer = piece.GetComponent<MeshRenderer>();
-        teamMeshRenderer.material = new Material(Shader.Find("Shader Graphs/Dissolve"));
-        
-        teamMeshRenderer.material.SetTexture("Texture_",team == ChessPieceTeam.White ? whiteTeamTexture : blackTeamTexture);
+        piece.GetComponent<MeshRenderer>().material = team == ChessPieceTeam.White ? whiteTeamMaterial : blackTeamMaterial;
         
         if (team == ChessPieceTeam.Black)
         {
@@ -532,6 +555,7 @@ public class Chessboard : MonoBehaviour
         piece.boardPosition = position;
 
         tiles[position.x, position.y].piece = piece;
+        
     }
 
     // Position pieces
@@ -643,6 +667,7 @@ public class Chessboard : MonoBehaviour
         {
             if (localGame)
             {
+                GameUINet.Instance.ChangeCamera(team == ChessPieceTeam.White ? CameraAngle.blackTeam : CameraAngle.whiteTeam);
                 team = team == ChessPieceTeam.White ? ChessPieceTeam.Black : ChessPieceTeam.White;
             }
             else
@@ -650,6 +675,7 @@ public class Chessboard : MonoBehaviour
                 myTurn = false;
             }
         }
+        //tutorial only
         else
         {
             switch (tutorialGameStep)
@@ -669,27 +695,31 @@ public class Chessboard : MonoBehaviour
                     opponentMove.enabled = false;
                     Invoke("DelayedTutorialAction", 0.7f);
                     break;
+                case 9:
+                    Invoke("DelayedTutorialAction", 0.5f);
+                    break;
+            }
+
+            if (PuzzleActive)
+            {
+                switch (cardDeckHandler.GetCurrentAmountCardsHeld())
+                {
+                    case 4:
+                        ReceiveMove(new Vector2Int(7,2), new Vector2Int(7,1));
+                        break;
+                    case 3:
+                        ReceiveMove(new Vector2Int(1,6), new Vector2Int(1,3));
+                        break;
+                    case 2:
+                        ReceiveMove(new Vector2Int(2,7), new Vector2Int(2,6));
+                        break;
+                    default:
+                        Debug.Log("Hey look at me");
+                        break;
+                }
+                Debug.Log(cardDeckHandler.GetCurrentAmountCardsHeld());
             }
             myTurn = true;
-        }
-    }
-
-    private void DelayedTutorialAction()
-    {
-        switch (tutorialGameStep)
-        {
-            case 3:
-            case 4:
-                ReceiveSpawnedPiece(new Vector2Int(enemyPlayerSpawnTutorial.x,7),1);//Not sure why this exactly but eh who cares
-                break;
-            case 5:
-            case 6:
-                ReceiveMove(new Vector2Int(enemyPlayerSpawnTutorial.x,7), new Vector2Int(enemyPlayerSpawnTutorial.x,5));
-                break;
-            case 7:
-            case 8:
-                ReceiveSpawnedPiece(new Vector2Int(enemyPlayerSpawnTutorial.x,7),1);
-                break;
         }
     }
 
@@ -725,6 +755,60 @@ public class Chessboard : MonoBehaviour
             }
     #endif
 
+    #region tutorial
+
+    private void DelayedTutorialAction()
+    {
+        switch (tutorialGameStep)
+        {
+            case 3:
+            case 4:
+                ReceiveSpawnedPiece(new Vector2Int(enemyPlayerSpawnTutorial.x,7),1);
+                break;
+            case 5:
+            case 6:
+                ReceiveMove(new Vector2Int(enemyPlayerSpawnTutorial.x,7), new Vector2Int(enemyPlayerSpawnTutorial.x,5));
+                break;
+            case 7:
+            case 8:
+                ReceiveSpawnedPiece(new Vector2Int(enemyPlayerSpawnTutorial.x,7),1);
+                break;
+            case 9:
+            case 10:
+                PuzzleSetUp();
+                break;
+        }
+    }
+
+    private void PuzzleSetUp()
+    {
+        if (puzzleSetUp)
+        {
+            ReceiveSpawnedPiece(new Vector2Int(3, 0), 0);
+
+            ReceiveSpawnedPiece(new Vector2Int(3, 1), 1);
+            ReceiveSpawnedPiece(new Vector2Int(2, 1), 1);
+            ReceiveSpawnedPiece(new Vector2Int(2, 2), 1);
+            ReceiveSpawnedPiece(new Vector2Int(3, 3), 1);
+            
+            ReceiveSpawnedPiece(new Vector2Int(2, 7), 1);
+            
+            //Deadweight
+            
+            ReceiveSpawnedPiece(new Vector2Int(3, 6), 1);
+            ReceiveSpawnedPiece(new Vector2Int(7, 2), 1);
+            ReceiveSpawnedPiece(new Vector2Int(5, 5), 1);
+            ReceiveSpawnedPiece(new Vector2Int(0, 4), 1);
+            ReceiveSpawnedPiece(new Vector2Int(1, 6), 1);
+            ReceiveSpawnedPiece(new Vector2Int(0, 1), 1);
+
+            PuzzleActive = true;
+            puzzleSetUp = false;
+        }
+    }
+
+    #endregion
+    
     #region Rematch
 
     public void OnRematchButton()
@@ -772,7 +856,7 @@ public class Chessboard : MonoBehaviour
 
         //Set up all cards
         cardDeckHandler.ResetHand();
-        
+
         //Points restart
         myPoints = 0;
         enemyPoints = 0;
