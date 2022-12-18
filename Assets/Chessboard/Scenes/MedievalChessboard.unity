@@ -2659,7 +2659,7 @@ GameObject:
   - component: {fileID: 242372964}
   - component: {fileID: 242372963}
   m_Layer: 5
-  m_Name: Game Over Screen (1)
+  m_Name: Pause Menu
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
