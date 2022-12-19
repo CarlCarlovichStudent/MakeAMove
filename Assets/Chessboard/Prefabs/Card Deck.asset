@@ -15,12 +15,12 @@ MonoBehaviour:
   cards:
   - piecesAffected: 1
     cardType: 2
-    sprite: {fileID: 21300000, guid: b3a9ef00b6e804e4bb9715ccbe8e1ea5, type: 3}
+    sprite: {fileID: 21300000, guid: 6feaea06b49183f4680840eda3846f5c, type: 3}
     weightedChance: 15
     movementPatterns: []
   - piecesAffected: 1
     cardType: 1
-    sprite: {fileID: 21300000, guid: 0f4a6496a71e7704c83459b80da79778, type: 3}
+    sprite: {fileID: 21300000, guid: 94c2423a3597c7b48b42c05fb8207059, type: 3}
     weightedChance: 10
     movementPatterns:
     - move: {x: 0, y: 1}
@@ -31,14 +31,14 @@ MonoBehaviour:
       moveType: 1
   - piecesAffected: 1
     cardType: 1
-    sprite: {fileID: 21300000, guid: 62133642043669f46ae60ab828eed2d3, type: 3}
+    sprite: {fileID: 21300000, guid: fa38b25e85deb5743bd6a4f25b096c97, type: 3}
     weightedChance: 7
     movementPatterns:
     - move: {x: 0, y: 2}
       moveType: 2
   - piecesAffected: 1
     cardType: 1
-    sprite: {fileID: 21300000, guid: 394867b50bb4dbf49a332a0c12a07afa, type: 3}
+    sprite: {fileID: 21300000, guid: 1b8640c35f763ab408093c63d0aae9db, type: 3}
     weightedChance: 4
     movementPatterns:
     - move: {x: 0, y: 3}
