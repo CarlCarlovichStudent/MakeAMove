@@ -1,10 +1,6 @@
-using System;
 using TMPro;
-using TowerDefense.UI.HUD;
-using Unity.Collections;
 using Unity.Networking.Transport;
 using UnityEngine;
-using UnityEngine.tvOS;
 using Button = UnityEngine.UI.Button;
 
 public class Chessboard : MonoBehaviour
