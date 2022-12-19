@@ -1,8 +1,8 @@
 using System;
 using TMPro;
 using Unity.Networking.Transport;
-using UnityEditorInternal;
 using UnityEngine;
+using UnityEngine.PlayerLoop;
 using Button = UnityEngine.UI.Button;
 
 public class Chessboard : MonoBehaviour
@@ -25,6 +25,10 @@ public class Chessboard : MonoBehaviour
     [Header("Points, mana and timmer")] 
     [SerializeField] private int winPoints;
     [SerializeField] private TextMeshProUGUI scoreText;
+    [SerializeField] private bool manaisOff;
+    [SerializeField] private int manaStart;
+    [SerializeField] private int manaGrowth;
+    [SerializeField] private TextMeshProUGUI manaText;
     [SerializeField] private int startTimmer;
     [SerializeField] private TextMeshProUGUI timmerWhiteText;
     [SerializeField] private TextMeshProUGUI timmerBlackText;
@@ -77,6 +81,8 @@ public class Chessboard : MonoBehaviour
     private int enemyPoints;
     private int myTimmer;
     private int enemyTimmer;
+    public int MyMana { get; set;}
+    private int currentMana;
     private float timeBank;
     private bool myTurn; // Improve when mana and multiple cards per round is implemented (fully fix current logic)
     
@@ -102,6 +108,12 @@ public class Chessboard : MonoBehaviour
         myTurn = false;
         timmerWhiteText.text = $"White Timer: {startTimmer}"; 
         timmerBlackText.text = $"Black Timer: {startTimmer}";
+        if (!manaisOff)
+        {
+            currentMana = manaStart;
+            MyMana = currentMana;
+            manaText.text = $"Mana: {MyMana}/{currentMana}";
+        }
 
         GenerateAllTiles();
 
@@ -121,6 +133,10 @@ public class Chessboard : MonoBehaviour
         TileHandler();
 
         TimmerUpdate();
+        if (!manaisOff)
+        {
+            ManaUpdate();
+        }
     }
 
     private void WinConditionHandler()
@@ -266,7 +282,7 @@ public class Chessboard : MonoBehaviour
     {
         if (currentlyDragging is not null && Input.GetMouseButtonUp(0))
         {
-            if (myTurn && currentHover is not null && currentHover.highlighted)
+            if (myTurn && currentHover is not null && currentHover.highlighted && (manaisOff || cardDeckHandler.ValidCardPlay()))
             {
                 if (currentHover.piece is null) audioHandler.moveKnight.PlayAudio();
                 else audioHandler.killKnight.PlayAudio(); 
@@ -361,7 +377,7 @@ public class Chessboard : MonoBehaviour
 
     private void SelectSummon()
     {
-        if (myTurn)
+        if (myTurn && (manaisOff || cardDeckHandler.ValidCardPlay()))
         {
             SpawnPiece(currentHover.Position);
             selectedBehavior = null;
@@ -393,7 +409,12 @@ public class Chessboard : MonoBehaviour
         PositionPiece(ref tiles[to.x, to.y].piece, to);
 
         myTurn = true;
-        
+        if (!manaisOff)
+        {
+            currentMana += manaGrowth;
+            MyMana = manaGrowth;
+        }
+
         if (team != ChessPieceTeam.White)
         {
             if (to.y == 7)
@@ -564,6 +585,11 @@ public class Chessboard : MonoBehaviour
         InstantiatePiece(position, ChessPieceType.Pawn, teamId == 0 ? ChessPieceTeam.White : ChessPieceTeam.Black);
         audioHandler.summonKnight.PlayAudio();
         myTurn = true;
+        if (!manaisOff)
+        {
+            currentMana += manaGrowth;
+            MyMana = manaGrowth;
+        }
     }
 
     private void InstantiatePiece(Vector2Int position, ChessPieceType type, ChessPieceTeam team) // fix for all types
@@ -697,6 +723,12 @@ public class Chessboard : MonoBehaviour
             if (localGame)
             {
                 GameUINet.Instance.ChangeCamera(team == ChessPieceTeam.White ? CameraAngle.blackTeam : CameraAngle.whiteTeam);
+                if (!manaisOff)
+                {
+                    currentMana += team == ChessPieceTeam.White ? 0 : manaGrowth;
+                    MyMana = currentMana;
+                }
+
                 team = team == ChessPieceTeam.White ? ChessPieceTeam.Black : ChessPieceTeam.White;
                 myTimmer = startTimmer;
                 timmerWhiteText.color=Color.white;
@@ -811,6 +843,11 @@ public class Chessboard : MonoBehaviour
                 timmerBlackText.color = Color.white;
             }
         }
+    }
+
+    private void ManaUpdate()
+    {
+        manaText.text = $"Mana: {MyMana}/{currentMana}";
     }
 
     // Draw preview of tiles in editor (shows outlines of tiles)

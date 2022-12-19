@@ -10,6 +10,8 @@ public class Card : MonoBehaviour
     private const float HoverTime = 0.3f;
     private const float StartTime = 1f;
 
+    public int ManaCost { get; set; }
+    
     private bool selected;
     private bool wasSelected;
     private float lerpTime;
@@ -24,6 +26,7 @@ public class Card : MonoBehaviour
     public void SetStartValues(float slotOffset, Vector3Int cardOffset, CardBehavior behavior,AudioPlay audioHoverCard,AudioPlay audioSelectCard, bool start = false) // TODO: start yay or nay?
     {
         this.behavior = behavior;
+        ManaCost = behavior.ManaCost;
         hoverOffset = cardOffset.z;
         this.audioHoverCard = audioHoverCard;
         this.audioSelectCard = audioSelectCard;

@@ -104,15 +104,20 @@ public class CardDeckHandler : MonoBehaviour
 
     public void UseCard()
     {
+        board.MyMana -= lastSelected.ManaCost;
         lastSelected.Use(UseCardTime);
-        for (int i = 0; i < hand.Length; i++)
-        {
-            if (lastSelected == hand[i])
+            for (int i = 0; i < hand.Length; i++)
             {
-                respawnTimers[i] = RespawnOffset;
+                if (lastSelected == hand[i])
+                {
+                    respawnTimers[i] = RespawnOffset;
+                }
             }
-        }
-        
+    }
+
+    public bool ValidCardPlay()
+    {
+        return lastSelected.ManaCost <= board.MyMana;
     }
 
     // Hover and select handlers for HUD Raycaster

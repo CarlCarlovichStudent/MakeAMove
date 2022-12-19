@@ -18,6 +18,7 @@ public class CardDeck : ScriptableObject
 [Serializable]
 public class CardBehavior
 {
+    [Range(0, 20)]public int ManaCost;
     public ChessPieceType piecesAffected;
     public CardType cardType;
     public Sprite sprite;
