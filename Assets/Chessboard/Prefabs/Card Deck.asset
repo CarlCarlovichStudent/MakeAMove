@@ -39,7 +39,28 @@ MonoBehaviour:
   - piecesAffected: 1
     cardType: 1
     sprite: {fileID: 21300000, guid: 1b8640c35f763ab408093c63d0aae9db, type: 3}
-    weightedChance: 4
+    weightedChance: 5
     movementPatterns:
     - move: {x: 0, y: 3}
       moveType: 0
+  - piecesAffected: 1
+    cardType: 3
+    sprite: {fileID: 21300000, guid: 30d58674b0700fa49a31af1a13aa7c07, type: 3}
+    weightedChance: 10
+    movementPatterns:
+    - move: {x: 0, y: 1}
+      moveType: 3
+  - piecesAffected: 1
+    cardType: 3
+    sprite: {fileID: 21300000, guid: d6cdec801619ee642bae88b9d14752d1, type: 3}
+    weightedChance: 10
+    movementPatterns:
+    - move: {x: 0, y: 2}
+      moveType: 3
+  - piecesAffected: 1
+    cardType: 3
+    sprite: {fileID: 21300000, guid: 4913764bba3f7c14cafed3205a84ece9, type: 3}
+    weightedChance: 10
+    movementPatterns:
+    - move: {x: 0, y: 3}
+      moveType: 3

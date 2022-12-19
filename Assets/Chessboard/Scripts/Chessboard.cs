@@ -249,6 +249,10 @@ public class Chessboard : MonoBehaviour
                 case CardType.Move:
                     SelectMove();
                     break;
+                
+                case CardType.Special:
+                    SelectSpecial();
+                    break;
             }
         }
     }
@@ -412,6 +416,12 @@ public class Chessboard : MonoBehaviour
         }
     }
     
+    private void SelectSpecial()
+    {
+        currentlyDragging = currentHover.Select();
+        
+    }
+    
     // Highlight
     private void HighlightTileHandler()
     {
@@ -428,6 +438,9 @@ public class Chessboard : MonoBehaviour
                     
                     case CardType.Move:
                         HighlightMovablePieces();
+                        break;
+                    case CardType.Special:
+                        HighlightReverseMovablePieces();
                         break;
                 }
             }
@@ -448,11 +461,16 @@ public class Chessboard : MonoBehaviour
             if (move.x > 7) continue;
             if (move.y < 0) move.y = 0;
             if (move.y > 7) move.y = 7;
-            
+
             ChessPiece piece = tiles[move.x, move.y].piece;
             if (piece is null)
             {
                 if (movementPattern.moveType is MoveType.MoveOnly or MoveType.MoveAndCapture)
+                {
+                    HighlightTile(move.x, move.y);
+                }
+
+                if (movementPattern.moveType is MoveType.MoveAndNoCapture && (move.y <= 6 && move.y >= 1))
                 {
                     HighlightTile(move.x, move.y);
                 }
@@ -489,6 +507,20 @@ public class Chessboard : MonoBehaviour
             if (tiles[x, teamSide].piece is null)
             {
                 HighlightTile(x, teamSide);
+            }
+        }
+    }
+    
+    private void HighlightReverseMovablePieces() 
+    {
+        for (int x = 0; x < TileCountX; x++)
+        {
+            for (int y = 0; y < TileCountY; y++)
+            {
+                if (tiles[x, y].piece?.type == selectedBehavior.piecesAffected && tiles[x, y].piece.team != team) // TODO: not needed!
+                {
+                    HighlightTile(x, y);
+                }
             }
         }
     }

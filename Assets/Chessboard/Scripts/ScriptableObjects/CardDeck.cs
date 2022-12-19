@@ -46,5 +46,6 @@ public enum MoveType
 {
     MoveOnly = 0,
     CaptureOnly = 1,
-    MoveAndCapture = 2
+    MoveAndCapture = 2,
+    MoveAndNoCapture = 3
 }
