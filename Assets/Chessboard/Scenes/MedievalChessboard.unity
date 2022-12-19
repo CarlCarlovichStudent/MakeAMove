@@ -6922,7 +6922,7 @@ GameObject:
   - component: {fileID: 840979342}
   - component: {fileID: 840979341}
   m_Layer: 5
-  m_Name: TimmerBlack
+  m_Name: TimerBlack
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6945,7 +6945,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -100, y: 200}
+  m_AnchoredPosition: {x: -25, y: 200}
   m_SizeDelta: {x: 400, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &840979341
@@ -15619,7 +15619,7 @@ GameObject:
   - component: {fileID: 1977025152}
   - component: {fileID: 1977025151}
   m_Layer: 5
-  m_Name: TimmerWhite
+  m_Name: TimerWhite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -15642,7 +15642,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 100, y: 200}
+  m_AnchoredPosition: {x: 30, y: 200}
   m_SizeDelta: {x: 400, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1977025151
@@ -16883,9 +16883,9 @@ MonoBehaviour:
   pawn: {fileID: 5832795104108962804, guid: d86f16433ff85064685a398846b2ec08, type: 3}
   winPoints: 5
   scoreText: {fileID: 83683443}
-  startTimmer: 25
-  timmerWhiteText: {fileID: 1977025151}
-  timmerBlackText: {fileID: 840979341}
+  startTimer: 25
+  timerWhiteText: {fileID: 1977025151}
+  timerBlackText: {fileID: 840979341}
   victoryScreen: {fileID: 1042273163}
   rematchIndicator: {fileID: 241666121}
   rematchButton: {fileID: 241666122}

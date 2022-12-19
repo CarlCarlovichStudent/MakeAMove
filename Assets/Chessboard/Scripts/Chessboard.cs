@@ -1,7 +1,5 @@
-using System;
 using TMPro;
 using Unity.Networking.Transport;
-using UnityEditorInternal;
 using UnityEngine;
 using Button = UnityEngine.UI.Button;
 
@@ -22,12 +20,12 @@ public class Chessboard : MonoBehaviour
     [Header("Piece prefabs")]
     [SerializeField] private GameObject pawn;
 
-    [Header("Points, mana and timmer")] 
+    [Header("Points, mana and timer")] 
     [SerializeField] private int winPoints;
-    [SerializeField] private TextMeshProUGUI scoreText;
-    [SerializeField] private int startTimmer;
-    [SerializeField] private TextMeshProUGUI timmerWhiteText;
-    [SerializeField] private TextMeshProUGUI timmerBlackText;
+    [SerializeField] private TextMeshProUGUI scoreText; 
+    [SerializeField] private int startTimer;
+    [SerializeField] private TextMeshProUGUI timerWhiteText;
+    [SerializeField] private TextMeshProUGUI timerBlackText;
     
 
     [Header("Rematch")]
@@ -75,8 +73,8 @@ public class Chessboard : MonoBehaviour
     private ChessPieceTeam team;
     private int myPoints;
     private int enemyPoints;
-    private int myTimmer;
-    private int enemyTimmer;
+    private int mytimer;
+    private int enemytimer;
     private float timeBank;
     private bool myTurn; // Improve when mana and multiple cards per round is implemented (fully fix current logic)
     
@@ -100,8 +98,8 @@ public class Chessboard : MonoBehaviour
         pieceContainer = CreateContainer("Pieces", transform);
         team = ChessPieceTeam.White;
         myTurn = false;
-        timmerWhiteText.text = $"White Timer: {startTimmer}"; 
-        timmerBlackText.text = $"Black Timer: {startTimmer}";
+        timerWhiteText.text = $"White Timer: {startTimer}"; 
+        timerBlackText.text = $"Black Timer: {startTimer}";
 
         GenerateAllTiles();
 
@@ -120,15 +118,23 @@ public class Chessboard : MonoBehaviour
 
         TileHandler();
 
-        TimmerUpdate();
+        timerUpdate();
     }
 
     private void WinConditionHandler()
     {
         if (!tutorialGame || tutorialGameStep > 10)
         {
-            scoreText.text = (myTurn ? "Your" : "Enemy") +
-                             $" turn\n\nYour points: {myPoints}/{winPoints}\nEnemy points: {enemyPoints}/{winPoints}";
+            if (localGame)
+            {
+                scoreText.text = (team == ChessPieceTeam.White ? "White's" : "Black's") 
+                                 + $" turn\n\nWhite points: {myPoints}/{winPoints}\nBlack points: {enemyPoints}/{winPoints}";
+            }
+            else
+            { 
+                scoreText.text = (myTurn ? "Your" : "Opponent's") 
+                                 + $" turn\n\nYour points: {myPoints}/{winPoints}\nEnemy points: {enemyPoints}/{winPoints}";
+            }
         }
         else
         {
@@ -666,9 +672,9 @@ public class Chessboard : MonoBehaviour
             {
                 GameUINet.Instance.ChangeCamera(team == ChessPieceTeam.White ? CameraAngle.blackTeam : CameraAngle.whiteTeam);
                 team = team == ChessPieceTeam.White ? ChessPieceTeam.Black : ChessPieceTeam.White;
-                myTimmer = startTimmer;
-                timmerWhiteText.color=Color.white;
-                timmerBlackText.color=Color.white;
+                mytimer = startTimer;
+                timerWhiteText.color=Color.white;
+                timerBlackText.color=Color.white;
             }
             else
             {
@@ -722,14 +728,14 @@ public class Chessboard : MonoBehaviour
         }
     }
     
-    private void TimmerUpdate()
+    private void timerUpdate()
     {
-        timmerWhiteText.text = $"White Timer: {startTimmer}";
-        timmerBlackText.text = $"Black Timer: {startTimmer}";
+        timerWhiteText.text = $"White Timer: {startTimer}";
+        timerBlackText.text = $"Black Timer: {startTimer}";
         if (TutorialGame)
         {
-            timmerBlackText.text = "";
-            timmerWhiteText.text = "";
+            timerBlackText.text = "";
+            timerWhiteText.text = "";
             return;
         }
         else
@@ -740,43 +746,43 @@ public class Chessboard : MonoBehaviour
 
                 if ((int)timeBank == 1)
                 {
-                    myTimmer--;
+                    mytimer--;
                     timeBank = 0;
                 }
 
                 switch (team)
                 {
                     case ChessPieceTeam.White:
-                        timmerWhiteText.text = $"White Timer: {myTimmer}";
+                        timerWhiteText.text = $"White Timer: {mytimer}";
                         break;
                     case ChessPieceTeam.Black:
-                        timmerBlackText.text = $"Black Timer: {myTimmer}";
+                        timerBlackText.text = $"Black Timer: {mytimer}";
                         break;
                 }
 
-                if (myTimmer <= 0)
+                if (mytimer <= 0)
                 {
                     HandleTurn();
                 }
 
-                if (myTimmer <= startTimmer / 5)
+                if (mytimer <= startTimer / 5)
                 {
                     switch (team)
                     {
                         case ChessPieceTeam.White:
-                            timmerWhiteText.color = Color.red;
+                            timerWhiteText.color = Color.red;
                             break;
                         case ChessPieceTeam.Black:
-                            timmerBlackText.color = Color.red;
+                            timerBlackText.color = Color.red;
                             break;
                     }
                 }
             }
             else
             {
-                myTimmer = startTimmer;
-                timmerWhiteText.color = Color.white;
-                timmerBlackText.color = Color.white;
+                mytimer = startTimer;
+                timerWhiteText.color = Color.white;
+                timerBlackText.color = Color.white;
             }
         }
     }
