@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.37311953, g: 0.38074014, b: 0.3587274, a: 1}
+  m_IndirectSpecularColor: {r: 0.37311918, g: 0.3807398, b: 0.35872716, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -295,7 +295,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 30550213}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 5.26, y: 0, z: 1.04}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -384,7 +384,7 @@ AudioSource:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 0.871
+      value: 0.919
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -399,7 +399,7 @@ AudioSource:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 0.33888888
+      value: 0.225
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -414,7 +414,7 @@ AudioSource:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 1
+      value: 1.009
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -5381,7 +5381,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
   m_PlayOnAwake: 0
-  m_Volume: 0.468
+  m_Volume: 0.7
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -5496,14 +5496,14 @@ MonoBehaviour:
   oneShot: 0
   startDelay: 1
   playWithFade: 1
-  targetVolume: 0.687
+  targetVolume: 0.7
   fadeSpeed: 0.2
   clipsToPlay:
-  - {fileID: 8300000, guid: cd2fb01589e8fd7448bfb07637e43439, type: 3}
+  - {fileID: 8300000, guid: 96325b1e0f507a04e8a339cd9a85b7df, type: 3}
   minTime: 0
   maxTime: 0
-  minVolume: 1
-  maxVolume: 1
+  minVolume: 0.7
+  maxVolume: 0.7
   minPitch: 1
   maxPitch: 1
 --- !u!1 &671746805
@@ -10317,7 +10317,6 @@ MonoBehaviour:
   targetVolume: 1
   fadeSpeed: 1
   clipsToPlay:
-  - {fileID: 8300000, guid: 9f8d78ffffb27a2478d5d334c7bcdb9c, type: 3}
   - {fileID: 8300000, guid: e5bf3465745980041a034c9eef0b50f7, type: 3}
   minTime: 0
   maxTime: 0
