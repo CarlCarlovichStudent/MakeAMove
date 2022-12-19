@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using TowerDefense.UI;
 using UnityEngine;
 
 public enum CameraAngle
@@ -20,6 +21,7 @@ public class GameUINet : MonoBehaviour
     [SerializeField] private GameObject[] cameraAngles;
     [SerializeField] private Animator menuAnimation;
     [SerializeField] private TMP_InputField addressInput;
+    //[SerializeField] public canvas pauseMenuActive;
     
     private int opponentTurn = 0;
     
@@ -94,6 +96,12 @@ public class GameUINet : MonoBehaviour
     {
         menuAnimation.SetTrigger("InGameMenu");
         Server.Instace.Broadcast(new NetStartGame());
+    }
+
+    public void OnPauseMenu(string name)
+    {
+        //pauseMenuActive. = false;
+        //menuAnimation.SetTrigger(name);
     }
     
     //Tutorials
