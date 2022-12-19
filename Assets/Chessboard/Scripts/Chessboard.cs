@@ -642,7 +642,7 @@ public class Chessboard : MonoBehaviour
                 amount++;
             }
         }
-
+        
         return amount;
     }
     

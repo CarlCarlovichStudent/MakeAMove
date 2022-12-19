@@ -20,12 +20,12 @@ public class CardDeckHandler : MonoBehaviour
     [SerializeField] private AudioPlay audioHoverCard;
     [SerializeField] private AudioPlay audioSelectCard;
     
-
     private const float UseCardTime = 0.5f;
     private const float RespawnOffset = 0.3f;
     
     private Chessboard board;
     private float[] respawnTimers;
+    private int starting;
     
     // Cards
     private List<CardBehavior> cardPool;
@@ -64,7 +64,6 @@ public class CardDeckHandler : MonoBehaviour
                     if (respawnTimers[i] <= 0)
                     {
                         hand[i] = InitializeCard(i);
-
                     }
                 } 
             }
@@ -95,7 +94,7 @@ public class CardDeckHandler : MonoBehaviour
         int totalCards = 0;
         foreach (Card c in hand)
         {
-            if (c != null)
+            if (c is not null)
             {
                 totalCards++;
             }
@@ -154,10 +153,13 @@ public class CardDeckHandler : MonoBehaviour
         hand = new Card[handSize];
         respawnTimers = new float[handSize];
         
+        starting = 0;
         for (int i = 0; i < handSize; i++)
         {
             hand[i] = InitializeCard(i);
+            starting++;
         }
+        starting = 0;
     }
 
     private Card InitializeCard(int slot)
@@ -252,16 +254,13 @@ public class CardDeckHandler : MonoBehaviour
     // Randomizer
     private CardBehavior GetRandomCardBehavior() // TODO: Improve
     {
-        int spawnAmount = board.GetPieceAmount();
-
-        foreach (Card card in hand)
-        {
-            if (card?.behavior.cardType == CardType.Summon)
-            {
-                spawnAmount++;
-            }
-        }
+        int spawnAmount = starting + board.GetPieceAmount();
         
+        foreach (Card card in hand)
+        { 
+            if (card?.behavior.cardType == CardType.Summon && !card.forcedMovement) spawnAmount++;
+        }
+
         List<CardBehavior> behaviors = new List<CardBehavior>();
         if (spawnAmount < 1)
         {
