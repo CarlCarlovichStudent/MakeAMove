@@ -65,11 +65,11 @@ public class AudioPlay : MonoBehaviour
             if (playingAudioFunction == false || oneShot == true)
             {
                 
-                Debug.Log("Started AudioFunction");
+                //Debug.Log("Started AudioFunction");
                 StartCoroutine("RandomClip");
             }
-            else
-                Debug.Log("Audio Function already playing");
+            //else
+                //Debug.Log("Audio Function already playing");
         }
     }
 
@@ -82,7 +82,7 @@ public class AudioPlay : MonoBehaviour
         {
             playingAudioFunction = false;
             source.Stop();
-            Debug.Log("Stopped AudioFunction");
+            //Debug.Log("Stopped AudioFunction");
         }
         firstPlay = false;
     }
@@ -95,7 +95,7 @@ public class AudioPlay : MonoBehaviour
             yield return null;
         }
         source.Stop();
-        Debug.Log("Stopped AudioFunction");
+        //Debug.Log("Stopped AudioFunction");
         playingAudioFunction = false;
     }
 
@@ -137,7 +137,7 @@ public class AudioPlay : MonoBehaviour
                 if(playWithFade)
                     source.volume = 0f;
                 firstPlay = false;
-                Debug.Log("Stopped AudioFunction");
+                //Debug.Log("Stopped AudioFunction");
             }
         }
         else
@@ -155,7 +155,7 @@ public class AudioPlay : MonoBehaviour
             else
             {
                 firstPlay = false;
-                Debug.Log("Stopped AudioFunction else");
+                //Debug.Log("Stopped AudioFunction else");
             }
         }
     }
@@ -173,12 +173,12 @@ public class AudioPlay : MonoBehaviour
             int clip = Random.Range(0, clipsToPlay.Length);
             if (clip == tempClip)
             {
-                Debug.Log("Tried to play the clip - Restarting");
+                //Debug.Log("Tried to play the clip - Restarting");
                 StartCoroutine("RandomClip");
             }
             else
             {
-                Debug.Log("Picked a new clip - Success");
+                //Debug.Log("Picked a new clip - Success");
                 source.clip = clipsToPlay[clip];
                 tempClip = clip;
                 StartCoroutine("AudioFunction");
