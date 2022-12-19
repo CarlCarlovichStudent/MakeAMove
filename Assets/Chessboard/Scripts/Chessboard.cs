@@ -1,5 +1,7 @@
+using System;
 using TMPro;
 using Unity.Networking.Transport;
+using UnityEditorInternal;
 using UnityEngine;
 using Button = UnityEngine.UI.Button;
 
@@ -13,18 +15,20 @@ public class Chessboard : MonoBehaviour
     [SerializeField] private float tileSize = 1.0f;
     [SerializeField] private float yOffset = 1.0f;
 
-    [Header("Team Textures")] 
-    [SerializeField] private Texture whiteTeamTexture;
-    [SerializeField] private Texture blackTeamTexture;
+    [Header("Team Textures")]
     [SerializeField] private Material blackTeamMaterial;
     [SerializeField] private Material whiteTeamMaterial;
 
     [Header("Piece prefabs")]
     [SerializeField] private GameObject pawn;
 
-    [Header("Points and mana")] 
+    [Header("Points, mana and timmer")] 
     [SerializeField] private int winPoints;
     [SerializeField] private TextMeshProUGUI scoreText;
+    [SerializeField] private int startTimmer;
+    [SerializeField] private TextMeshProUGUI timmerWhiteText;
+    [SerializeField] private TextMeshProUGUI timmerBlackText;
+    
 
     [Header("Rematch")]
     [SerializeField] private GameObject victoryScreen;
@@ -119,6 +123,8 @@ public class Chessboard : MonoBehaviour
         WinConditionHandler();
 
         TileHandler();
+
+        //TimmerUpdate();
     }
 
     private void WinConditionHandler()
@@ -268,14 +274,13 @@ public class Chessboard : MonoBehaviour
                 if (currentHover.piece is null) audioHandler.moveKnight.PlayAudio();
                 else audioHandler.killKnightSwosh.PlayAudio(); 
                 
-
                 MoveTo(currentlyDragging.boardPosition, currentHover.Position);
+
                 if (tutorialGameStep == 10 && PuzzleActive && myPoints>1)
                 {
                     ResetGame();
                     GameUINet.Instance.OnFreePlayTutorial();
                     myPoints = 2;
-                    Debug.Log("Hefoegeo");
                 }
             }
             else
@@ -289,16 +294,17 @@ public class Chessboard : MonoBehaviour
 
     private void MoveTo(Vector2Int from, Vector2Int to)
     {
+        Debug.Log("qweryt");
         tiles[to.x, to.y].piece?.DestroyPiece();
         tiles[to.x, to.y].piece = currentlyDragging;
         tiles[from.x, from.y].piece = null;
-
+        Debug.Log("qweryt1");
         PositionPiece(ref currentlyDragging, to);
-        
+        Debug.Log("qweryt2");
         currentlyDragging = null;
         selectedBehavior = null;
         cardDeckHandler.UseCard();
-        
+        Debug.Log("qweryt3");
         if (team == ChessPieceTeam.White)
         {
             if (to.y == 7)
@@ -326,9 +332,11 @@ public class Chessboard : MonoBehaviour
                 audioHandler.score.PlayAudio();
             }
         }
+        Debug.Log("qweryt4");
 
         HandleTurn();
 
+        Debug.Log("qweryt5");
         if (tutorialGameStep == 5 || tutorialGameStep == 7)
         {
             GameUINet.Instance.OnOpponentTutorial();
@@ -698,22 +706,25 @@ public class Chessboard : MonoBehaviour
 
             if (PuzzleActive)
             {
+                Debug.Log(cardDeckHandler.GetCurrentAmountCardsHeld());
                 switch (cardDeckHandler.GetCurrentAmountCardsHeld())
                 {
                     case 4:
-                        ReceiveMove(new Vector2Int(7,2), new Vector2Int(7,1));
+                        Debug.Log("Heo");
+                        ReceiveMove(new Vector2Int(7, 2), new Vector2Int(7, 1));
                         break;
                     case 3:
-                        ReceiveMove(new Vector2Int(1,6), new Vector2Int(1,3));
+                        Debug.Log("Heo2");
+                        ReceiveMove(new Vector2Int(1, 6), new Vector2Int(1, 3));
                         break;
                     case 2:
-                        ReceiveMove(new Vector2Int(2,7), new Vector2Int(2,6));
+                        Debug.Log("Heo3");
+                        ReceiveMove(new Vector2Int(2, 7), new Vector2Int(2, 6));
                         break;
                     default:
                         Debug.Log("Hey look at me");
                         break;
                 }
-                Debug.Log(cardDeckHandler.GetCurrentAmountCardsHeld());
             }
             myTurn = true;
         }
@@ -860,6 +871,13 @@ public class Chessboard : MonoBehaviour
 
     public void OnMenuButton()
     {
+        if (tutorialGame)
+        {
+            GameUINet.Instance.OnLeaveFromGameMenu();
+            audioHandler.menuMusic.Play();
+            audioHandler.exitMenuMusic.StopAudio(audioHandler.fadeOut);
+            return;
+        }
         NetRematch rm = new NetRematch();
         rm.teamId = currentTeam;
         rm.wantRematch = 0;

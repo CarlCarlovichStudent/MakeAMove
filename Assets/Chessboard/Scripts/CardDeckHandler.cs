@@ -94,7 +94,7 @@ public class CardDeckHandler : MonoBehaviour
         int totalCards = 0;
         foreach (Card c in hand)
         {
-            if (c is not null)
+            if (c != null)
             {
                 totalCards++;
             }

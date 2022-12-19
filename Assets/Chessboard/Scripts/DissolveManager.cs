@@ -19,7 +19,6 @@ public class DissolveManager : MonoBehaviour
     private void Start()
     {
         materialsForward.Add(GetComponent<MeshRenderer>().material);
-        Debug.Log(materialsForward.First().name);
         OnReset();
     }
 
@@ -51,8 +50,6 @@ public class DissolveManager : MonoBehaviour
         {
             StartCoroutine(DissolveSmoothly(mat));
         }
-        Debug.Log("dissolveing");
-        
     }
 
     private IEnumerator DissolveSmoothly(Material mat)

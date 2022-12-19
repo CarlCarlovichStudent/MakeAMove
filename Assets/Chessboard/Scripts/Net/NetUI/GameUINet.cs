@@ -20,9 +20,9 @@ public class GameUINet : MonoBehaviour
     
     [SerializeField] private GameObject[] cameraAngles;
     [SerializeField] private Animator menuAnimation;
+    [SerializeField] private Animator pauseAnimaiton;
     [SerializeField] private TMP_InputField addressInput;
-    //[SerializeField] public canvas pauseMenuActive;
-    
+
     private int opponentTurn = 0;
     
     public Action<bool> SetLocalGame;
@@ -34,7 +34,15 @@ public class GameUINet : MonoBehaviour
         Instance = this;
         RegisterEvents();
     }
-    
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Tab)&&!menuAnimation.GetBool("StartIsOn"))
+        {
+            pauseAnimaiton.SetTrigger("PauseMenu");
+        }
+    }
+
     //Camera work
     public void ChangeCamera(CameraAngle index)
     {
@@ -51,11 +59,13 @@ public class GameUINet : MonoBehaviour
         SetLocalGame?.Invoke(true);
         server.Init(8007);
         client.Init("127.0.0.1", 8007);
+        menuAnimation.SetBool("StartIsOn",false);
     }
     
     public void OnOnlineGameButton()
     {
         menuAnimation.SetTrigger("OnlineMenu");
+        menuAnimation.SetBool("StartIsOn",false);
     }
     
     public void OnOnlineHostButton()
@@ -74,6 +84,7 @@ public class GameUINet : MonoBehaviour
     public void OnOnlineBackButton()
     {
         menuAnimation.SetTrigger("StartMenu");
+        menuAnimation.SetBool("StartIsOn",true);
     }
     
     public void OnHostBackButton()
@@ -87,9 +98,11 @@ public class GameUINet : MonoBehaviour
     {
         ChangeCamera(CameraAngle.menu);
         menuAnimation.SetTrigger("StartMenu");
+        menuAnimation.SetBool("StartIsOn",true);
         menuAnimation.SetInteger("TutorialStep", 0);
         SetTutorialGame?.Invoke(false);
         SetTutorialGameStep?.Invoke(0);
+        pauseAnimaiton.SetTrigger("PauseMenu");
     }
 
     public void OnResetToGameMenu()
@@ -98,10 +111,9 @@ public class GameUINet : MonoBehaviour
         Server.Instace.Broadcast(new NetStartGame());
     }
 
-    public void OnPauseMenu(string name)
+    public void OnPauseMenu()
     {
-        //pauseMenuActive. = false;
-        //menuAnimation.SetTrigger(name);
+        pauseAnimaiton.SetTrigger("PauseMenu");
     }
     
     //Tutorials
@@ -112,6 +124,7 @@ public class GameUINet : MonoBehaviour
         ChangeCamera(CameraAngle.whiteTeam);
         SetTutorialGame?.Invoke(true);
         SetTutorialGameStep?.Invoke(1);
+        menuAnimation.SetBool("StartIsOn",false);
     }
     
     public void OnCardTutorial()
