@@ -75,6 +75,9 @@ public class Chessboard : MonoBehaviour
     private ChessPieceTeam team;
     private int myPoints;
     private int enemyPoints;
+    private int myTimmer;
+    private int enemyTimmer;
+    private float timeBank;
     private bool myTurn; // Improve when mana and multiple cards per round is implemented (fully fix current logic)
     
     //MultiLogic
@@ -91,21 +94,14 @@ public class Chessboard : MonoBehaviour
     private bool puzzleSetUp = true;
     public bool PuzzleActive { get; set; }
 
-    private Material shaderMaterial;
-    //[Header("Shader test")]
-    //[SerializeField] private shaderGraph;
-
-    private void Start()
-    {
-        shaderMaterial = new Material(Shader.Find("Shader Graphs/Dissolve"));
-    }
-
     private void Awake()
     {
         cardDeckHandler = GetComponent<CardDeckHandler>();
         pieceContainer = CreateContainer("Pieces", transform);
         team = ChessPieceTeam.White;
         myTurn = false;
+        timmerWhiteText.text = $"White Timer: {startTimmer}"; 
+        timmerBlackText.text = $"Black Timer: {startTimmer}";
 
         GenerateAllTiles();
 
@@ -124,7 +120,7 @@ public class Chessboard : MonoBehaviour
 
         TileHandler();
 
-        //TimmerUpdate();
+        TimmerUpdate();
     }
 
     private void WinConditionHandler()
@@ -294,17 +290,16 @@ public class Chessboard : MonoBehaviour
 
     private void MoveTo(Vector2Int from, Vector2Int to)
     {
-        Debug.Log("qweryt");
         tiles[to.x, to.y].piece?.DestroyPiece();
         tiles[to.x, to.y].piece = currentlyDragging;
-        tiles[from.x, from.y].piece = null;
-        Debug.Log("qweryt1");
+        tiles[from.x, from.y].piece = null; 
+        
         PositionPiece(ref currentlyDragging, to);
-        Debug.Log("qweryt2");
+        
         currentlyDragging = null;
         selectedBehavior = null;
         cardDeckHandler.UseCard();
-        Debug.Log("qweryt3");
+        
         if (team == ChessPieceTeam.White)
         {
             if (to.y == 7)
@@ -332,11 +327,9 @@ public class Chessboard : MonoBehaviour
                 audioHandler.score.PlayAudio();
             }
         }
-        Debug.Log("qweryt4");
 
         HandleTurn();
 
-        Debug.Log("qweryt5");
         if (tutorialGameStep == 5 || tutorialGameStep == 7)
         {
             GameUINet.Instance.OnOpponentTutorial();
@@ -673,6 +666,9 @@ public class Chessboard : MonoBehaviour
             {
                 GameUINet.Instance.ChangeCamera(team == ChessPieceTeam.White ? CameraAngle.blackTeam : CameraAngle.whiteTeam);
                 team = team == ChessPieceTeam.White ? ChessPieceTeam.Black : ChessPieceTeam.White;
+                myTimmer = startTimmer;
+                timmerWhiteText.color=Color.white;
+                timmerBlackText.color=Color.white;
             }
             else
             {
@@ -710,23 +706,78 @@ public class Chessboard : MonoBehaviour
                 switch (cardDeckHandler.GetCurrentAmountCardsHeld())
                 {
                     case 4:
-                        Debug.Log("Heo");
                         ReceiveMove(new Vector2Int(7, 2), new Vector2Int(7, 1));
                         break;
                     case 3:
-                        Debug.Log("Heo2");
                         ReceiveMove(new Vector2Int(1, 6), new Vector2Int(1, 3));
                         break;
                     case 2:
-                        Debug.Log("Heo3");
                         ReceiveMove(new Vector2Int(2, 7), new Vector2Int(2, 6));
                         break;
                     default:
-                        Debug.Log("Hey look at me");
                         break;
                 }
             }
             myTurn = true;
+        }
+    }
+    
+    private void TimmerUpdate()
+    {
+        timmerWhiteText.text = $"White Timer: {startTimmer}";
+        timmerBlackText.text = $"Black Timer: {startTimmer}";
+        if (TutorialGame)
+        {
+            timmerBlackText.text = "";
+            timmerWhiteText.text = "";
+            return;
+        }
+        else
+        {
+            if (myTurn)
+            {
+                timeBank += Time.deltaTime;
+
+                if ((int)timeBank == 1)
+                {
+                    myTimmer--;
+                    timeBank = 0;
+                }
+
+                switch (team)
+                {
+                    case ChessPieceTeam.White:
+                        timmerWhiteText.text = $"White Timer: {myTimmer}";
+                        break;
+                    case ChessPieceTeam.Black:
+                        timmerBlackText.text = $"Black Timer: {myTimmer}";
+                        break;
+                }
+
+                if (myTimmer <= 0)
+                {
+                    HandleTurn();
+                }
+
+                if (myTimmer <= startTimmer / 5)
+                {
+                    switch (team)
+                    {
+                        case ChessPieceTeam.White:
+                            timmerWhiteText.color = Color.red;
+                            break;
+                        case ChessPieceTeam.Black:
+                            timmerBlackText.color = Color.red;
+                            break;
+                    }
+                }
+            }
+            else
+            {
+                myTimmer = startTimmer;
+                timmerWhiteText.color = Color.white;
+                timmerBlackText.color = Color.white;
+            }
         }
     }
 

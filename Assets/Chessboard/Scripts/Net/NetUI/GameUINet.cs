@@ -96,13 +96,17 @@ public class GameUINet : MonoBehaviour
 
     public void OnLeaveFromGameMenu()
     {
+        if (menuAnimation.GetInteger("TutorialStep") == 0)
+        {
+            pauseAnimaiton.SetTrigger("PauseMenu");
+        }
+
         ChangeCamera(CameraAngle.menu);
         menuAnimation.SetTrigger("StartMenu");
         menuAnimation.SetBool("StartIsOn",true);
         menuAnimation.SetInteger("TutorialStep", 0);
         SetTutorialGame?.Invoke(false);
         SetTutorialGameStep?.Invoke(0);
-        pauseAnimaiton.SetTrigger("PauseMenu");
     }
 
     public void OnResetToGameMenu()
