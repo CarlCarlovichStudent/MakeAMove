@@ -37,7 +37,7 @@ public class GameUINet : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Tab)&&!menuAnimation.GetBool("StartIsOn"))
+        if ((Input.GetKeyDown(KeyCode.Tab)||Input.GetKeyDown(KeyCode.Escape))&&!menuAnimation.GetBool("StartIsOn"))
         {
             pauseAnimaiton.SetTrigger("PauseMenu");
         }
@@ -96,11 +96,17 @@ public class GameUINet : MonoBehaviour
 
     public void OnLeaveFromGameMenu()
     {
-        if (menuAnimation.GetInteger("TutorialStep") == 0)
-        {
-            pauseAnimaiton.SetTrigger("PauseMenu");
-        }
-
+        ChangeCamera(CameraAngle.menu);
+        menuAnimation.SetTrigger("StartMenu");
+        menuAnimation.SetBool("StartIsOn",true);
+        menuAnimation.SetInteger("TutorialStep", 0);
+        SetTutorialGame?.Invoke(false);
+        SetTutorialGameStep?.Invoke(0);
+    }
+    
+    public void OnLeaveFromGameMenuWithPause()
+    {
+        pauseAnimaiton.SetTrigger("PauseMenu");
         ChangeCamera(CameraAngle.menu);
         menuAnimation.SetTrigger("StartMenu");
         menuAnimation.SetBool("StartIsOn",true);

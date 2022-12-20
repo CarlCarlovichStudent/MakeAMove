@@ -108,6 +108,8 @@ public class Chessboard : MonoBehaviour
         myTurn = false;
         timmerWhiteText.text = $"White Timer: {startTimmer}"; 
         timmerBlackText.text = $"Black Timer: {startTimmer}";
+        myTimmer = startTimmer;
+        enemyTimmer = startTimmer;
         if (!manaisOff)
         {
             currentMana = manaStart;
@@ -143,8 +145,16 @@ public class Chessboard : MonoBehaviour
     {
         if (!tutorialGame || tutorialGameStep > 10)
         {
-            scoreText.text = (myTurn ? "Your" : "Enemy") +
-                             $" turn\n\nYour points: {myPoints}/{winPoints}\nEnemy points: {enemyPoints}/{winPoints}";
+            if (localGame)
+            {
+                scoreText.text = (team == ChessPieceTeam.White ? "White's" : "Black's") 
+                                 + $" turn\n\nWhite points: {myPoints}/{winPoints}\nBlack points: {enemyPoints}/{winPoints}";
+            }
+            else
+            { 
+                scoreText.text = (myTurn ? "Your" : "Opponent's") 
+                                 + $" turn\n\nYour points: {myPoints}/{winPoints}\nEnemy points: {enemyPoints}/{winPoints}";
+            }
         }
         else
         {
@@ -800,6 +810,7 @@ public class Chessboard : MonoBehaviour
         {
             if (myTurn)
             {
+                enemyTimmer = startTimmer;
                 timeBank += Time.deltaTime;
 
                 if ((int)timeBank == 1)
@@ -817,13 +828,8 @@ public class Chessboard : MonoBehaviour
                         timmerBlackText.text = $"Black Timer: {myTimmer}";
                         break;
                 }
-
-                if (myTimmer <= 0)
-                {
-                    HandleTurn();
-                }
-
-                if (myTimmer <= startTimmer / 5)
+                
+                if (myTimmer <= 5)
                 {
                     switch (team)
                     {
@@ -835,12 +841,56 @@ public class Chessboard : MonoBehaviour
                             break;
                     }
                 }
+
+                if (myTimmer <= 0)
+                {
+                    HandleTurn();
+                    timmerWhiteText.color = Color.white;
+                    timmerBlackText.color = Color.white;
+                }
             }
             else
             {
                 myTimmer = startTimmer;
-                timmerWhiteText.color = Color.white;
-                timmerBlackText.color = Color.white;
+                if (!localGame)
+                {
+                    timeBank += Time.deltaTime;
+
+                    if ((int)timeBank == 1)
+                    {
+                        enemyTimmer--;
+                        timeBank = 0;
+                    }
+                    
+                    if (enemyTimmer <= 5)
+                    {
+                        switch (team)
+                        {
+                            case ChessPieceTeam.White:
+                                timmerBlackText.color = Color.red;
+                                break;
+                            case ChessPieceTeam.Black:
+                                timmerWhiteText.color = Color.red;
+                                break;
+                        }
+                    }
+                    
+                    if (enemyTimmer <= 0)
+                    {
+                        myTurn = true;
+                        timmerWhiteText.color = Color.white;
+                        timmerBlackText.color = Color.white;
+                    }
+                    switch (team)
+                    {
+                        case ChessPieceTeam.White:
+                            timmerBlackText.text = $"Black Timer: {enemyTimmer}";
+                            break;
+                        case ChessPieceTeam.Black:
+                            timmerWhiteText.text = $"White Timer: {enemyTimmer}";
+                            break;
+                    }
+                }
             }
         }
     }
@@ -1004,6 +1054,33 @@ public class Chessboard : MonoBehaviour
         Client.Instace.SendToServer(rm);
         
         GameUINet.Instance.OnLeaveFromGameMenu();
+        
+        Invoke("ShutdownRelay", 1.0f);
+        
+        // Music
+        audioHandler.menuMusic.Play();
+        audioHandler.exitMenuMusic.StopAudio(audioHandler.fadeOut);
+        
+        //resetValues
+        playerCount = -1;
+        currentTeam = -1;
+    }
+    
+    public void OnMenuButtonPause()
+    {
+        if (tutorialGame)
+        {
+            GameUINet.Instance.OnLeaveFromGameMenuWithPause();
+            audioHandler.menuMusic.Play();
+            audioHandler.exitMenuMusic.StopAudio(audioHandler.fadeOut);
+            return;
+        }
+        NetRematch rm = new NetRematch();
+        rm.teamId = currentTeam;
+        rm.wantRematch = 0;
+        Client.Instace.SendToServer(rm);
+        
+        GameUINet.Instance.OnLeaveFromGameMenuWithPause();
         
         Invoke("ShutdownRelay", 1.0f);
         
@@ -1217,6 +1294,7 @@ public class Chessboard : MonoBehaviour
         myTurn = false;
         ResetGame();
         cardDeckHandler.ResetHand(1);
+        team = ChessPieceTeam.White;
     }
     
     private void OnSetTutorialGameStep(int obj)
