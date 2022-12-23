@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.43667564, g: 0.48427135, b: 0.5645233, a: 1}
+  m_IndirectSpecularColor: {r: 0.43667564, g: 0.48427135, b: 0.5645232, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -1156,7 +1156,7 @@ GameObject:
   - component: {fileID: 83683444}
   - component: {fileID: 83683443}
   m_Layer: 5
-  m_Name: ScoreText
+  m_Name: Score Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1479,7 +1479,7 @@ GameObject:
   - component: {fileID: 127441801}
   - component: {fileID: 127441800}
   m_Layer: 5
-  m_Name: ManaValue
+  m_Name: Mana Value
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7312,7 +7312,7 @@ GameObject:
   - component: {fileID: 840979342}
   - component: {fileID: 840979341}
   m_Layer: 5
-  m_Name: TimmerBlack
+  m_Name: Timer Black
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7582,7 +7582,7 @@ GameObject:
   - component: {fileID: 869018445}
   - component: {fileID: 869018444}
   m_Layer: 5
-  m_Name: Tilte
+  m_Name: Title
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -9117,7 +9117,7 @@ GameObject:
   - component: {fileID: 1020169553}
   - component: {fileID: 1020169552}
   m_Layer: 5
-  m_Name: Tilte After Move
+  m_Name: Title After Move
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -10854,7 +10854,7 @@ GameObject:
   - component: {fileID: 1210432941}
   - component: {fileID: 1210432940}
   m_Layer: 5
-  m_Name: Tilte After Capture
+  m_Name: Title After Capture
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -16523,7 +16523,7 @@ GameObject:
   - component: {fileID: 1977025152}
   - component: {fileID: 1977025151}
   m_Layer: 5
-  m_Name: TimmerWhite
+  m_Name: Timer White
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -17787,14 +17787,11 @@ MonoBehaviour:
   whiteTeamMaterial: {fileID: 2100000, guid: 998347fddee9ffd429b9a99375fd432d, type: 2}
   pawn: {fileID: 5832795104108962804, guid: d86f16433ff85064685a398846b2ec08, type: 3}
   winPoints: 5
-  scoreText: {fileID: 83683443}
   manaisOff: 1
   manaStart: 3
   manaGrowth: 1
-  manaText: {fileID: 127441800}
   startTimmer: 50
-  timmerWhiteText: {fileID: 1977025151}
-  timmerBlackText: {fileID: 840979341}
+  textManager: {fileID: 4000013639899782}
   victoryScreen: {fileID: 1042273163}
   rematchIndicator: {fileID: 241666121}
   rematchButton: {fileID: 241666122}
@@ -17802,8 +17799,6 @@ MonoBehaviour:
   blackWinText: {fileID: 731556919}
   otherWantRematch: {fileID: 936993671}
   noToRematch: {fileID: 913406584}
-  opponentMove: {fileID: 1138150830}
-  opponentSpawned: {fileID: 1874023643}
   audioHandler: {fileID: 4000013639899781}
   cardDeckHandler: {fileID: 2056848573}
 --- !u!114 &2056848573
@@ -18350,6 +18345,7 @@ GameObject:
   - component: {fileID: 2056848571}
   - component: {fileID: 2056848573}
   - component: {fileID: 4000013639899781}
+  - component: {fileID: 4000013639899782}
   m_Layer: 0
   m_Name: Chess Board
   m_TagString: Untagged
@@ -18403,3 +18399,32 @@ MonoBehaviour:
   moveKnight: {fileID: 1686463753}
   wrongMove: {fileID: 111575075}
   loosePoint: {fileID: 1390889589}
+--- !u!114 &4000013639899782
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1000010357434584}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b2f46e42af10b554f8255af795103195, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GraphicTextInTutorial:
+  - {fileID: 869018444}
+  - {fileID: 1020169552}
+  - {fileID: 1210432940}
+  - {fileID: 1874023643}
+  - {fileID: 1138150830}
+  - {fileID: 1069585582}
+  GraphicTextInGamePlay:
+  - {fileID: 83683443}
+  - {fileID: 1977025151}
+  - {fileID: 840979341}
+  - {fileID: 127441800}
+  GraphicTextInRematch:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}

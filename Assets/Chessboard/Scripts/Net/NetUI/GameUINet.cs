@@ -100,8 +100,8 @@ public class GameUINet : MonoBehaviour
         menuAnimation.SetTrigger("StartMenu");
         menuAnimation.SetBool("StartIsOn",true);
         menuAnimation.SetInteger("TutorialStep", 0);
-        SetTutorialGame?.Invoke(false);
         SetTutorialGameStep?.Invoke(0);
+        SetTutorialGame?.Invoke(false);
     }
     
     public void OnLeaveFromGameMenuWithPause()
@@ -111,8 +111,8 @@ public class GameUINet : MonoBehaviour
         menuAnimation.SetTrigger("StartMenu");
         menuAnimation.SetBool("StartIsOn",true);
         menuAnimation.SetInteger("TutorialStep", 0);
-        SetTutorialGame?.Invoke(false);
         SetTutorialGameStep?.Invoke(0);
+        SetTutorialGame?.Invoke(false);
     }
 
     public void OnResetToGameMenu()

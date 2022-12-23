@@ -36,7 +36,8 @@ public class CardDeckHandler : MonoBehaviour
     private int handSize;
     
     //Tutorial
-    private int tutorialStepForCards = 0;
+    private int tutorialStepForCards = -1;
+    private int[] tutorialCards = new[] { 0, 3, 2, 2, 1, 3, 1, 3 };
 
     private void Awake()
     {
@@ -170,6 +171,11 @@ public class CardDeckHandler : MonoBehaviour
     private Card InitializeCard(int slot)
     {
         CardBehavior behavior = new CardBehavior();
+        if (board.TutorialGameStep == 0 || board.TutorialGameStep >= 11)
+        {
+            tutorialStepForCards = -1;
+        }
+
         if (board.TutorialGame && board.TutorialGameStep<10)
         {
             behavior = GetTutorialCardBehavior();
@@ -177,11 +183,6 @@ public class CardDeckHandler : MonoBehaviour
         else
         {
             behavior = GetRandomCardBehavior();
-        }
-
-        if (board.TutorialGameStep >= 11)
-        {
-            tutorialStepForCards = 0;
         }
 
 
@@ -224,36 +225,10 @@ public class CardDeckHandler : MonoBehaviour
     {
         //Define all cards
         List<CardBehavior> behaviors = deck.GetCards();
-
-        switch (tutorialStepForCards)
-        {
-            case <6 :
-                tutorialStepForCards++;
-                return behaviors[0];
-            case <7 :
-                tutorialStepForCards++;
-                return behaviors[3];
-            case <8 :
-                tutorialStepForCards++;
-                return behaviors[2];
-            case <9 :
-                tutorialStepForCards++;
-                return behaviors[2];
-            case <10 :
-                tutorialStepForCards++;
-                return behaviors[1];
-            case <11 :
-                tutorialStepForCards++;
-                return behaviors[3];
-            case <12 :
-                tutorialStepForCards++;
-                return behaviors[1];
-            case <13 :
-                tutorialStepForCards++;
-                return behaviors[3];
-            default:
-                return null;
-        }
+        tutorialStepForCards++;
+        
+        //Check tutorial cards array for the order of the cards
+        return behaviors[tutorialCards[tutorialStepForCards]];
     }
     
     // Randomizer

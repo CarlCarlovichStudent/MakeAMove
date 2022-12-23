@@ -3,6 +3,7 @@ using TMPro;
 using Unity.Networking.Transport;
 using UnityEngine;
 using UnityEngine.PlayerLoop;
+using UnityEngine.UI;
 using Button = UnityEngine.UI.Button;
 
 public class Chessboard : MonoBehaviour
@@ -24,16 +25,14 @@ public class Chessboard : MonoBehaviour
 
     [Header("Points, mana and timmer")] 
     [SerializeField] private int winPoints;
-    [SerializeField] private TextMeshProUGUI scoreText;
     [SerializeField] private bool manaisOff;
     [SerializeField] private int manaStart;
     [SerializeField] private int manaGrowth;
-    [SerializeField] private TextMeshProUGUI manaText;
     [SerializeField] private int startTimmer;
-    [SerializeField] private TextMeshProUGUI timmerWhiteText;
-    [SerializeField] private TextMeshProUGUI timmerBlackText;
-    
 
+    [Header("TextManager")]
+    [SerializeField] private TextManager textManager;
+    
     [Header("Rematch")]
     [SerializeField] private GameObject victoryScreen;
     [SerializeField] private Transform rematchIndicator;
@@ -45,10 +44,6 @@ public class Chessboard : MonoBehaviour
     [SerializeField] private TextMeshProUGUI otherWantRematch;
     [SerializeField] private TextMeshProUGUI noToRematch;
 
-    [Header("Tutorial")] 
-    [SerializeField] private TextMeshProUGUI opponentMove;
-    [SerializeField] private TextMeshProUGUI opponentSpawned;
-    
     [Header("Handlers")]
     [SerializeField] private AudioHandler audioHandler;
     [SerializeField] private CardDeckHandler cardDeckHandler;
@@ -96,8 +91,8 @@ public class Chessboard : MonoBehaviour
     private bool tutorialGame;
     private int tutorialGameStep;
     private Vector2Int enemyPlayerSpawnTutorial;
-    
-    private bool puzzleSetUp = true;
+
+    private bool puzzleSetUp;
     public bool PuzzleActive { get; set; }
 
     private void Awake()
@@ -106,16 +101,18 @@ public class Chessboard : MonoBehaviour
         pieceContainer = CreateContainer("Pieces", transform);
         team = ChessPieceTeam.White;
         myTurn = false;
-        timmerWhiteText.text = $"White Timer: {startTimmer}"; 
-        timmerBlackText.text = $"Black Timer: {startTimmer}";
+        textManager.SetText($"White Timer: {startTimmer}","Timer White", textCollection.GamePlay);
+        textManager.SetText($"Black Timer: {startTimmer}","Timer Black", textCollection.GamePlay);
         myTimmer = startTimmer;
         enemyTimmer = startTimmer;
         if (!manaisOff)
         {
             currentMana = manaStart;
             MyMana = currentMana;
-            manaText.text = $"Mana: {MyMana}/{currentMana}";
+            textManager.SetText($"Mana: {MyMana}/{currentMana}","Mana Value",textCollection.GamePlay);
         }
+        //textManager.ResetTexts(textCollection.GamePlay);
+        textManager.ResetTexts(textCollection.Tutorial);
 
         GenerateAllTiles();
 
@@ -134,7 +131,7 @@ public class Chessboard : MonoBehaviour
 
         TileHandler();
 
-        TimmerUpdate();
+        TimerUpdate();
         if (!manaisOff)
         {
             ManaUpdate();
@@ -147,18 +144,18 @@ public class Chessboard : MonoBehaviour
         {
             if (localGame)
             {
-                scoreText.text = (team == ChessPieceTeam.White ? "White's" : "Black's") 
-                                 + $" turn\n\nWhite points: {myPoints}/{winPoints}\nBlack points: {enemyPoints}/{winPoints}";
+                textManager.SetText((team == ChessPieceTeam.White ? "White's" : "Black's") 
+                                    + $" turn\n\nWhite points: {myPoints}/{winPoints}\nBlack points: {enemyPoints}/{winPoints}", "Score Text", textCollection.GamePlay);
             }
             else
-            { 
-                scoreText.text = (myTurn ? "Your" : "Opponent's") 
-                                 + $" turn\n\nYour points: {myPoints}/{winPoints}\nEnemy points: {enemyPoints}/{winPoints}";
+            {
+                textManager.SetText((myTurn ? "Your" : "Opponent's") 
+                                    + $" turn\n\nYour points: {myPoints}/{winPoints}\nEnemy points: {enemyPoints}/{winPoints}", "Score Text", textCollection.GamePlay);
             }
         }
         else
         {
-            scoreText.text = "";
+            textManager.SetText("", "Score Text", textCollection.GamePlay);
         }
 
         if (tutorialGame)
@@ -732,6 +729,7 @@ public class Chessboard : MonoBehaviour
         {
             if (localGame)
             {
+
                 GameUINet.Instance.ChangeCamera(team == ChessPieceTeam.White ? CameraAngle.blackTeam : CameraAngle.whiteTeam);
                 if (!manaisOff)
                 {
@@ -741,8 +739,8 @@ public class Chessboard : MonoBehaviour
 
                 team = team == ChessPieceTeam.White ? ChessPieceTeam.Black : ChessPieceTeam.White;
                 myTimmer = startTimmer;
-                timmerWhiteText.color=Color.white;
-                timmerBlackText.color=Color.white;
+                textManager.GetText("Timer White",textCollection.GamePlay).color=Color.white;
+                textManager.GetText("Timer Black",textCollection.GamePlay).color=Color.white;
             }
             else
             {
@@ -752,27 +750,31 @@ public class Chessboard : MonoBehaviour
         //tutorial only
         else
         {
+            Debug.Log(tutorialGameStep);
             switch (tutorialGameStep)
             {
                 case 3:
-                    opponentSpawned.enabled = true;
-                    opponentMove.enabled = false;
+                    textManager.EnableText("Title", textCollection.Tutorial, true);
+                    textManager.EnableText("Info Placed", textCollection.Tutorial, true);
                     Invoke("DelayedTutorialAction", 0.6f);
                     break;
                 case 5:
-                    opponentSpawned.enabled = false;
-                    opponentMove.enabled = true;
+                    textManager.ResetTexts(textCollection.Tutorial);
+                    textManager.EnableText("Title After Move", textCollection.Tutorial, true);
+                    textManager.EnableText("Info Move", textCollection.Tutorial, true);
                     Invoke("DelayedTutorialAction", 0.6f);
                     break;
                 case 7:
-                    opponentSpawned.enabled = true;
-                    opponentMove.enabled = false;
+                    textManager.ResetTexts(textCollection.Tutorial);
+                    textManager.EnableText("Title After Capture", textCollection.Tutorial, true);
+                    textManager.EnableText("Info Score", textCollection.Tutorial, true);
                     Invoke("DelayedTutorialAction", 0.7f);
                     break;
                 case 9:
                     Invoke("DelayedTutorialAction", 0.5f);
                     break;
             }
+            Debug.Log(tutorialGameStep);
 
             if (PuzzleActive)
             {
@@ -796,14 +798,14 @@ public class Chessboard : MonoBehaviour
         }
     }
     
-    private void TimmerUpdate()
+    private void TimerUpdate()
     {
-        timmerWhiteText.text = $"White Timer: {startTimmer}";
-        timmerBlackText.text = $"Black Timer: {startTimmer}";
+        textManager.SetText($"White Timer: {startTimmer}","Timer White", textCollection.GamePlay);
+        textManager.SetText($"Black Timer: {startTimmer}","Timer Black", textCollection.GamePlay);
         if (TutorialGame)
         {
-            timmerBlackText.text = "";
-            timmerWhiteText.text = "";
+            textManager.SetText("","Timer White", textCollection.GamePlay);
+            textManager.SetText("","Timer Black", textCollection.GamePlay);
             return;
         }
         else
@@ -822,10 +824,10 @@ public class Chessboard : MonoBehaviour
                 switch (team)
                 {
                     case ChessPieceTeam.White:
-                        timmerWhiteText.text = $"White Timer: {myTimmer}";
+                        textManager.SetText($"White Timer: {myTimmer}","Timer White", textCollection.GamePlay);
                         break;
                     case ChessPieceTeam.Black:
-                        timmerBlackText.text = $"Black Timer: {myTimmer}";
+                        textManager.SetText($"Black Timer: {myTimmer}","Timer Black", textCollection.GamePlay);
                         break;
                 }
                 
@@ -834,10 +836,10 @@ public class Chessboard : MonoBehaviour
                     switch (team)
                     {
                         case ChessPieceTeam.White:
-                            timmerWhiteText.color = Color.red;
+                            textManager.GetText("Timer Black",textCollection.GamePlay).color=Color.red;
                             break;
                         case ChessPieceTeam.Black:
-                            timmerBlackText.color = Color.red;
+                            textManager.GetText("Timer White",textCollection.GamePlay).color=Color.red;
                             break;
                     }
                 }
@@ -845,8 +847,8 @@ public class Chessboard : MonoBehaviour
                 if (myTimmer <= 0)
                 {
                     HandleTurn();
-                    timmerWhiteText.color = Color.white;
-                    timmerBlackText.color = Color.white;
+                    textManager.GetText("Timer Black",textCollection.GamePlay).color=Color.white;
+                    textManager.GetText("Timer White",textCollection.GamePlay).color=Color.white;
                 }
             }
             else
@@ -867,10 +869,10 @@ public class Chessboard : MonoBehaviour
                         switch (team)
                         {
                             case ChessPieceTeam.White:
-                                timmerBlackText.color = Color.red;
+                                textManager.GetText("Timer Black",textCollection.GamePlay).color=Color.red;
                                 break;
                             case ChessPieceTeam.Black:
-                                timmerWhiteText.color = Color.red;
+                                textManager.GetText("Timer Black",textCollection.GamePlay).color=Color.red;
                                 break;
                         }
                     }
@@ -878,16 +880,16 @@ public class Chessboard : MonoBehaviour
                     if (enemyTimmer <= 0)
                     {
                         myTurn = true;
-                        timmerWhiteText.color = Color.white;
-                        timmerBlackText.color = Color.white;
+                        textManager.GetText("Timer Black",textCollection.GamePlay).color=Color.white;
+                        textManager.GetText("Timer White",textCollection.GamePlay).color=Color.white;
                     }
                     switch (team)
                     {
                         case ChessPieceTeam.White:
-                            timmerBlackText.text = $"Black Timer: {enemyTimmer}";
+                            textManager.SetText($"Black Timer: {enemyTimmer}","Timer Black",textCollection.GamePlay);
                             break;
                         case ChessPieceTeam.Black:
-                            timmerWhiteText.text = $"White Timer: {enemyTimmer}";
+                            textManager.SetText($"White Timer: {enemyTimmer}","Timer White",textCollection.GamePlay);
                             break;
                     }
                 }
@@ -897,7 +899,7 @@ public class Chessboard : MonoBehaviour
 
     private void ManaUpdate()
     {
-        manaText.text = $"Mana: {MyMana}/{currentMana}";
+        textManager.SetText($"Mana: {MyMana}/{currentMana}","Mana Value",textCollection.GamePlay);
     }
 
     // Draw preview of tiles in editor (shows outlines of tiles)
@@ -1295,6 +1297,7 @@ public class Chessboard : MonoBehaviour
         ResetGame();
         cardDeckHandler.ResetHand(1);
         team = ChessPieceTeam.White;
+        puzzleSetUp = true;
     }
     
     private void OnSetTutorialGameStep(int obj)
