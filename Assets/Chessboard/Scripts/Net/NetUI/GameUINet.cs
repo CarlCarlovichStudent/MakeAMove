@@ -24,6 +24,7 @@ public class GameUINet : MonoBehaviour
     [SerializeField] private TMP_InputField addressInput;
 
     private int opponentTurn = 0;
+    private bool gameOver;
     
     public Action<bool> SetLocalGame;
     public Action<bool> SetTutorialGame;
@@ -51,6 +52,12 @@ public class GameUINet : MonoBehaviour
         
         cameraAngles[(int)index].SetActive(true);
     }
+    
+    //GameSetter
+    public bool GetGameOver()
+    {
+        return gameOver;
+    }
 
     //Buttons
     public void OnLocalGameButton()
@@ -60,6 +67,7 @@ public class GameUINet : MonoBehaviour
         server.Init(8007);
         client.Init("127.0.0.1", 8007);
         menuAnimation.SetBool("StartIsOn",false);
+        gameOver = false;
     }
     
     public void OnOnlineGameButton()
@@ -74,12 +82,14 @@ public class GameUINet : MonoBehaviour
         server.Init(8007);
         client.Init("127.0.0.1", 8007);
         menuAnimation.SetTrigger("HostMenu");
+        gameOver = false;
     }
     
     public void OnOnlineConnectButton()
     {
         SetLocalGame?.Invoke(false);
         client.Init(addressInput.text, 8007);
+        gameOver = false;
     }
     public void OnOnlineBackButton()
     {
@@ -96,29 +106,37 @@ public class GameUINet : MonoBehaviour
 
     public void OnLeaveFromGameMenu()
     {
-        ChangeCamera(CameraAngle.menu);
-        menuAnimation.SetTrigger("StartMenu");
-        menuAnimation.SetBool("StartIsOn",true);
-        menuAnimation.SetInteger("TutorialStep", 0);
-        SetTutorialGameStep?.Invoke(0);
-        SetTutorialGame?.Invoke(false);
+        FullRest();
     }
     
     public void OnLeaveFromGameMenuWithPause()
     {
         pauseAnimaiton.SetTrigger("PauseMenu");
+        FullRest();
+    }
+
+    private void FullRest()
+    {
         ChangeCamera(CameraAngle.menu);
         menuAnimation.SetTrigger("StartMenu");
         menuAnimation.SetBool("StartIsOn",true);
         menuAnimation.SetInteger("TutorialStep", 0);
         SetTutorialGameStep?.Invoke(0);
         SetTutorialGame?.Invoke(false);
+        opponentTurn = 0;
     }
 
     public void OnResetToGameMenu()
     {
         menuAnimation.SetTrigger("InGameMenu");
         Server.Instace.Broadcast(new NetStartGame());
+        gameOver = false;
+    }
+    
+    public void OnRematchMenuTrigger()
+    {
+        menuAnimation.SetTrigger("RematchMenu");
+        gameOver = true;
     }
 
     public void OnPauseMenu()
@@ -220,11 +238,6 @@ public class GameUINet : MonoBehaviour
     private void OnStartGameClient(Netmessage obj)
     {
         menuAnimation.SetTrigger("InGameMenu");
-    }
-
-    public void OnRematchMenuTrigger()
-    {
-        menuAnimation.SetTrigger("RematchMenu");
     }
 
     #endregion

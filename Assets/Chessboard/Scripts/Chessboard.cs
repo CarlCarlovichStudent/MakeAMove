@@ -131,10 +131,14 @@ public class Chessboard : MonoBehaviour
 
         TileHandler();
 
-        TimerUpdate();
-        if (!manaisOff)
+        if (!GameUINet.Instance.GetGameOver())
         {
-            ManaUpdate();
+            TimerUpdate();
+
+            if (!manaisOff)
+            {
+                ManaUpdate();
+            }
         }
     }
 
@@ -329,7 +333,7 @@ public class Chessboard : MonoBehaviour
         
         if (team == ChessPieceTeam.White)
         {
-            if (to.y == 7)
+            if (to.y == 7 && tiles[to.x, to.y].piece.team != ChessPieceTeam.Black)
             {
                 myPoints++;
                 tiles[to.x, to.y].piece.DestroyPiece();
@@ -339,7 +343,7 @@ public class Chessboard : MonoBehaviour
         }
         else
         {
-            if (to.y == 0)
+            if (to.y == 0 && tiles[to.x, to.y].piece.team != ChessPieceTeam.White)
             {
                 if (localGame)
                 {
@@ -424,7 +428,7 @@ public class Chessboard : MonoBehaviour
 
         if (team != ChessPieceTeam.White)
         {
-            if (to.y == 7)
+            if (to.y == 7 && tiles[to.x, to.y].piece.team != ChessPieceTeam.Black)
             {
                 enemyPoints++;
                 tiles[to.x, to.y].piece.DestroyPiece();
@@ -434,7 +438,7 @@ public class Chessboard : MonoBehaviour
         }
         else
         {
-            if (to.y == 0)
+            if (to.y == 0 && tiles[to.x, to.y].piece.team != ChessPieceTeam.White)
             {
                 enemyPoints++;
                 tiles[to.x, to.y].piece.DestroyPiece();
@@ -493,12 +497,7 @@ public class Chessboard : MonoBehaviour
             ChessPiece piece = tiles[move.x, move.y].piece;
             if (piece is null)
             {
-                if (movementPattern.moveType is MoveType.MoveOnly or MoveType.MoveAndCapture)
-                {
-                    HighlightTile(move.x, move.y);
-                }
-
-                if (movementPattern.moveType is MoveType.MoveAndNoCapture && (move.y <= 6 && move.y >= 1))
+                if (movementPattern.moveType is MoveType.MoveOnly or MoveType.MoveAndCapture or MoveType.MoveAndNoCapture)
                 {
                     HighlightTile(move.x, move.y);
                 }
@@ -750,10 +749,10 @@ public class Chessboard : MonoBehaviour
         //tutorial only
         else
         {
-            Debug.Log(tutorialGameStep);
             switch (tutorialGameStep)
             {
                 case 3:
+                    textManager.ResetTexts(textCollection.Tutorial);
                     textManager.EnableText("Title", textCollection.Tutorial, true);
                     textManager.EnableText("Info Placed", textCollection.Tutorial, true);
                     Invoke("DelayedTutorialAction", 0.6f);
@@ -774,11 +773,9 @@ public class Chessboard : MonoBehaviour
                     Invoke("DelayedTutorialAction", 0.5f);
                     break;
             }
-            Debug.Log(tutorialGameStep);
 
             if (PuzzleActive)
             {
-                Debug.Log(cardDeckHandler.GetCurrentAmountCardsHeld());
                 switch (cardDeckHandler.GetCurrentAmountCardsHeld())
                 {
                     case 4:
@@ -802,6 +799,8 @@ public class Chessboard : MonoBehaviour
     {
         textManager.SetText($"White Timer: {startTimmer}","Timer White", textCollection.GamePlay);
         textManager.SetText($"Black Timer: {startTimmer}","Timer Black", textCollection.GamePlay);
+        textManager.GetText("Timer White",textCollection.GamePlay).color=Color.white;
+        textManager.GetText("Timer Black",textCollection.GamePlay).color=Color.white;
         if (TutorialGame)
         {
             textManager.SetText("","Timer White", textCollection.GamePlay);
@@ -836,10 +835,10 @@ public class Chessboard : MonoBehaviour
                     switch (team)
                     {
                         case ChessPieceTeam.White:
-                            textManager.GetText("Timer Black",textCollection.GamePlay).color=Color.red;
+                            textManager.GetText("Timer White",textCollection.GamePlay).color=Color.red;
                             break;
                         case ChessPieceTeam.Black:
-                            textManager.GetText("Timer White",textCollection.GamePlay).color=Color.red;
+                            textManager.GetText("Timer Black",textCollection.GamePlay).color=Color.red;
                             break;
                     }
                 }
@@ -849,6 +848,7 @@ public class Chessboard : MonoBehaviour
                     HandleTurn();
                     textManager.GetText("Timer Black",textCollection.GamePlay).color=Color.white;
                     textManager.GetText("Timer White",textCollection.GamePlay).color=Color.white;
+                    Debug.Log("heyo");
                 }
             }
             else
@@ -864,25 +864,6 @@ public class Chessboard : MonoBehaviour
                         timeBank = 0;
                     }
                     
-                    if (enemyTimmer <= 5)
-                    {
-                        switch (team)
-                        {
-                            case ChessPieceTeam.White:
-                                textManager.GetText("Timer Black",textCollection.GamePlay).color=Color.red;
-                                break;
-                            case ChessPieceTeam.Black:
-                                textManager.GetText("Timer Black",textCollection.GamePlay).color=Color.red;
-                                break;
-                        }
-                    }
-                    
-                    if (enemyTimmer <= 0)
-                    {
-                        myTurn = true;
-                        textManager.GetText("Timer Black",textCollection.GamePlay).color=Color.white;
-                        textManager.GetText("Timer White",textCollection.GamePlay).color=Color.white;
-                    }
                     switch (team)
                     {
                         case ChessPieceTeam.White:
@@ -891,6 +872,27 @@ public class Chessboard : MonoBehaviour
                         case ChessPieceTeam.Black:
                             textManager.SetText($"White Timer: {enemyTimmer}","Timer White",textCollection.GamePlay);
                             break;
+                    }
+                    
+                    if (enemyTimmer <= 5)
+                    {
+                        switch (team)
+                        {
+                            case ChessPieceTeam.White:
+                                textManager.GetText("Timer Black",textCollection.GamePlay).color=Color.red;
+                                break;
+                            case ChessPieceTeam.Black:
+                                textManager.GetText("Timer White",textCollection.GamePlay).color=Color.red;
+                                break;
+                        }
+                    }
+                    
+                    if (enemyTimmer <= 0)
+                    {
+                        myTurn = true;
+                        textManager.GetText("Timer Black",textCollection.GamePlay).color=Color.white;
+                        textManager.GetText("Timer White", textCollection.GamePlay).color = Color.white;
+                        Debug.Log("sewp");
                     }
                 }
             }
@@ -1046,6 +1048,7 @@ public class Chessboard : MonoBehaviour
         if (tutorialGame)
         {
             GameUINet.Instance.OnLeaveFromGameMenu();
+            cardDeckHandler.ResetHand(5);
             audioHandler.menuMusic.Play();
             audioHandler.exitMenuMusic.StopAudio(audioHandler.fadeOut);
             return;
@@ -1056,6 +1059,8 @@ public class Chessboard : MonoBehaviour
         Client.Instace.SendToServer(rm);
         
         GameUINet.Instance.OnLeaveFromGameMenu();
+        
+        cardDeckHandler.ResetHand(5);
         
         Invoke("ShutdownRelay", 1.0f);
         
@@ -1083,7 +1088,7 @@ public class Chessboard : MonoBehaviour
         Client.Instace.SendToServer(rm);
         
         GameUINet.Instance.OnLeaveFromGameMenuWithPause();
-        
+
         Invoke("ShutdownRelay", 1.0f);
         
         // Music

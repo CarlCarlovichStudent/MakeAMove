@@ -54,39 +54,38 @@ public class CardDeckHandler : MonoBehaviour
 
     private void HandleDeath()
     {
-        if (!board.PuzzleActive)
+        for (int i = 0; i < handSize; i++)
         {
-            for (int i = 0; i < handSize; i++)
-            {
                 if (respawnTimers[i] <= 0) continue;
                 else
                 {
                     respawnTimers[i] -= Time.deltaTime;
                     if (respawnTimers[i] <= 0)
                     {
-                        hand[i] = InitializeCard(i);
+                        if (!board.PuzzleActive)
+                        {
+                            hand[i] = InitializeCard(i);
+                        }
                     }
                 } 
-            }
         }
+        
     }
 
     public void ResetHand(int size = 0)
     {
-        if (!board.PuzzleActive)
-        {
-            foreach (Card card in hand)
-            {
-                card.Use(0.1f);
-            }
+        foreach (Card card in hand)
+        { 
+            card.Use(0.1f);
         }
-        else
+
+        if (board.TutorialGameStep != 10)
         {
             board.PuzzleActive = false;
         }
-
-        handSize = size <= 0 ? maxHandSize : size;
         
+        handSize = size <= 0 ? maxHandSize : size;
+
         InitializeHand();
     }
 
