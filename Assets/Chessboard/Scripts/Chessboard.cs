@@ -47,6 +47,9 @@ public class Chessboard : MonoBehaviour
     [Header("Handlers")]
     [SerializeField] private AudioHandler audioHandler;
     [SerializeField] private CardDeckHandler cardDeckHandler;
+
+    [Header("Trail")] 
+    [SerializeField] private GameObject trailFollow;
     
     // Getters for Tile
     public Vector2Int BoardSize => new Vector2Int(TileCountX, TileCountY);
@@ -144,7 +147,7 @@ public class Chessboard : MonoBehaviour
 
     private void WinConditionHandler()
     {
-        if (!tutorialGame || tutorialGameStep > 10)
+        if (!tutorialGame || tutorialGameStep > 8)
         {
             if (localGame)
             {
@@ -278,7 +281,7 @@ public class Chessboard : MonoBehaviour
                     break;
                 
                 case CardType.Special:
-                    SelectSpecial();
+                    SelectMove();
                     break;
             }
         }
@@ -287,6 +290,9 @@ public class Chessboard : MonoBehaviour
     private void SelectMove()
     {
         currentlyDragging = currentHover.Select();
+        trailFollow.transform.SetParent(currentlyDragging.transform);
+        trailFollow.transform.localScale = Vector3.one;
+        trailFollow.transform.localPosition = new Vector3(0,-0.015f,0);
     }
 
     private void DeselectPieceHandler()
@@ -321,6 +327,7 @@ public class Chessboard : MonoBehaviour
 
     private void MoveTo(Vector2Int from, Vector2Int to)
     {
+        trailFollow.transform.SetParent(null);
         tiles[to.x, to.y].piece?.DestroyPiece();
         tiles[to.x, to.y].piece = currentlyDragging;
         tiles[from.x, from.y].piece = null; 
@@ -447,13 +454,7 @@ public class Chessboard : MonoBehaviour
             }
         }
     }
-    
-    private void SelectSpecial()
-    {
-        currentlyDragging = currentHover.Select();
-        
-    }
-    
+
     // Highlight
     private void HighlightTileHandler()
     {
