@@ -293,6 +293,8 @@ public class Chessboard : MonoBehaviour
         trailFollow.transform.SetParent(currentlyDragging.transform);
         trailFollow.transform.localScale = Vector3.one;
         trailFollow.transform.localPosition = new Vector3(0,-0.015f,0);
+        trailFollow.transform.GetChild(1).localScale = Vector3.one/30;
+        trailFollow.transform.GetChild(1).localPosition = Vector3.zero;
     }
 
     private void DeselectPieceHandler()
@@ -328,9 +330,15 @@ public class Chessboard : MonoBehaviour
     private void MoveTo(Vector2Int from, Vector2Int to)
     {
         trailFollow.transform.SetParent(null);
+        trailFollow.transform.localScale = Vector3.one;
+        trailFollow.transform.position = new Vector3(0,0,0);
+        
         tiles[to.x, to.y].piece?.DestroyPiece();
         tiles[to.x, to.y].piece = currentlyDragging;
         tiles[from.x, from.y].piece = null; 
+        
+        trailFollow.transform.GetChild(1).position = GetTileCenter(new Vector2Int(to.x,to.y)) + new Vector3(0,0.2f,0);
+        trailFollow.transform.GetChild(1).localScale = Vector3.one;
         
         PositionPiece(ref currentlyDragging, to);
         
