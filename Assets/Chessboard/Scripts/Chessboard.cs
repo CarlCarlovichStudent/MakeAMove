@@ -4,6 +4,7 @@ using Unity.Networking.Transport;
 using UnityEngine;
 using UnityEngine.PlayerLoop;
 using UnityEngine.UI;
+using UnityEngine.VFX;
 using Button = UnityEngine.UI.Button;
 
 public class Chessboard : MonoBehaviour
@@ -50,6 +51,9 @@ public class Chessboard : MonoBehaviour
 
     [Header("Trail")] 
     [SerializeField] private GameObject trailFollow;
+
+    [Header("VFX")] 
+    [SerializeField] private GameObject[] celebrationEffects;
     
     // Getters for Tile
     public Vector2Int BoardSize => new Vector2Int(TileCountX, TileCountY);
@@ -354,6 +358,8 @@ public class Chessboard : MonoBehaviour
                 tiles[to.x, to.y].piece.DestroyPiece();
                 tiles[to.x, to.y].piece = null;
                 audioHandler.score.PlayAudio();
+                celebrationEffects[2].GetComponent<VisualEffect>().Play();
+                celebrationEffects[3].GetComponent<VisualEffect>().Play();
             }
         }
         else
@@ -371,6 +377,8 @@ public class Chessboard : MonoBehaviour
                 tiles[to.x, to.y].piece.DestroyPiece();
                 tiles[to.x, to.y].piece = null;
                 audioHandler.score.PlayAudio();
+                celebrationEffects[0].GetComponent<VisualEffect>().Play();
+                celebrationEffects[1].GetComponent<VisualEffect>().Play();
             }
         }
 

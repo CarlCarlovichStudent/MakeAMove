@@ -18764,6 +18764,11 @@ MonoBehaviour:
   audioHandler: {fileID: 4000013639899781}
   cardDeckHandler: {fileID: 2056848573}
   trailFollow: {fileID: 99308556}
+  celebrationEffects:
+  - {fileID: 2064593591}
+  - {fileID: 375699781}
+  - {fileID: 250893813}
+  - {fileID: 1703783778}
 --- !u!114 &2056848573
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -19218,8 +19223,11 @@ VisualEffect:
       m_Array: []
     m_Vector4f:
       m_Array:
-      - m_Value: {x: 60.988228, y: 4.7896514, z: 4.7896514, w: 0}
+      - m_Value: {x: 30.494114, y: 2.3948257, z: 2.3948257, w: 0}
         m_Name: Color
+        m_Overridden: 1
+      - m_Value: {x: 9.79612, y: 6.4374504, z: 1.6326867, w: 0}
+        m_Name: Paricle color
         m_Overridden: 1
     m_Uint:
       m_Array: []

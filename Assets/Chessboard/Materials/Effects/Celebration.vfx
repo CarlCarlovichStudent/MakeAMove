@@ -5496,7 +5496,7 @@ MonoBehaviour:
       m_Type:
         m_SerializableType: UnityEditor.VFX.Sphere, Unity.VisualEffectGraph.Editor,
           Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-      m_SerializableObject: '{"center":{"x":0.0,"y":0.0,"z":-0.10000000149011612},"radius":3.4874110221862795}'
+      m_SerializableObject: '{"center":{"x":0.0,"y":0.0,"z":-0.20000000298023225},"radius":3.4874110221862795}'
     m_Space: 0
   m_Property:
     name: Sphere
