@@ -102,6 +102,14 @@ public class Chessboard : MonoBehaviour
     private bool puzzleSetUp;
     public bool PuzzleActive { get; set; }
 
+    private void Start()
+    {
+        foreach (GameObject c in celebrationEffects)
+        {
+            c.GetComponent<VisualEffect>().Stop();
+        }
+    }
+
     private void Awake()
     {
         cardDeckHandler = GetComponent<CardDeckHandler>();
@@ -120,6 +128,11 @@ public class Chessboard : MonoBehaviour
         }
         //textManager.ResetTexts(textCollection.GamePlay);
         textManager.ResetTexts(textCollection.Tutorial);
+
+        foreach (GameObject c in celebrationEffects)
+        {
+            c.GetComponent<VisualEffect>().Stop();
+        }
 
         GenerateAllTiles();
 
@@ -333,6 +346,7 @@ public class Chessboard : MonoBehaviour
 
     private void MoveTo(Vector2Int from, Vector2Int to)
     {
+        //Trail Reset
         trailFollow.transform.SetParent(null);
         trailFollow.transform.localScale = Vector3.one;
         trailFollow.transform.position = new Vector3(0,0,0);
@@ -341,6 +355,7 @@ public class Chessboard : MonoBehaviour
         tiles[to.x, to.y].piece = currentlyDragging;
         tiles[from.x, from.y].piece = null; 
         
+        //Save Location with orb
         trailFollow.transform.GetChild(1).position = GetTileCenter(new Vector2Int(to.x,to.y)) + new Vector3(0,0.2f,0);
         trailFollow.transform.GetChild(1).localScale = Vector3.one;
         
@@ -358,8 +373,8 @@ public class Chessboard : MonoBehaviour
                 tiles[to.x, to.y].piece.DestroyPiece();
                 tiles[to.x, to.y].piece = null;
                 audioHandler.score.PlayAudio();
-                celebrationEffects[2].GetComponent<VisualEffect>().Play();
-                celebrationEffects[3].GetComponent<VisualEffect>().Play();
+                celebrationEffects[2].GetComponent<VisualEffect>().SendEvent("OnPlay");
+                celebrationEffects[3].GetComponent<VisualEffect>().SendEvent("OnPlay");
             }
         }
         else
@@ -377,8 +392,8 @@ public class Chessboard : MonoBehaviour
                 tiles[to.x, to.y].piece.DestroyPiece();
                 tiles[to.x, to.y].piece = null;
                 audioHandler.score.PlayAudio();
-                celebrationEffects[0].GetComponent<VisualEffect>().Play();
-                celebrationEffects[1].GetComponent<VisualEffect>().Play();
+                celebrationEffects[0].GetComponent<VisualEffect>().SendEvent("OnPlay");
+                celebrationEffects[1].GetComponent<VisualEffect>().SendEvent("OnPlay");
             }
         }
 
@@ -587,6 +602,10 @@ public class Chessboard : MonoBehaviour
     private void SpawnPiece(Vector2Int position)
     {
         InstantiatePiece(position, ChessPieceType.Pawn, team);
+        
+        //Place Orb
+        trailFollow.transform.GetChild(1).position = GetTileCenter(new Vector2Int(position.x,position.y)) + new Vector3(0,0.2f,0);
+        trailFollow.transform.GetChild(1).localScale = Vector3.one;
         
         audioHandler.summonKnight.PlayAudio();
         

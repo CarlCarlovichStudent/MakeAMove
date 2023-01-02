@@ -62,7 +62,7 @@ public class CardDeckHandler : MonoBehaviour
                     respawnTimers[i] -= Time.deltaTime;
                     if (respawnTimers[i] <= 0)
                     {
-                        if (!board.PuzzleActive)
+                        if (board.TutorialGameStep != 10)
                         {
                             hand[i] = InitializeCard(i);
                         }
