@@ -39,12 +39,6 @@ public class Chessboard : MonoBehaviour
     [SerializeField] private Transform rematchIndicator;
     [SerializeField] private Button rematchButton;
 
-    [Header("Rematch Text")] 
-    [SerializeField] private TextMeshProUGUI whiteWinText;
-    [SerializeField] private TextMeshProUGUI blackWinText;
-    [SerializeField] private TextMeshProUGUI otherWantRematch;
-    [SerializeField] private TextMeshProUGUI noToRematch;
-
     [Header("Handlers")]
     [SerializeField] private AudioHandler audioHandler;
     [SerializeField] private CardDeckHandler cardDeckHandler;
@@ -102,14 +96,6 @@ public class Chessboard : MonoBehaviour
     private bool puzzleSetUp;
     public bool PuzzleActive { get; set; }
 
-    private void Start()
-    {
-        foreach (GameObject c in celebrationEffects)
-        {
-            c.GetComponent<VisualEffect>().Stop();
-        }
-    }
-
     private void Awake()
     {
         cardDeckHandler = GetComponent<CardDeckHandler>();
@@ -128,11 +114,6 @@ public class Chessboard : MonoBehaviour
         }
         //textManager.ResetTexts(textCollection.GamePlay);
         textManager.ResetTexts(textCollection.Tutorial);
-
-        foreach (GameObject c in celebrationEffects)
-        {
-            c.GetComponent<VisualEffect>().Stop();
-        }
 
         GenerateAllTiles();
 
@@ -186,7 +167,10 @@ public class Chessboard : MonoBehaviour
         {
             if (myPoints >= winPoints)
             {
+                myPoints = 0;
+                enemyPoints = 0;
                 GameUINet.Instance.OnWinTutorila();
+                celebrationEffects[4].GetComponent<VisualEffect>().Play();
             }
             return;
         }
@@ -197,24 +181,25 @@ public class Chessboard : MonoBehaviour
             {
                 if (myPoints > enemyPoints)
                 {
-                    whiteWinText.enabled = true;
-                    blackWinText.enabled = false;
+                    textManager.EnableText("White Win",textCollection.Rematch,true);
+                    textManager.EnableText("Black Win",textCollection.Rematch,false);
                 }
                 else
                 {
-                    whiteWinText.enabled = false;
-                    blackWinText.enabled = true;
+                    textManager.EnableText("White Win",textCollection.Rematch,false);
+                    textManager.EnableText("Black Win",textCollection.Rematch,true);
                 }
                 
                 GameUINet.Instance.OnRematchMenuTrigger();
-                otherWantRematch.enabled = false;
-                noToRematch.enabled = false;
+                textManager.EnableText("Accept",textCollection.Rematch,false);
+                textManager.EnableText("Decline",textCollection.Rematch,false);
                 myPoints = 0;
                 enemyPoints = 0;
                 audioHandler.playList.StopAudio(audioHandler.fadeOut);
                 audioHandler.ambLoop.StopAudio(audioHandler.fadeOut);
                 audioHandler.victoryStinger.PlayAudio();
                 audioHandler.exitMenuMusic.PlayAudio();
+                celebrationEffects[4].GetComponent<VisualEffect>().Play();
             }
 
             return;
@@ -223,18 +208,17 @@ public class Chessboard : MonoBehaviour
         if (myPoints >= winPoints)
         {
             GameUINet.Instance.OnRematchMenuTrigger();
-            otherWantRematch.enabled = false;
-            noToRematch.enabled = false;
+            textManager.EnableText("Accept",textCollection.Rematch,false);
+            textManager.EnableText("Decline",textCollection.Rematch,false);
             if (team == ChessPieceTeam.White)
             {
-                whiteWinText.enabled = true;
-                blackWinText.enabled = false;
-               
+                textManager.EnableText("White Win",textCollection.Rematch,true);
+                textManager.EnableText("Black Win",textCollection.Rematch,false);
             }
             else
             {
-                whiteWinText.enabled = false;
-                blackWinText.enabled = true;
+                textManager.EnableText("White Win",textCollection.Rematch,false);
+                textManager.EnableText("Black Win",textCollection.Rematch,true);
             }
             myPoints = 0;
             enemyPoints = 0;
@@ -242,22 +226,23 @@ public class Chessboard : MonoBehaviour
             audioHandler.ambLoop.StopAudio(audioHandler.fadeOut);
             audioHandler.victoryStinger.PlayAudio();
             audioHandler.exitMenuMusic.PlayAudio();
+            celebrationEffects[4].GetComponent<VisualEffect>().Play();
         }
 
         if (enemyPoints >= winPoints)
         {
             GameUINet.Instance.OnRematchMenuTrigger();
-            otherWantRematch.enabled = false;
-            noToRematch.enabled = false;
+            textManager.EnableText("Accept",textCollection.Rematch,false);
+            textManager.EnableText("Decline",textCollection.Rematch,false);
             if (team != ChessPieceTeam.White)
             {
-                whiteWinText.enabled = true;
-                blackWinText.enabled = false;
+                textManager.EnableText("White Win",textCollection.Rematch,true);
+                textManager.EnableText("Black Win",textCollection.Rematch,false);
             }
             else
             {
-                whiteWinText.enabled = false;
-                blackWinText.enabled = true;
+                textManager.EnableText("White Win",textCollection.Rematch,false);
+                textManager.EnableText("Black Win",textCollection.Rematch,true);
             }
             myPoints = 0;
             enemyPoints = 0;
@@ -265,6 +250,7 @@ public class Chessboard : MonoBehaviour
             audioHandler.ambLoop.StopAudio(audioHandler.fadeOut);
             audioHandler.defeatStinger.PlayAudio();
             audioHandler.exitMenuMusic.PlayAudio();
+            celebrationEffects[4].GetComponent<VisualEffect>().Play();
         }
     }
 
@@ -373,8 +359,8 @@ public class Chessboard : MonoBehaviour
                 tiles[to.x, to.y].piece.DestroyPiece();
                 tiles[to.x, to.y].piece = null;
                 audioHandler.score.PlayAudio();
-                celebrationEffects[2].GetComponent<VisualEffect>().SendEvent("OnPlay");
-                celebrationEffects[3].GetComponent<VisualEffect>().SendEvent("OnPlay");
+                celebrationEffects[2].GetComponent<VisualEffect>().Play();
+                celebrationEffects[3].GetComponent<VisualEffect>().Play();
             }
         }
         else
@@ -392,8 +378,8 @@ public class Chessboard : MonoBehaviour
                 tiles[to.x, to.y].piece.DestroyPiece();
                 tiles[to.x, to.y].piece = null;
                 audioHandler.score.PlayAudio();
-                celebrationEffects[0].GetComponent<VisualEffect>().SendEvent("OnPlay");
-                celebrationEffects[1].GetComponent<VisualEffect>().SendEvent("OnPlay");
+                celebrationEffects[0].GetComponent<VisualEffect>().Play();
+                celebrationEffects[1].GetComponent<VisualEffect>().Play();
             }
         }
 
@@ -928,7 +914,6 @@ public class Chessboard : MonoBehaviour
                         myTurn = true;
                         textManager.GetText("Timer Black",textCollection.GamePlay).color=Color.white;
                         textManager.GetText("Timer White", textCollection.GamePlay).color = Color.white;
-                        Debug.Log("sewp");
                     }
                 }
             }
@@ -1073,7 +1058,14 @@ public class Chessboard : MonoBehaviour
 
         //Set up all cards
         cardDeckHandler.ResetHand();
+        
+        //Trail Reset
+        trailFollow.transform.GetChild(1).localScale = Vector3.one/30;
+        trailFollow.transform.GetChild(1).localPosition = Vector3.zero;
 
+        textManager.EnableText("Timer White", textCollection.GamePlay,false);
+        textManager.EnableText("Timer Black", textCollection.GamePlay,false);
+        
         //Points restart
         myPoints = 0;
         enemyPoints = 0;
@@ -1252,6 +1244,9 @@ public class Chessboard : MonoBehaviour
         audioHandler.fire.PlayAudio();
         audioHandler.randomSounds.PlayAudio();
         
+        textManager.EnableText("Timer White", textCollection.GamePlay,true);
+        textManager.EnableText("Timer Black", textCollection.GamePlay,true);
+        
         GameUINet.Instance.ChangeCamera((currentTeam==0) ? CameraAngle.whiteTeam : CameraAngle.blackTeam);
         
         team = currentTeam == 0 ? ChessPieceTeam.White : ChessPieceTeam.Black;
@@ -1297,12 +1292,12 @@ public class Chessboard : MonoBehaviour
             if (rm.wantRematch != 1)
             {
                 rematchButton.gameObject.SetActive(false);
-                noToRematch.enabled = true;
-                otherWantRematch.enabled = false;
+                textManager.EnableText("Accept",textCollection.Rematch,false);
+                textManager.EnableText("Decline",textCollection.Rematch,true);
             }
             else
             {
-                otherWantRematch.enabled = true;
+                textManager.EnableText("Accept",textCollection.Rematch,true);
             }
         }
 

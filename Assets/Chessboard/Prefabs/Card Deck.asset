@@ -43,7 +43,7 @@ MonoBehaviour:
     piecesAffected: 1
     cardType: 1
     sprite: {fileID: 21300000, guid: 1b8640c35f763ab408093c63d0aae9db, type: 3}
-    weightedChance: 20
+    weightedChance: 5
     movementPatterns:
     - move: {x: 0, y: 3}
       moveType: 0
