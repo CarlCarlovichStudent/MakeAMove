@@ -298,19 +298,25 @@ public class Chessboard : MonoBehaviour
         trailFollow.transform.localPosition = new Vector3(0,-0.015f,0);
         trailFollow.transform.GetChild(1).localScale = Vector3.one/30;
         trailFollow.transform.GetChild(1).localPosition = Vector3.zero;
+        audioHandler.trail.PlayAudio();
     }
 
     private void DeselectPieceHandler()
     {
         if (currentlyDragging is not null && Input.GetMouseButtonUp(0))
+            
         {
             if (myTurn && currentHover is not null && currentHover.highlighted && (manaisOff || cardDeckHandler.ValidCardPlay()))
             {
                 if (currentHover.piece is null) audioHandler.moveKnight.PlayAudio();
-                else audioHandler.killKnight.PlayAudio(); 
+                else audioHandler.killKnight.PlayAudio();
+              
                 
                 if (currentHover.piece is null) audioHandler.moveKnight.PlayAudio();
                 else audioHandler.killKnightSwosh.PlayAudio(); 
+                
+                
+                
                 
                 MoveTo(currentlyDragging.boardPosition, currentHover.Position);
 
@@ -326,7 +332,9 @@ public class Chessboard : MonoBehaviour
                 PositionPiece(ref currentlyDragging, currentlyDragging.boardPosition);
                 currentlyDragging = null;
                 audioHandler.wrongMove.PlayAudio();
+        
             }
+            audioHandler.trail.StopAudio(audioHandler.fadeOut);
         }
     }
 
@@ -340,6 +348,7 @@ public class Chessboard : MonoBehaviour
         tiles[to.x, to.y].piece?.DestroyPiece();
         tiles[to.x, to.y].piece = currentlyDragging;
         tiles[from.x, from.y].piece = null; 
+            
         
         //Save Location with orb
         trailFollow.transform.GetChild(1).position = GetTileCenter(new Vector2Int(to.x,to.y)) + new Vector3(0,0.2f,0);

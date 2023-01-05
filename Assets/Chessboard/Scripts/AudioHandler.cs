@@ -27,4 +27,5 @@ public class AudioHandler : MonoBehaviour
     public AudioPlay moveKnight;
     public AudioPlay wrongMove;
     public AudioPlay loosePoint;
+    public AudioPlay trail;
 }
