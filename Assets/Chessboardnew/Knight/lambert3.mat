@@ -42,7 +42,7 @@ Material:
     - EdgeWidth_: 0.2
     - NoiseStr_: 1
     - Noise_: 100
-    - _CutOfHight: 3
+    - _CutOfHight: 4
     - _QueueControl: 0
     - _QueueOffset: 0
     m_Colors:

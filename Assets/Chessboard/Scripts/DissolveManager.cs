@@ -10,7 +10,7 @@ public class DissolveManager : MonoBehaviour
     [SerializeField] private List<Material> materialsBackward;
     
     [Range(0.01f, 1f)]
-    private float dissolveSpeed = 0.15f;
+    private float dissolveSpeed = 8f;
 
     private float dissolveFrom = 2.5f;
 
@@ -62,7 +62,7 @@ public class DissolveManager : MonoBehaviour
         while (dissolveAmount > dissolveTo)
         {
 
-            dissolveAmount -= dissolveSpeed;
+            dissolveAmount -= dissolveSpeed*Time.deltaTime;
 
             //Set the _CutOfHight amount to the dissolve amount.
             mat.SetFloat("_CutOfHight", dissolveAmount);
@@ -84,7 +84,7 @@ public class DissolveManager : MonoBehaviour
         while (dissolveAmount < dissolveFrom)
         {
             Debug.Log(dissolveAmount);
-            dissolveAmount += dissolveSpeed;
+            dissolveAmount += dissolveSpeed * Time.deltaTime;
 
             //Set the _CutOfHight amount to the dissolve amount.
             mat.SetFloat("_CutOfHight", dissolveAmount);
